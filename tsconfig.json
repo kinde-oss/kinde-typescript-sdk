@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
+    "declaration": true,
+    "moduleResolution": "node",
+    "declarationDir": "dist/types",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["lib"],
+  "exclude": ["node_modules", "tsconfig.cjs.json"]
+}
