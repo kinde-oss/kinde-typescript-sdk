@@ -1,5 +1,5 @@
 import { generateRandomString } from "./random-string";
-import { crypto } from "./js-environment";
+import { crypto } from "../environment";
 
 const base64UrlEncode = (str: ArrayBuffer): string => {
   return btoa(String.fromCharCode(...new Uint8Array(str)))

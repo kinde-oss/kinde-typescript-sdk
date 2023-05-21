@@ -1,4 +1,4 @@
-import { isBrowserEnvironment } from "../utilities";
+import { isBrowserEnvironment } from "../environment";
 import { BrowserSessionStore } from "./BrowserSessionStore";
 import { MemoryStore } from "./MemoryStore";
 

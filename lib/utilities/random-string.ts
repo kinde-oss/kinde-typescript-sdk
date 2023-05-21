@@ -1,4 +1,4 @@
-import { crypto, isBrowserEnvironment } from "./js-environment";
+import { crypto, isBrowserEnvironment } from "../environment";
 
 const randomStringInBrowser = (length: number = 50): string => {
   const array = new Uint32Array(length);

@@ -4,7 +4,6 @@ import * as tokenClaimUtilities from "./token-claims";
 export { featureFlagUtilities, tokenClaimUtilities };
 
 export * from "./feature-flags";
-export * from "./js-environment";
 export * from "./code-challenge";
 export * from "./random-string";
 export * from "./token-claims";

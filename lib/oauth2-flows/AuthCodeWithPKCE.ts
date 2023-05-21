@@ -1,3 +1,4 @@
+import * as environment from "../environment";
 import * as utilities from "../utilities";
 import type { User } from "../utilities";
 import { sessionStore } from "../stores";
@@ -59,7 +60,7 @@ export class AuthCodeWithPKCE {
     }
 
     const refreshToken = utilities.getRefreshToken();
-    if (refreshToken === null && utilities.isNodeEnvironment()) {
+    if (refreshToken === null && environment.isNodeEnvironment()) {
       throw Error("Cannot persist session no valid refresh token found");
     }
 
