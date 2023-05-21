@@ -2,6 +2,7 @@ import type { PKCEClientOptions, AuthURLOptions } from "../oauth2-flows/types";
 import { sessionStore, memoryStore } from "../stores";
 import { AuthCodeWithPKCE } from "../oauth2-flows";
 import * as utilities from "../utilities";
+import type { User } from "../utilities";
 
 const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   const client = new AuthCodeWithPKCE(options);
@@ -37,6 +38,10 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     onCreateRedirect(authURL);
   };
 
+  const getUserProfile = async (): Promise<User> => {
+    return await client.getUserProfile();
+  };
+
   const handleRedirectToApp = async (
     callbackURL: URL,
     onAppRedirect: () => void
@@ -68,6 +73,7 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     ...utilities.tokenClaimUtilities,
     handleRedirectToApp,
     isAuthenticated,
+    getUserProfile,
     createOrg,
     getToken,
     register,

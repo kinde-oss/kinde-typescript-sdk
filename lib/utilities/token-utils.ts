@@ -1,7 +1,7 @@
-import type { TokenCollection, TokenType } from "./types";
+import type { TokenCollection, User, TokenType } from "./types";
 import { memoryStore } from "../stores";
 
-export const getTokenPayload = (token: string): any => {
+const getTokenPayload = (token: string): any => {
   try {
     return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
@@ -9,7 +9,7 @@ export const getTokenPayload = (token: string): any => {
   }
 };
 
-export const commitUserToMemory = (idToken: string): void => {
+const commitUserToMemoryFromToken = (idToken: string): void => {
   const idTokenPayload = getTokenPayload(idToken);
   memoryStore.setItem(
     "user",
@@ -30,7 +30,7 @@ export const commitTokenToMemory = (token: string, type: TokenType): void => {
     memoryStore.setItem("access_token_payload", tokenPayload);
   } else if (type === "id_token") {
     memoryStore.setItem("id_token_payload", tokenPayload);
-    commitUserToMemory(token);
+    commitUserToMemoryFromToken(token);
   }
 };
 
@@ -49,7 +49,11 @@ export const getAccessToken = (): string | null => {
 };
 
 export const getUserFromMemory = (): any => {
-  return memoryStore.getItem("user");
+  return memoryStore.getItem("user") as User | null;
+};
+
+export const commitUserToMemory = (user: User) => {
+  memoryStore.setItem("user", user);
 };
 
 export const isTokenExpired = (token: string | null): boolean => {

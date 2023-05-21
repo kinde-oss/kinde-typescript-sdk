@@ -1,4 +1,5 @@
 import * as utilities from "../utilities";
+import type { User } from "../utilities";
 import { sessionStore } from "../stores";
 
 import type {
@@ -13,10 +14,12 @@ export class AuthCodeWithPKCE {
 
   private readonly authorizationEndpoint: string;
   private readonly tokenEndpoint: string;
+  private readonly userProfileEndpoint: string;
   private codeVerifier?: string;
   private state?: string;
 
   constructor(private readonly config: PKCEClientOptions) {
+    this.userProfileEndpoint = `${config.authDomain}/oauth2/v2/user_profile`;
     this.authorizationEndpoint = `${config.authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${config.authDomain}/oauth2/token`;
     this.config = config;
@@ -62,6 +65,20 @@ export class AuthCodeWithPKCE {
 
     const tokens = await this.refreshTokens();
     return tokens.access_token;
+  }
+
+  async getUserProfile() {
+    const accessToken = await this.getToken();
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${accessToken}`);
+    headers.append("Accept", "application/json");
+
+    const targetURL = this.userProfileEndpoint;
+    const config: RequestInit = { method: "GET", headers };
+    const response = await fetch(targetURL, config);
+    const payload = (await response.json()) as User;
+    utilities.commitUserToMemory(payload);
+    return payload;
   }
 
   private async refreshTokens(): Promise<OAuth2CodeExchangeResponse> {
