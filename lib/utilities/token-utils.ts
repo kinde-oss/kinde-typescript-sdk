@@ -11,16 +11,15 @@ const getTokenPayload = (token: string): any => {
 
 const commitUserToMemoryFromToken = (idToken: string): void => {
   const idTokenPayload = getTokenPayload(idToken);
-  memoryStore.setItem(
-    "user",
-    JSON.stringify({
-      family_name: idTokenPayload.family_name,
-      given_name: idTokenPayload.given_name,
-      picture: idTokenPayload.picture,
-      email: idTokenPayload.email,
-      id: idTokenPayload.sub,
-    })
-  );
+  const user: User = {
+    family_name: idTokenPayload.family_name,
+    given_name: idTokenPayload.given_name,
+    picture: idTokenPayload.picture ?? null,
+    email: idTokenPayload.email,
+    id: idTokenPayload.sub,
+  };
+
+  memoryStore.setItem("user", JSON.stringify(user));
 };
 
 export const commitTokenToMemory = (token: string, type: TokenType): void => {

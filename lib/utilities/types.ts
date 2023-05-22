@@ -8,10 +8,7 @@ export interface User {
   picture: null | string;
   family_name: string;
   given_name: string;
-  updated_at: number;
   email: string;
-  name: string;
-  sub: string;
   id: string;
 }
 
