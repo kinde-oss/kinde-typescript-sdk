@@ -17,7 +17,7 @@ export const getClaim = (claim: string, type: TokenType = "access_token") => {
 };
 
 export const getPermission = (name: string) => {
-  const permissions = (getClaimValue("permissions") != null || []) as string[];
+  const permissions = (getClaimValue("permissions") ?? []) as string[];
   const isGranted = permissions.some((p) => p === name);
   const orgCode = getClaimValue("org_code") as string;
   return { orgCode, isGranted };
@@ -30,4 +30,8 @@ export const getOrganization = () => ({
 export const getPermissions = () => ({
   permissions: getClaimValue("permissions") as string[],
   orgCode: getClaimValue("org_code") as string,
+});
+
+export const getUserOrganizations = () => ({
+  orgCodes: getClaimValue("org_codes", "id_token"),
 });
