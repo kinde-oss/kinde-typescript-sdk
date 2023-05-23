@@ -7,47 +7,31 @@ import type { User } from "../utilities";
 const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   const client = new AuthCodeWithPKCE(options);
 
-  const login = async (
-    options: AuthURLOptions,
-    onLoginRedirect: (callbackURL: URL) => void
-  ) => {
-    const authURL = await client.createAuthorizationURL(options);
-    onLoginRedirect(authURL);
+  const login = async (options?: AuthURLOptions) => {
+    return await client.createAuthorizationURL(options);
   };
 
-  const register = async (
-    options: AuthURLOptions,
-    onRegisterRedirect: (callbackURL: URL) => void
-  ) => {
-    const authURL = await client.createAuthorizationURL({
+  const register = async (options?: AuthURLOptions) => {
+    return await client.createAuthorizationURL({
       ...options,
       start_page: "registration",
     });
-    onRegisterRedirect(authURL);
   };
 
-  const createOrg = async (
-    options: AuthURLOptions,
-    onCreateRedirect: (callbackURL: URL) => void
-  ) => {
-    const authURL = await client.createAuthorizationURL({
+  const createOrg = async (options?: AuthURLOptions) => {
+    return await client.createAuthorizationURL({
       ...options,
       start_page: "registration",
       is_create_org: true,
     });
-    onCreateRedirect(authURL);
   };
 
   const getUserProfile = async (): Promise<User> => {
     return await client.getUserProfile();
   };
 
-  const handleRedirectToApp = async (
-    callbackURL: URL,
-    onAppRedirect: () => void
-  ) => {
+  const handleRedirectToApp = async (callbackURL: URL) => {
     await client.handleRedirectFromAuthDomain(callbackURL);
-    onAppRedirect();
   };
 
   const isAuthenticated = () => {

@@ -29,11 +29,6 @@ export interface CCClientOptions {
   authDomain: string;
 }
 
-export interface ClientOptions extends CCClientOptions, PKCEClientOptions {
-  grantType: GrantType;
-  authDomain: string;
-}
-
 export interface AuthURLOptions {
   start_page?: string;
   audience?: string;
