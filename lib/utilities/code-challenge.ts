@@ -1,14 +1,14 @@
 import { generateRandomString } from "./random-string";
 import { crypto } from "../environment";
 
-const base64UrlEncode = (str: ArrayBuffer): string => {
+export const base64UrlEncode = (str: ArrayBuffer): string => {
   return btoa(String.fromCharCode(...new Uint8Array(str)))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 };
 
-const sha256 = async (plain: string): Promise<ArrayBuffer> => {
+export const sha256 = async (plain: string): Promise<ArrayBuffer> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(plain);
   return crypto.subtle.digest("SHA-256", data);
