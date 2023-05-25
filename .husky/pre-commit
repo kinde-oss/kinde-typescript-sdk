@@ -1,2 +1,2 @@
 #!/bin/bash
-cd ./lib && pnpm run lint-staged
+pnpm run lint-staged
