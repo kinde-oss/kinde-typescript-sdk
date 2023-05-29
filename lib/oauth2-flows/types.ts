@@ -19,6 +19,7 @@ export interface OAuth2CCTokenResponse {
 
 export interface PKCEClientOptions {
   redirectURL: string;
+  logoutRedirectURL: string;
   clientId: string;
   authDomain: string;
 }
@@ -26,6 +27,7 @@ export interface PKCEClientOptions {
 export interface CCClientOptions {
   clientSecret: string;
   clientId: string;
+  logoutRedirectURL: string;
   authDomain: string;
 }
 

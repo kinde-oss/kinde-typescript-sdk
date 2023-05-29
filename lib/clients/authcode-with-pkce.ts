@@ -50,6 +50,7 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   const logout = () => {
     sessionStore.clear();
     memoryStore.clear();
+    return client.logoutEndpoint;
   };
 
   return {

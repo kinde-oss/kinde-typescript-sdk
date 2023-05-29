@@ -7,6 +7,7 @@ import * as mocks from "../mocks";
 describe("ClientCredentials", () => {
   const clientConfig: CCClientOptions = {
     authDomain: "https://local-testing@kinde.com",
+    logoutRedirectURL: "http://app-domain.com",
     clientSecret: "client-secret",
     clientId: "client-id",
   };

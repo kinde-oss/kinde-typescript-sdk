@@ -11,20 +11,21 @@ const createCCClient = (options: CCClientOptions) => {
     return !utilities.isTokenExpired(accessToken);
   };
 
-  const flushTokens = () => {
-    memoryStore.clear();
-  };
-
   const getToken = async (): Promise<string> => {
     return await client.getToken();
+  };
+
+  const logout = () => {
+    memoryStore.clear();
+    return client.logoutEndpoint;
   };
 
   return {
     ...utilities.featureFlagUtilities,
     ...utilities.tokenClaimUtilities,
     isAuthenticated,
-    flushTokens,
     getToken,
+    logout,
   };
 };
 

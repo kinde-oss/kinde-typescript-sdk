@@ -3,10 +3,13 @@ import * as utilities from "../utilities";
 
 export class ClientCredentials {
   public static DEFAULT_TOKEN_SCOPES: string = "openid profile email offline";
-  private readonly tokenEndpoint: string;
+  public readonly logoutEndpoint: string;
+  public readonly tokenEndpoint: string;
 
   constructor(private readonly config: CCClientOptions) {
-    this.tokenEndpoint = `${config.authDomain}/oauth2/token`;
+    const { authDomain, logoutRedirectURL } = config;
+    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
+    this.tokenEndpoint = `${authDomain}/oauth2/token`;
     this.config = config;
   }
 

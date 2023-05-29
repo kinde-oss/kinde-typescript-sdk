@@ -13,16 +13,19 @@ export class AuthCodeWithPKCE {
   public static DEFAULT_TOKEN_SCOPES: string = "openid profile email offline";
   public static AUTH_FLOW_STATE_KEY: string = "acwp-authflow-state";
 
-  private readonly authorizationEndpoint: string;
-  private readonly tokenEndpoint: string;
-  private readonly userProfileEndpoint: string;
+  public readonly authorizationEndpoint: string;
+  public readonly userProfileEndpoint: string;
+  public readonly logoutEndpoint: string;
+  public readonly tokenEndpoint: string;
   private codeVerifier?: string;
   private state?: string;
 
   constructor(private readonly config: PKCEClientOptions) {
-    this.userProfileEndpoint = `${config.authDomain}/oauth2/v2/user_profile`;
-    this.authorizationEndpoint = `${config.authDomain}/oauth2/auth`;
-    this.tokenEndpoint = `${config.authDomain}/oauth2/token`;
+    const { authDomain, logoutRedirectURL } = config;
+    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
+    this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
+    this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
+    this.tokenEndpoint = `${authDomain}/oauth2/token`;
     this.config = config;
   }
 

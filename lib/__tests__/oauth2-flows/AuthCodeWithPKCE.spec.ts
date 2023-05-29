@@ -8,6 +8,7 @@ describe("AuthCodeWitPKCE", () => {
   const clientConfig: PKCEClientOptions = {
     authDomain: "https://local-testing@kinde.com",
     redirectURL: "https://app-domain.com",
+    logoutRedirectURL: "http://app-domain.com",
     clientId: "client-id",
   };
 
