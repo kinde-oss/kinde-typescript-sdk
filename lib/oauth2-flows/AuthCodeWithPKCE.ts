@@ -31,17 +31,14 @@ export class AuthCodeWithPKCE {
   }
 
   async createAuthorizationURL(options: AuthURLOptions = {}): Promise<URL> {
+    this.state = options.state ?? utilities.generateRandomString();
     const challengeSetup = await utilities.setupCodeChallenge();
-    this.state = utilities.generateRandomString();
     this.codeVerifier = challengeSetup.verifier;
 
     const authFlowStateKey = this.getAuthFlowKeyFor(this.state);
     sessionStore.setItem(
       authFlowStateKey,
-      JSON.stringify({
-        codeVerifier: this.codeVerifier,
-        appState: options.appState,
-      })
+      JSON.stringify({ codeVerifier: this.codeVerifier })
     );
 
     const { challenge } = challengeSetup;

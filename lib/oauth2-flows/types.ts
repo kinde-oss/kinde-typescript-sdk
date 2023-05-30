@@ -36,6 +36,6 @@ export interface AuthURLOptions {
   audience?: string;
   is_create_org?: boolean;
   org_name?: string;
-  appState?: string;
+  state?: string;
   scope?: string;
 }

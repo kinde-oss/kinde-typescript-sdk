@@ -34,11 +34,8 @@ describe("AuthCodeWitPKCE", () => {
       );
     });
 
-    it("saves generated code verifier and provided app state to session storage", async () => {
-      const expectedState = "test-app-state";
-      const authURL = await client.createAuthorizationURL({
-        appState: expectedState,
-      });
+    it("saves generated code verifier to session storage again state", async () => {
+      const authURL = await client.createAuthorizationURL();
       const searchParams = new URLSearchParams(authURL.search);
 
       const state = searchParams.get("state");
@@ -52,12 +49,24 @@ describe("AuthCodeWitPKCE", () => {
       );
       expect(authFlowState).toBeDefined();
 
-      const { appState: foundState, codeVerifier } = authFlowState;
+      const { codeVerifier } = authFlowState;
       expect(codeVerifier).toBeDefined();
 
       const foundChallenge = base64UrlEncode(await sha256(codeVerifier));
-      expect(foundState).toBe(expectedState);
       expect(foundChallenge).toBe(expectedChallenge);
+    });
+
+    it("uses provided state to generate authorization URL if given", async () => {
+      const expectedState = "test-app-state";
+      const authURL = await client.createAuthorizationURL({
+        state: expectedState,
+      });
+      const searchParams = new URLSearchParams(authURL.search);
+
+      const state = searchParams.get("state");
+      const expectedChallenge = searchParams.get("code_challenge");
+      expect(state).toBe(expectedState);
+      expect(expectedChallenge).toBeDefined();
     });
   });
 
