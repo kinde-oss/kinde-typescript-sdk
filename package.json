@@ -16,8 +16,9 @@
     }
   },
   "scripts": {
+    "sdk-version": "./sdk-version",
     "build": "tsc && tsc -p tsconfig.cjs.json",
-    "prebuild": "rimraf dist dist-cjs",
+    "prebuild": "pnpm run sdk-version && rimraf dist dist-cjs",
     "dev": "nodemon --exec ts-node ./lib/index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",

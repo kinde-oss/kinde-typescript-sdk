@@ -1,3 +1,4 @@
+import { getSDKHeader } from "../sdk-version";
 import * as environment from "../environment";
 import * as utilities from "../utilities";
 import type { User } from "../utilities";
@@ -140,10 +141,12 @@ export class AuthCodeWithPKCE {
     body: URLSearchParams
   ): Promise<OAuth2CodeExchangeResponse> {
     const headers = new Headers();
+    headers.append(...getSDKHeader());
     headers.append(
       "Content-Type",
       "application/x-www-form-urlencoded; charset=UTF-8"
     );
+
     const config: RequestInit = { method: "POST", headers, body };
     const response = await fetch(this.tokenEndpoint, config);
     return (await response.json()) as OAuth2CodeExchangeResponse;

@@ -2,6 +2,7 @@ import type { PKCEClientOptions } from "../../oauth2-flows";
 import { base64UrlEncode, sha256 } from "../../utilities";
 import { memoryStore, sessionStore } from "../../stores";
 import { AuthCodeWithPKCE } from "../../oauth2-flows";
+import { getSDKHeader } from "../../sdk-version";
 import * as mocks from "../mocks";
 
 describe("AuthCodeWitPKCE", () => {
@@ -175,6 +176,7 @@ describe("AuthCodeWitPKCE", () => {
       });
 
       const headers = new Headers();
+      headers.append(...getSDKHeader());
       headers.append(
         "Content-Type",
         "application/x-www-form-urlencoded; charset=UTF-8"

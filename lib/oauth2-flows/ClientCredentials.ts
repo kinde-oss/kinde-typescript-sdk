@@ -1,4 +1,5 @@
 import type { CCClientOptions, OAuth2CCTokenResponse } from "./types";
+import { getSDKHeader } from "../sdk-version";
 import * as utilities from "../utilities";
 
 export class ClientCredentials {
@@ -28,6 +29,7 @@ export class ClientCredentials {
   private async fetchAccessTokenFor(): Promise<OAuth2CCTokenResponse> {
     const body = this.generateTokenURLParams();
     const headers = new Headers();
+    headers.append(...getSDKHeader());
     headers.append(
       "Content-Type",
       "application/x-www-form-urlencoded; charset=UTF-8"

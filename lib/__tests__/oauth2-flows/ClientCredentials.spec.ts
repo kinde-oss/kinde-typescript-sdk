@@ -1,6 +1,7 @@
 import { ClientCredentials } from "../../oauth2-flows/ClientCredentials";
 import { type CCClientOptions } from "../../oauth2-flows/types";
 import { commitTokenToMemory } from "../../utilities";
+import { getSDKHeader } from "../../sdk-version";
 import { memoryStore } from "../../stores";
 import * as mocks from "../mocks";
 
@@ -29,6 +30,7 @@ describe("ClientCredentials", () => {
     });
 
     const headers = new Headers();
+    headers.append(...getSDKHeader());
     headers.append(
       "Content-Type",
       "application/x-www-form-urlencoded; charset=UTF-8"
