@@ -185,7 +185,7 @@ describe("AuthCodeWitPKCE", () => {
       await client.getToken();
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
-        { method: "POST", headers, body }
+        { method: "POST", headers, body, credentials: "include" }
       );
     });
 

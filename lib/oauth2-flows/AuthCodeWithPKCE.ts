@@ -147,7 +147,12 @@ export class AuthCodeWithPKCE {
       "application/x-www-form-urlencoded; charset=UTF-8"
     );
 
-    const config: RequestInit = { method: "POST", headers, body };
+    const config: RequestInit = {
+      method: "POST",
+      headers,
+      body,
+      credentials: "include",
+    };
     const response = await fetch(this.tokenEndpoint, config);
     return (await response.json()) as OAuth2CodeExchangeResponse;
   }
