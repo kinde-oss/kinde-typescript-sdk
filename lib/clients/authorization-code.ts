@@ -1,11 +1,16 @@
 import type { PKCEClientOptions, AuthURLOptions } from "../oauth2-flows/types";
+import { AuthCodeWithPKCE, AuthorizationCode } from "../oauth2-flows";
 import { sessionStore, memoryStore } from "../stores";
-import { AuthCodeWithPKCE } from "../oauth2-flows";
 import * as utilities from "../utilities";
 import type { User } from "../utilities";
 
-const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
-  const client = new AuthCodeWithPKCE(options);
+const createAuthorizationCodeClient = (
+  options: PKCEClientOptions,
+  isPKCE: boolean
+) => {
+  const client = !isPKCE
+    ? new AuthorizationCode(options)
+    : new AuthCodeWithPKCE(options);
 
   const login = async (options?: AuthURLOptions) => {
     return await client.createAuthorizationURL(options);
@@ -68,4 +73,4 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   };
 };
 
-export default createAuthCodeWithPKCEClient;
+export default createAuthorizationCodeClient;

@@ -1,20 +1,29 @@
-import type { PKCEClientOptions, CCClientOptions } from "../oauth2-flows/types";
-import { type CCClient, type PKCEClient } from "./types";
-import createPKCEClient from "./authcode-with-pkce";
+import { type CCClient, type AuthCodeClient } from "./types";
+import createAuthCodeClient from "./authorization-code";
 import createCCClient from "./client-credentials";
 import { GrantType } from "../oauth2-flows";
 
+import type {
+  AuthCodeClientOptions,
+  PKCEClientOptions,
+  CCClientOptions,
+} from "../oauth2-flows/types";
+
 export const createKindeClient = <
-  C extends PKCEClient | CCClient,
-  O extends PKCEClientOptions | CCClientOptions
+  C extends AuthCodeClient | CCClient,
+  O extends AuthCodeClientOptions | PKCEClientOptions | CCClientOptions
 >(
   grantType: GrantType,
   options: O
 ) => {
   switch (grantType) {
+    case GrantType.AUTHORIZATION_CODE: {
+      const clientOptions = options as AuthCodeClientOptions;
+      return createAuthCodeClient(clientOptions, false) as C;
+    }
     case GrantType.PKCE: {
       const clientOptions = options as PKCEClientOptions;
-      return createPKCEClient(clientOptions) as C;
+      return createAuthCodeClient(clientOptions, true) as C;
     }
     case GrantType.CLIENT_CREDENTIALS: {
       const clientOptions = options as CCClientOptions;
