@@ -43,13 +43,13 @@ describe("AuthCodeWitPKCE", () => {
       expect(state).toBeDefined();
       expect(expectedChallenge).toBeDefined();
 
-      const authFlowKey = `${AuthCodeWithPKCE.AUTH_FLOW_STATE_KEY}-${state!}`;
-      const authFlowState = JSON.parse(
-        sessionStore.getItem(authFlowKey)! as string
+      const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-${state!}`;
+      const codeVerifierState = JSON.parse(
+        sessionStore.getItem(codeVerifierKey)! as string
       );
-      expect(authFlowState).toBeDefined();
+      expect(codeVerifierState).toBeDefined();
 
-      const { codeVerifier } = authFlowState;
+      const { codeVerifier } = codeVerifierState;
       expect(codeVerifier).toBeDefined();
 
       const foundChallenge = base64UrlEncode(await sha256(codeVerifier));
@@ -94,7 +94,7 @@ describe("AuthCodeWitPKCE", () => {
 
       await expect(async () => {
         await client.handleRedirectFromAuthDomain(callbackURL);
-      }).rejects.toThrow(`Authentication flow state not found`);
+      }).rejects.toThrow(`Stored state not found`);
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
 
@@ -112,15 +112,11 @@ describe("AuthCodeWitPKCE", () => {
       const callbackURL = new URL(
         `${clientConfig.redirectURL}?state=state&code=code`
       );
-      const authFlowKey = `${AuthCodeWithPKCE.AUTH_FLOW_STATE_KEY}-state`;
+      const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-state`;
       sessionStore.setItem(
-        authFlowKey,
-        JSON.stringify({
-          codeVerifier: "code-verifier",
-          appState: "app-state",
-        })
+        codeVerifierKey,
+        JSON.stringify({ codeVerifier: "code-verifier" })
       );
-
       await client.handleRedirectFromAuthDomain(callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 

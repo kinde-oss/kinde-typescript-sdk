@@ -1,4 +1,5 @@
 export enum GrantType {
+  AUTHORIZATION_CODE = "AUTHORIZATION_CODE",
   CLIENT_CREDENTIALS = "CLIENT_CREDENTIALS",
   PKCE = "PKCE",
 }
@@ -17,19 +18,23 @@ export interface OAuth2CCTokenResponse {
   expires_in: string;
 }
 
-export interface PKCEClientOptions {
-  redirectURL: string;
-  logoutRedirectURL: string;
+export interface CommonClientOptions {
   clientId: string;
+  logoutRedirectURL: string;
   authDomain: string;
 }
 
-export interface CCClientOptions {
+export interface CCClientOptions extends CommonClientOptions {
   clientSecret: string;
-  clientId: string;
-  logoutRedirectURL: string;
-  authDomain: string;
 }
+
+export interface AuthCodeClientOptions extends CommonClientOptions {
+  clientSecret?: string;
+  redirectURL: string;
+}
+
+export interface PKCEClientOptions
+  extends Omit<AuthCodeClientOptions, "clientSecret"> {}
 
 export interface AuthURLOptions {
   start_page?: string;

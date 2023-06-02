@@ -1,89 +1,42 @@
-import { getSDKHeader } from "../sdk-version";
-import * as environment from "../environment";
+import { AuthorizationCode } from "./AuthorizationCode";
 import * as utilities from "../utilities";
-import type { User } from "../utilities";
 import { sessionStore } from "../stores";
 
 import type {
   OAuth2CodeExchangeResponse,
-  AuthURLOptions,
   PKCEClientOptions,
+  AuthURLOptions,
 } from "./types";
 
-export class AuthCodeWithPKCE {
-  public static DEFAULT_TOKEN_SCOPES: string = "openid profile email offline";
-  public static AUTH_FLOW_STATE_KEY: string = "acwp-authflow-state";
-
-  public readonly authorizationEndpoint: string;
-  public readonly userProfileEndpoint: string;
-  public readonly logoutEndpoint: string;
-  public readonly tokenEndpoint: string;
+export class AuthCodeWithPKCE extends AuthorizationCode {
+  public static STATE_KEY: string = "acwpf-state-key";
+  private codeChallenge?: string;
   private codeVerifier?: string;
-  private state?: string;
 
-  constructor(private readonly config: PKCEClientOptions) {
-    const { authDomain, logoutRedirectURL } = config;
-    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
-    this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
-    this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
-    this.tokenEndpoint = `${authDomain}/oauth2/token`;
+  constructor(protected readonly config: PKCEClientOptions) {
+    super(config);
     this.config = config;
   }
 
-  async createAuthorizationURL(options: AuthURLOptions = {}): Promise<URL> {
-    this.state = options.state ?? utilities.generateRandomString();
+  async createAuthorizationURL(options: AuthURLOptions = {}) {
     const challengeSetup = await utilities.setupCodeChallenge();
-    this.codeVerifier = challengeSetup.verifier;
+    const { challenge, verifier } = challengeSetup;
+    this.codeChallenge = challenge;
+    this.codeVerifier = verifier;
 
-    const authFlowStateKey = this.getAuthFlowKeyFor(this.state);
+    this.state = options.state ?? utilities.generateRandomString();
     sessionStore.setItem(
-      authFlowStateKey,
+      this.getCodeVerifierKey(this.state),
       JSON.stringify({ codeVerifier: this.codeVerifier })
     );
 
-    const { challenge } = challengeSetup;
     const authURL = new URL(this.authorizationEndpoint);
-    const authParams = this.generateAuthURLParams(challenge, options);
+    const authParams = this.generateAuthURLParams(options);
     authURL.search = authParams.toString();
     return authURL;
   }
 
-  async handleRedirectFromAuthDomain(callbackURL: URL): Promise<void> {
-    const tokens = await this.exchangeAuthCodeForTokens(callbackURL);
-    utilities.commitTokensToMemory(tokens);
-  }
-
-  async getToken(): Promise<string> {
-    const accessToken = utilities.getAccessToken();
-    const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
-    if (!isAccessTokenExpired) {
-      return accessToken!;
-    }
-
-    const refreshToken = utilities.getRefreshToken();
-    if (refreshToken === null && environment.isNodeEnvironment()) {
-      throw Error("Cannot persist session no valid refresh token found");
-    }
-
-    const tokens = await this.refreshTokens();
-    return tokens.access_token;
-  }
-
-  async getUserProfile() {
-    const accessToken = await this.getToken();
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${accessToken}`);
-    headers.append("Accept", "application/json");
-
-    const targetURL = this.userProfileEndpoint;
-    const config: RequestInit = { method: "GET", headers };
-    const response = await fetch(targetURL, config);
-    const payload = (await response.json()) as User;
-    utilities.commitUserToMemory(payload);
-    return payload;
-  }
-
-  private async refreshTokens(): Promise<OAuth2CodeExchangeResponse> {
+  protected async refreshTokens() {
     const refreshToken = utilities.getRefreshToken();
     const body = new URLSearchParams({
       grant_type: "refresh_token",
@@ -91,32 +44,26 @@ export class AuthCodeWithPKCE {
       client_id: this.config.clientId,
     });
 
-    const tokens = await this.fetchTokensFor(body);
+    const tokens = await this.fetchTokensFor(body, true);
     utilities.commitTokensToMemory(tokens);
     return tokens;
   }
 
-  private async exchangeAuthCodeForTokens(
+  protected async exchangeAuthCodeForTokens(
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse> {
-    const searchParams = new URLSearchParams(callbackURL.search);
-    const authCode = searchParams.get("code");
-    const state = searchParams.get("state")!;
-    const error = searchParams.get("error");
-    if (error !== null) {
-      throw new Error(`Authorization server reported an error: ${error}`);
+    const [code, state] = super.getCallbackURLParams(callbackURL);
+    const storedStateKey = this.getCodeVerifierKey(state!);
+    if (storedStateKey === null || !storedStateKey.endsWith(state!)) {
+      throw new Error(`Received state does not match stored state`);
     }
 
-    const authFlowStateKey = this.getAuthFlowKeyFor(state);
-    const authFlowStateString = sessionStore.getItem(authFlowStateKey) as
-      | string
-      | null;
-
-    if (authFlowStateString === null) {
-      throw new Error(`Authentication flow state not found`);
+    const storedState = sessionStore.getItem(storedStateKey) as string | null;
+    if (storedState === null) {
+      throw new Error(`Stored state not found`);
     }
 
-    const authFlowState = JSON.parse(authFlowStateString);
+    const authFlowState = JSON.parse(storedState);
     this.codeVerifier = authFlowState.codeVerifier;
 
     const body = new URLSearchParams({
@@ -124,71 +71,29 @@ export class AuthCodeWithPKCE {
       client_id: this.config.clientId,
       code_verifier: this.codeVerifier!,
       grant_type: "authorization_code",
-      code: authCode!,
+      code: code!,
     });
 
     try {
       return await this.fetchTokensFor(body);
     } finally {
-      sessionStore.removeItem(this.getAuthFlowKeyFor(state));
+      sessionStore.removeItem(this.getCodeVerifierKey(state!));
     }
   }
 
-  private async fetchTokensFor(
-    body: URLSearchParams
-  ): Promise<OAuth2CodeExchangeResponse> {
-    const headers = new Headers();
-    headers.append(...getSDKHeader());
-    headers.append(
-      "Content-Type",
-      "application/x-www-form-urlencoded; charset=UTF-8"
-    );
-
-    const config: RequestInit = {
-      method: "POST",
-      headers,
-      body,
-      credentials: "include",
-    };
-    const response = await fetch(this.tokenEndpoint, config);
-    return (await response.json()) as OAuth2CodeExchangeResponse;
+  private getCodeVerifierKey(state: string): string {
+    return `${AuthCodeWithPKCE.STATE_KEY}-${state}`;
   }
 
-  private getAuthFlowKeyFor(state: string): string {
-    return `${AuthCodeWithPKCE.AUTH_FLOW_STATE_KEY}-${state}`;
-  }
-
-  private generateAuthURLParams(
-    codeChallenge: string,
-    options: AuthURLOptions = {}
-  ): URLSearchParams {
-    const searchParams: any = {
+  protected getBaseAuthURLParams() {
+    return new URLSearchParams({
       state: this.state!,
       client_id: this.config.clientId,
+      scope: AuthorizationCode.DEFAULT_TOKEN_SCOPES,
       redirect_uri: this.config.redirectURL,
-      scope: AuthCodeWithPKCE.DEFAULT_TOKEN_SCOPES,
       response_type: "code",
-      code_challenge: codeChallenge,
+      code_challenge: this.codeChallenge!,
       code_challenge_method: "S256",
-    };
-
-    if (options.start_page !== undefined) {
-      searchParams.start_page = options.start_page;
-    }
-
-    if (options.audience !== undefined) {
-      searchParams.audience = options.audience;
-    }
-
-    if (options.is_create_org !== undefined) {
-      searchParams.org_name = options.org_name;
-      searchParams.is_create_org = true;
-    }
-
-    if (options.scope !== undefined) {
-      searchParams.scope = options.scope;
-    }
-
-    return new URLSearchParams(searchParams);
+    });
   }
 }
