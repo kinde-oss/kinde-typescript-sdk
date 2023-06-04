@@ -1,6 +1,6 @@
 /* @jest-environment jsdom */
 
-import { BrowserSessionStore as SessionStore } from "../../stores/BrowserSessionStore";
+import { BrowserSessionStore as SessionStore } from "../../../sdk/stores/BrowserSessionStore";
 
 describe("BrowserSessionStore", () => {
   const itemValue = JSON.stringify({ value: "test-item-value" });

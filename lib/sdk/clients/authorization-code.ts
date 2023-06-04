@@ -1,8 +1,8 @@
 import type { PKCEClientOptions, AuthURLOptions } from "../oauth2-flows/types";
 import { AuthCodeWithPKCE, AuthorizationCode } from "../oauth2-flows";
 import { sessionStore, memoryStore } from "../stores";
+import type { UserType } from "../utilities";
 import * as utilities from "../utilities";
-import type { User } from "../utilities";
 
 const createAuthorizationCodeClient = (
   options: PKCEClientOptions,
@@ -31,7 +31,7 @@ const createAuthorizationCodeClient = (
     });
   };
 
-  const getUserProfile = async (): Promise<User> => {
+  const getUserProfile = async (): Promise<UserType> => {
     return await client.getUserProfile();
   };
 

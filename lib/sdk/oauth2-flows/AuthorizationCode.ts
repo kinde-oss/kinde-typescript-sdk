@@ -1,7 +1,7 @@
 import { isNodeEnvironment } from "../environment";
 import { getSDKHeader } from "../sdk-version";
+import type { UserType } from "../utilities";
 import * as utilities from "../utilities";
-import type { User } from "../utilities";
 import { sessionStore } from "../stores";
 
 import type {
@@ -68,7 +68,7 @@ export class AuthorizationCode {
     const targetURL = this.userProfileEndpoint;
     const config: RequestInit = { method: "GET", headers };
     const response = await fetch(targetURL, config);
-    const payload = (await response.json()) as User;
+    const payload = (await response.json()) as UserType;
     utilities.commitUserToMemory(payload);
     return payload;
   }

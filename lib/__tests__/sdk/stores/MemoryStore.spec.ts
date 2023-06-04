@@ -1,4 +1,4 @@
-import { MemoryStore } from "../../stores/MemoryStore";
+import { MemoryStore } from "../../../sdk/stores/MemoryStore";
 
 describe("MemoryStore", () => {
   const itemValue = { value: "test-item-value" };

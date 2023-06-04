@@ -1,9 +1,9 @@
-import type { PKCEClientOptions } from "../../oauth2-flows";
-import { base64UrlEncode, sha256 } from "../../utilities";
-import { memoryStore, sessionStore } from "../../stores";
-import { AuthCodeWithPKCE } from "../../oauth2-flows";
-import { getSDKHeader } from "../../sdk-version";
-import * as mocks from "../mocks";
+import type { PKCEClientOptions } from "../../../sdk/oauth2-flows";
+import { base64UrlEncode, sha256 } from "../../../sdk/utilities";
+import { memoryStore, sessionStore } from "../../../sdk/stores";
+import { AuthCodeWithPKCE } from "../../../sdk/oauth2-flows";
+import { getSDKHeader } from "../../../sdk/sdk-version";
+import * as mocks from "../../mocks";
 
 describe("AuthCodeWitPKCE", () => {
   const clientConfig: PKCEClientOptions = {

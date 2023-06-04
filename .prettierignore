@@ -12,4 +12,5 @@ dist-cjs
 .lintstagedrc.yml
 lib/apis/**
 lib/models/**
+lib/index.ts
 lib/runtime.ts

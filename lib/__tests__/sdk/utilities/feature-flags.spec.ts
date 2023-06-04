@@ -1,7 +1,11 @@
-import { memoryStore } from "../../stores";
-import * as mocks from "../mocks";
+import { memoryStore } from "../../../sdk/stores";
+import * as mocks from "../../mocks";
 
-import { type FeatureFlags, FlagDataType, getFlag } from "../../utilities";
+import {
+  type FeatureFlags,
+  FlagDataType,
+  getFlag,
+} from "../../../sdk/utilities";
 
 describe("feature-flags", () => {
   let mockAccessToken: ReturnType<typeof mocks.getMockAccessToken>;

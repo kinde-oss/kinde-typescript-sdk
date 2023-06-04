@@ -4,7 +4,7 @@ export interface TokenCollection {
   id_token: string;
 }
 
-export interface User {
+export interface UserType {
   picture: null | string;
   family_name: string;
   given_name: string;

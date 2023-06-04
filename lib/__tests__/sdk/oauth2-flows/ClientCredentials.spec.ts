@@ -1,9 +1,9 @@
-import { ClientCredentials } from "../../oauth2-flows/ClientCredentials";
-import { type CCClientOptions } from "../../oauth2-flows/types";
-import { commitTokenToMemory } from "../../utilities";
-import { getSDKHeader } from "../../sdk-version";
-import { memoryStore } from "../../stores";
-import * as mocks from "../mocks";
+import { ClientCredentials } from "../../../sdk/oauth2-flows/ClientCredentials";
+import { type CCClientOptions } from "../../../sdk/oauth2-flows/types";
+import { commitTokenToMemory } from "../../../sdk/utilities";
+import { getSDKHeader } from "../../../sdk/sdk-version";
+import { memoryStore } from "../../../sdk/stores";
+import * as mocks from "../../mocks";
 
 describe("ClientCredentials", () => {
   const clientConfig: CCClientOptions = {

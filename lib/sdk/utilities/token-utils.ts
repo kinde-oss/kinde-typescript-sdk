@@ -1,4 +1,4 @@
-import type { TokenCollection, User, TokenType } from "./types";
+import type { TokenCollection, UserType, TokenType } from "./types";
 import { memoryStore } from "../stores";
 
 const getTokenPayload = (token: string): any => {
@@ -11,7 +11,7 @@ const getTokenPayload = (token: string): any => {
 
 const commitUserToMemoryFromToken = (idToken: string): void => {
   const idTokenPayload = getTokenPayload(idToken);
-  const user: User = {
+  const user: UserType = {
     family_name: idTokenPayload.family_name,
     given_name: idTokenPayload.given_name,
     picture: idTokenPayload.picture ?? null,
@@ -48,10 +48,10 @@ export const getAccessToken = (): string | null => {
 };
 
 export const getUserFromMemory = (): any => {
-  return memoryStore.getItem("user") as User | null;
+  return memoryStore.getItem("user") as UserType | null;
 };
 
-export const commitUserToMemory = (user: User) => {
+export const commitUserToMemory = (user: UserType) => {
   memoryStore.setItem("user", user);
 };
 

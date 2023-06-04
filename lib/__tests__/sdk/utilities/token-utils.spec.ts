@@ -1,12 +1,12 @@
-import { memoryStore } from "../../stores";
-import * as mocks from "../mocks";
+import { memoryStore } from "../../../sdk/stores";
+import * as mocks from "../../mocks";
 
 import {
   type TokenCollection,
   commitTokensToMemory,
   commitTokenToMemory,
   isTokenExpired,
-} from "../../utilities";
+} from "../../../sdk/utilities";
 
 describe("token-utils", () => {
   const domain = "local-testing@kinde.com";
