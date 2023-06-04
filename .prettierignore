@@ -10,4 +10,6 @@ dist-cjs
 .eslintrc.yml
 .prettier.yml
 .lintstagedrc.yml
-
+lib/apis/**
+lib/models/**
+lib/runtime.ts

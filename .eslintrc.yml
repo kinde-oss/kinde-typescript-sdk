@@ -12,6 +12,9 @@ parserOptions:
 ignorePatterns:
   - dist
   - dist-cjs
+  - lib/apis/**
+  - lib/models/**
+  - lib/runtime.ts
 rules:
   "@typescript-eslint/explicit-function-return-type": off
   "@typescript-eslint/no-non-null-assertion": off
