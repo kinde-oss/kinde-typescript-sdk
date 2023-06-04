@@ -1,9 +1,9 @@
-import type { CCClientOptions, OAuth2CCTokenResponse } from "./types";
-import { getSDKHeader } from "../sdk-version";
-import * as utilities from "../utilities";
+import type { CCClientOptions, OAuth2CCTokenResponse } from './types';
+import { getSDKHeader } from '../sdk-version';
+import * as utilities from '../utilities';
 
 export class ClientCredentials {
-  public static DEFAULT_TOKEN_SCOPES: string = "openid profile email offline";
+  public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
 
@@ -22,7 +22,7 @@ export class ClientCredentials {
     }
 
     const payload = await this.fetchAccessTokenFor();
-    utilities.commitTokenToMemory(payload.access_token, "access_token");
+    utilities.commitTokenToMemory(payload.access_token, 'access_token');
     return payload.access_token;
   }
 
@@ -31,17 +31,17 @@ export class ClientCredentials {
     const headers = new Headers();
     headers.append(...getSDKHeader());
     headers.append(
-      "Content-Type",
-      "application/x-www-form-urlencoded; charset=UTF-8"
+      'Content-Type',
+      'application/x-www-form-urlencoded; charset=UTF-8'
     );
-    const config: RequestInit = { method: "POST", headers, body };
+    const config: RequestInit = { method: 'POST', headers, body };
     const response = await fetch(this.tokenEndpoint, config);
     return (await response.json()) as OAuth2CCTokenResponse;
   }
 
   private generateTokenURLParams(): URLSearchParams {
     const searchParams = {
-      grant_type: "client_credentials",
+      grant_type: 'client_credentials',
       scope: ClientCredentials.DEFAULT_TOKEN_SCOPES,
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,

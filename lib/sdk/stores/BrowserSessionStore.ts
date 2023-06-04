@@ -1,7 +1,7 @@
-import type { Store } from "./types";
+import type { Store } from './types';
 
 export class BrowserSessionStore implements Store {
-  public static ItemNamePrefix = "browser-session-store@";
+  public static ItemNamePrefix = 'browser-session-store@';
 
   setItem(itemKey: string, itemValue: string): void {
     const key = this.generateItemKey(itemKey);

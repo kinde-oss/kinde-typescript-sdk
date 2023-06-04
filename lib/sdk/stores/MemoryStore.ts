@@ -1,7 +1,7 @@
-import type { Store } from "./types";
+import type { Store } from './types';
 
 export class MemoryStore implements Store {
-  public static ItemNamePrefix = "memory-store@";
+  public static ItemNamePrefix = 'memory-store@';
   constructor(private store: Record<string, unknown> = {}) {}
 
   setItem(itemKey: string, itemValue: unknown): void {

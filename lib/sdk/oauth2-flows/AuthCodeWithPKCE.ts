@@ -1,15 +1,15 @@
-import { AuthorizationCode } from "./AuthorizationCode";
-import * as utilities from "../utilities";
-import { sessionStore } from "../stores";
+import { AuthorizationCode } from './AuthorizationCode';
+import * as utilities from '../utilities';
+import { sessionStore } from '../stores';
 
 import type {
   OAuth2CodeExchangeResponse,
   PKCEClientOptions,
   AuthURLOptions,
-} from "./types";
+} from './types';
 
 export class AuthCodeWithPKCE extends AuthorizationCode {
-  public static STATE_KEY: string = "acwpf-state-key";
+  public static STATE_KEY: string = 'acwpf-state-key';
   private codeChallenge?: string;
   private codeVerifier?: string;
 
@@ -39,7 +39,7 @@ export class AuthCodeWithPKCE extends AuthorizationCode {
   protected async refreshTokens() {
     const refreshToken = utilities.getRefreshToken();
     const body = new URLSearchParams({
-      grant_type: "refresh_token",
+      grant_type: 'refresh_token',
       refresh_token: refreshToken!,
       client_id: this.config.clientId,
     });
@@ -55,12 +55,12 @@ export class AuthCodeWithPKCE extends AuthorizationCode {
     const [code, state] = super.getCallbackURLParams(callbackURL);
     const storedStateKey = this.getCodeVerifierKey(state!);
     if (storedStateKey === null || !storedStateKey.endsWith(state!)) {
-      throw new Error(`Received state does not match stored state`);
+      throw new Error('Received state does not match stored state');
     }
 
     const storedState = sessionStore.getItem(storedStateKey) as string | null;
     if (storedState === null) {
-      throw new Error(`Stored state not found`);
+      throw new Error('Stored state not found');
     }
 
     const authFlowState = JSON.parse(storedState);
@@ -70,7 +70,7 @@ export class AuthCodeWithPKCE extends AuthorizationCode {
       redirect_uri: this.config.redirectURL,
       client_id: this.config.clientId,
       code_verifier: this.codeVerifier!,
-      grant_type: "authorization_code",
+      grant_type: 'authorization_code',
       code: code!,
     });
 
@@ -91,9 +91,9 @@ export class AuthCodeWithPKCE extends AuthorizationCode {
       client_id: this.config.clientId,
       scope: AuthorizationCode.DEFAULT_TOKEN_SCOPES,
       redirect_uri: this.config.redirectURL,
-      response_type: "code",
+      response_type: 'code',
       code_challenge: this.codeChallenge!,
-      code_challenge_method: "S256",
+      code_challenge_method: 'S256',
     });
   }
 }

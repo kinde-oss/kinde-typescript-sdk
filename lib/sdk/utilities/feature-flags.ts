@@ -1,18 +1,18 @@
-import { getClaimValue } from "./token-claims";
+import { getClaimValue } from './token-claims';
 
 import {
   type FeatureFlags,
   type GetFlagType,
   type FlagType,
   FlagDataType,
-} from "./types";
+} from './types';
 
 export const getFlag = (
   code: string,
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): GetFlagType => {
-  const featureFlags = (getClaimValue("feature_flags") as FeatureFlags) ?? {};
+  const featureFlags = (getClaimValue('feature_flags') as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
   if (flag === undefined && defaultValue === undefined) {
@@ -36,16 +36,16 @@ export const getFlag = (
 };
 
 export const getIntegerFlag = (code: string, defaultValue?: number): number => {
-  return getFlag(code, defaultValue, "i").value as number;
+  return getFlag(code, defaultValue, 'i').value as number;
 };
 
 export const getStringFlag = (code: string, defaultValue?: string): string => {
-  return getFlag(code, defaultValue, "s").value as string;
+  return getFlag(code, defaultValue, 's').value as string;
 };
 
 export const getBooleanFlag = (
   code: string,
   defaultValue?: boolean
 ): boolean => {
-  return getFlag(code, defaultValue, "b").value as boolean;
+  return getFlag(code, defaultValue, 'b').value as boolean;
 };

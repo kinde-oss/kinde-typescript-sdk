@@ -12,12 +12,12 @@ export interface UserType {
   id: string;
 }
 
-export type TokenType = "refresh_token" | "access_token" | "id_token";
+export type TokenType = 'refresh_token' | 'access_token' | 'id_token';
 
 export enum FlagDataType {
-  s = "string",
-  b = "boolean",
-  i = "number",
+  s = 'string',
+  b = 'boolean',
+  i = 'number',
 }
 
 export interface FlagType {
@@ -33,11 +33,11 @@ export interface FeatureFlag<T extends keyof FlagType> {
 
 export type FeatureFlags = Record<
   string,
-  FeatureFlag<"b" | "i" | "s"> | undefined
+  FeatureFlag<'b' | 'i' | 's'> | undefined
 >;
 
 export interface GetFlagType {
-  type: "string" | "boolean" | "number";
+  type: 'string' | 'boolean' | 'number';
   value: FlagType[keyof FlagType];
   is_default: boolean;
   code: string;

@@ -1,13 +1,13 @@
-import { type CCClient, type AuthCodeClient } from "./types";
-import createAuthCodeClient from "./authorization-code";
-import createCCClient from "./client-credentials";
-import { GrantType } from "../oauth2-flows";
+import { type CCClient, type AuthCodeClient } from './types';
+import createAuthCodeClient from './authorization-code';
+import createCCClient from './client-credentials';
+import { GrantType } from '../oauth2-flows';
 
 import type {
   AuthCodeClientOptions,
   PKCEClientOptions,
   CCClientOptions,
-} from "../oauth2-flows/types";
+} from '../oauth2-flows/types';
 
 export const createKindeClient = <
   C extends AuthCodeClient | CCClient,
@@ -30,9 +30,9 @@ export const createKindeClient = <
       return createCCClient(clientOptions) as C;
     }
     default: {
-      throw new Error("Unrecognized grant type provided");
+      throw new Error('Unrecognized grant type provided');
     }
   }
 };
 
-export * from "./types";
+export * from './types';

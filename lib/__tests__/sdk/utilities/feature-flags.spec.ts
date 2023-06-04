@@ -1,27 +1,27 @@
-import { memoryStore } from "../../../sdk/stores";
-import * as mocks from "../../mocks";
+import { memoryStore } from '../../../sdk/stores';
+import * as mocks from '../../mocks';
 
 import {
   type FeatureFlags,
   FlagDataType,
   getFlag,
-} from "../../../sdk/utilities";
+} from '../../../sdk/utilities';
 
-describe("feature-flags", () => {
+describe('feature-flags', () => {
   let mockAccessToken: ReturnType<typeof mocks.getMockAccessToken>;
 
   beforeEach(() => {
     mockAccessToken = mocks.getMockAccessToken();
-    memoryStore.setItem("access_token_payload", mockAccessToken.payload);
+    memoryStore.setItem('access_token_payload', mockAccessToken.payload);
   });
 
   afterEach(() => {
     memoryStore.clear();
   });
 
-  describe("getFlag", () => {
-    it("throws error if no flag is found no defaultValue is given", () => {
-      const code = "non-existant-code";
+  describe('getFlag', () => {
+    it('throws error if no flag is found no defaultValue is given', () => {
+      const code = 'non-existant-code';
       expect(() => getFlag(code)).toThrowError(
         new Error(
           `Flag ${code} was not found, and no default value has been provided`
@@ -29,12 +29,12 @@ describe("feature-flags", () => {
       );
     });
 
-    it("throw error if provided type is different from typeof of found flag", () => {
+    it('throw error if provided type is different from typeof of found flag', () => {
       const featureFlags = mockAccessToken.payload
         .feature_flags as FeatureFlags;
-      const code = "is_dark_mode";
+      const code = 'is_dark_mode';
       const flag = featureFlags[code];
-      expect(() => getFlag(code, true, "s")).toThrowError(
+      expect(() => getFlag(code, true, 's')).toThrowError(
         new Error(
           `Flag ${code} is of type ${FlagDataType[flag!.t]}, expected type ${
             FlagDataType.s
@@ -43,7 +43,7 @@ describe("feature-flags", () => {
       );
     });
 
-    it("retrieves flag data for a defined feature flag", () => {
+    it('retrieves flag data for a defined feature flag', () => {
       const featureFlags = mockAccessToken.payload
         .feature_flags as FeatureFlags;
       Object.keys(featureFlags).forEach((code) => {

@@ -1,18 +1,18 @@
-import { isNodeEnvironment } from "../environment";
-import { getSDKHeader } from "../sdk-version";
-import type { UserType } from "../utilities";
-import * as utilities from "../utilities";
-import { sessionStore } from "../stores";
+import { isNodeEnvironment } from '../environment';
+import { getSDKHeader } from '../sdk-version';
+import type { UserType } from '../utilities';
+import * as utilities from '../utilities';
+import { sessionStore } from '../stores';
 
 import type {
   OAuth2CodeExchangeResponse,
   AuthCodeClientOptions,
   AuthURLOptions,
-} from "./types";
+} from './types';
 
 export class AuthorizationCode {
-  public static DEFAULT_TOKEN_SCOPES: string = "openid profile email offline";
-  public static STATE_KEY: string = "ac-state-key";
+  public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
+  public static STATE_KEY: string = 'ac-state-key';
 
   public readonly authorizationEndpoint: string;
   public readonly userProfileEndpoint: string;
@@ -52,7 +52,7 @@ export class AuthorizationCode {
 
     const refreshToken = utilities.getRefreshToken();
     if (refreshToken === null && isNodeEnvironment()) {
-      throw Error("Cannot persist session no valid refresh token found");
+      throw Error('Cannot persist session no valid refresh token found');
     }
 
     const tokens = await this.refreshTokens();
@@ -62,11 +62,11 @@ export class AuthorizationCode {
   async getUserProfile() {
     const accessToken = await this.getToken();
     const headers = new Headers();
-    headers.append("Authorization", `Bearer ${accessToken}`);
-    headers.append("Accept", "application/json");
+    headers.append('Authorization', `Bearer ${accessToken}`);
+    headers.append('Accept', 'application/json');
 
     const targetURL = this.userProfileEndpoint;
-    const config: RequestInit = { method: "GET", headers };
+    const config: RequestInit = { method: 'GET', headers };
     const response = await fetch(targetURL, config);
     const payload = (await response.json()) as UserType;
     utilities.commitUserToMemory(payload);
@@ -76,7 +76,7 @@ export class AuthorizationCode {
   protected async refreshTokens() {
     const refreshToken = utilities.getRefreshToken();
     const body = new URLSearchParams({
-      grant_type: "refresh_token",
+      grant_type: 'refresh_token',
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret!,
       refresh_token: refreshToken!,
@@ -94,11 +94,11 @@ export class AuthorizationCode {
     const stateKey = AuthorizationCode.STATE_KEY;
     const storedState = sessionStore.getItem(stateKey) as string | null;
     if (storedState === null || storedState !== state) {
-      throw new Error(`Authentication flow state not found`);
+      throw new Error('Authentication flow state not found');
     }
 
     const body = new URLSearchParams({
-      grant_type: "authorization_code",
+      grant_type: 'authorization_code',
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret!,
       redirect_uri: this.config.redirectURL,
@@ -114,9 +114,9 @@ export class AuthorizationCode {
 
   protected getCallbackURLParams(callbackURL: URL) {
     const searchParams = new URLSearchParams(callbackURL.search);
-    const state = searchParams.get("state")!;
-    const error = searchParams.get("error");
-    const code = searchParams.get("code");
+    const state = searchParams.get('state')!;
+    const error = searchParams.get('error');
+    const code = searchParams.get('code');
 
     if (error !== null) {
       throw new Error(`Authorization server reported an error: ${error}`);
@@ -132,15 +132,15 @@ export class AuthorizationCode {
     const headers = new Headers();
     headers.append(...getSDKHeader());
     headers.append(
-      "Content-Type",
-      "application/x-www-form-urlencoded; charset=UTF-8"
+      'Content-Type',
+      'application/x-www-form-urlencoded; charset=UTF-8'
     );
 
     const config: RequestInit = {
-      method: "POST",
+      method: 'POST',
       headers,
       body,
-      credentials: useCookies ? "include" : undefined,
+      credentials: useCookies ? 'include' : undefined,
     };
     const response = await fetch(this.tokenEndpoint, config);
     return await response.json();
@@ -152,7 +152,7 @@ export class AuthorizationCode {
       client_id: this.config.clientId,
       scope: AuthorizationCode.DEFAULT_TOKEN_SCOPES,
       redirect_uri: this.config.redirectURL,
-      response_type: "code",
+      response_type: 'code',
     });
   }
 
@@ -161,20 +161,20 @@ export class AuthorizationCode {
   ): URLSearchParams {
     const searchParams = this.getBaseAuthURLParams();
     if (options.start_page !== undefined) {
-      searchParams.append("start_page", options.start_page);
+      searchParams.append('start_page', options.start_page);
     }
 
     if (options.is_create_org !== undefined) {
-      searchParams.append("org_name", options.org_name!);
-      searchParams.append("is_create_org", "true");
+      searchParams.append('org_name', options.org_name!);
+      searchParams.append('is_create_org', 'true');
     }
 
     if (options.audience !== undefined) {
-      searchParams.append("audience", options.audience);
+      searchParams.append('audience', options.audience);
     }
 
     if (options.scope !== undefined) {
-      searchParams.append("scope", options.scope);
+      searchParams.append('scope', options.scope);
     }
 
     return searchParams;

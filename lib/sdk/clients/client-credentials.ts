@@ -1,7 +1,7 @@
-import type { CCClientOptions } from "../oauth2-flows";
-import { ClientCredentials } from "../oauth2-flows";
-import * as utilities from "../utilities";
-import { memoryStore } from "../stores";
+import type { CCClientOptions } from '../oauth2-flows';
+import { ClientCredentials } from '../oauth2-flows';
+import * as utilities from '../utilities';
+import { memoryStore } from '../stores';
 
 const createCCClient = (options: CCClientOptions) => {
   const client = new ClientCredentials(options);

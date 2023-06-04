@@ -1,7 +1,7 @@
 export enum GrantType {
-  AUTHORIZATION_CODE = "AUTHORIZATION_CODE",
-  CLIENT_CREDENTIALS = "CLIENT_CREDENTIALS",
-  PKCE = "PKCE",
+  AUTHORIZATION_CODE = 'AUTHORIZATION_CODE',
+  CLIENT_CREDENTIALS = 'CLIENT_CREDENTIALS',
+  PKCE = 'PKCE',
 }
 
 export interface OAuth2CodeExchangeResponse {
@@ -34,7 +34,7 @@ export interface AuthCodeClientOptions extends CommonClientOptions {
 }
 
 export interface PKCEClientOptions
-  extends Omit<AuthCodeClientOptions, "clientSecret"> {}
+  extends Omit<AuthCodeClientOptions, 'clientSecret'> {}
 
 export interface AuthURLOptions {
   start_page?: string;

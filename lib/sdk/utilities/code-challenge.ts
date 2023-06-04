@@ -1,17 +1,17 @@
-import { generateRandomString } from "./random-string";
-import { crypto } from "../environment";
+import { generateRandomString } from './random-string';
+import { crypto } from '../environment';
 
 export const base64UrlEncode = (str: ArrayBuffer): string => {
   return btoa(String.fromCharCode(...new Uint8Array(str)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 };
 
 export const sha256 = async (plain: string): Promise<ArrayBuffer> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(plain);
-  return crypto.subtle.digest("SHA-256", data);
+  return crypto.subtle.digest('SHA-256', data);
 };
 
 export const setupCodeChallenge = async (): Promise<{
