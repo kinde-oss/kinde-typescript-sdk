@@ -1,5 +1,0 @@
-#!/bin/bash
-version_regex='[0-9]+\.[0-9]+\.[0-9]+'
-version=$(cat package.json | grep version | grep -oE $version_regex)
-sed -i "s/SDK_VERSION_PLACEHOLDER/$version/g" ./lib/sdk/sdk-version.ts
-
