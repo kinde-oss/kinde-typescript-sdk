@@ -9,7 +9,7 @@ export const getClaimValue = (
   const token = memoryStore.getItem(type) as string | null;
   if (isTokenExpired(token))
     throw new Error(
-      `No authenticating credential found, when requesting claim ${claim}`
+      `No authentication credential found, when requesting claim ${claim}`
     );
 
   const tokenPayload = memoryStore.getItem(`${type}_payload`) as Record<

@@ -46,7 +46,7 @@ describe('token-claims', () => {
       const mockExpiredAccessToken = mocks.getMockAccessToken(authDomain, true);
       memoryStore.setItem('access_token', mockExpiredAccessToken.token);
       expect(() => getClaimValue('claim')).toThrowError(
-        'No authenticating credential found, when requesting claim claim'
+        'No authentication credential found, when requesting claim claim'
       );
     });
 
@@ -54,7 +54,7 @@ describe('token-claims', () => {
       const mockExpiredIdToken = mocks.getMockIdToken(authDomain, true);
       memoryStore.setItem('id_token', mockExpiredIdToken.token);
       expect(() => getClaimValue('claim', 'id_token')).toThrowError(
-        'No authenticating credential found, when requesting claim claim'
+        'No authentication credential found, when requesting claim claim'
       );
     });
   });

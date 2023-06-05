@@ -36,10 +36,6 @@ const createAuthorizationCodeClient = (
     });
   };
 
-  const getUserProfile = async (): Promise<UserType> => {
-    return await client.getUserProfile();
-  };
-
   const handleRedirectToApp = async (callbackURL: URL) => {
     await client.handleRedirectFromAuthDomain(callbackURL);
   };
@@ -49,12 +45,26 @@ const createAuthorizationCodeClient = (
     return !utilities.isTokenExpired(accessToken);
   };
 
-  const getToken = async (): Promise<string> => {
-    return await client.getToken();
+  const getUserProfile = async (): Promise<UserType> => {
+    if (!isAuthenticated()) {
+      throw new Error(
+        'Cannot fetch user profile, no authentication credential found'
+      );
+    }
+    return await client.getUserProfile();
   };
 
   const getUser = () => {
+    if (!isAuthenticated()) {
+      throw new Error(
+        'Cannot get user details, no authentication credential found'
+      );
+    }
     return utilities.getUserFromMemory();
+  };
+
+  const getToken = async (): Promise<string> => {
+    return await client.getToken();
   };
 
   const logout = () => {
