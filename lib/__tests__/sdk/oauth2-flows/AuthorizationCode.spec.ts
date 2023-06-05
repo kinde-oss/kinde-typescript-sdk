@@ -1,11 +1,13 @@
-import type { AuthorizationCodeOptions } from '../../../sdk/oauth2-flows';
-import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
+import {
+  AuthorizationCode,
+  type AuthorizationCodeOptions,
+} from '../../../sdk/oauth2-flows';
 import { memoryStore, sessionStore } from '../../../sdk/stores';
-import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
 import { getSDKHeader } from '../../../sdk/sdk-version';
 import * as mocks from '../../mocks';
 
-describe('AuthCodeWitPKCE', () => {
+describe('AuthorizationCode', () => {
+  const clientSecret = 'client-secret' as const;
   const clientConfig: AuthorizationCodeOptions = {
     authDomain: 'https://local-testing@kinde.com',
     redirectURL: 'https://app-domain.com',
@@ -13,11 +15,13 @@ describe('AuthCodeWitPKCE', () => {
     clientId: 'client-id',
   };
 
-  const client = new AuthCodeWithPKCE(clientConfig);
+  const client = new AuthorizationCode(clientConfig, clientSecret);
 
-  describe('new AuthCodeWithPKCE', () => {
-    it('can construct AuthCodeWithPKCE instance', () => {
-      expect(() => new AuthCodeWithPKCE(clientConfig)).not.toThrowError();
+  describe('new AuthorizationCode', () => {
+    it('can construct AuthorizationCode instance', () => {
+      expect(
+        () => new AuthorizationCode(clientConfig, 'client-secret')
+      ).not.toThrowError();
     });
   });
 
@@ -30,30 +34,17 @@ describe('AuthCodeWitPKCE', () => {
       const authURL = await client.createAuthorizationURL();
       const searchParams = new URLSearchParams(authURL.search);
       expect(searchParams.get('scope')).toBe(
-        AuthCodeWithPKCE.DEFAULT_TOKEN_SCOPES
+        AuthorizationCode.DEFAULT_TOKEN_SCOPES
       );
     });
 
-    it('saves generated code verifier to session storage again state', async () => {
+    it('saves state to session storage again state', async () => {
       const authURL = await client.createAuthorizationURL();
       const searchParams = new URLSearchParams(authURL.search);
-
       const state = searchParams.get('state');
-      const expectedChallenge = searchParams.get('code_challenge');
-      expect(state).toBeDefined();
-      expect(expectedChallenge).toBeDefined();
-
-      const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-${state!}`;
-      const codeVerifierState = JSON.parse(
-        sessionStore.getItem(codeVerifierKey)! as string
-      );
-      expect(codeVerifierState).toBeDefined();
-
-      const { codeVerifier } = codeVerifierState;
-      expect(codeVerifier).toBeDefined();
-
-      const foundChallenge = base64UrlEncode(await sha256(codeVerifier));
-      expect(foundChallenge).toBe(expectedChallenge);
+      const stateKey = AuthorizationCode.STATE_KEY;
+      const storedState = sessionStore.getItem(stateKey)! as string;
+      expect(storedState).toBe(state);
     });
 
     it('uses provided state to generate authorization URL if given', async () => {
@@ -62,11 +53,8 @@ describe('AuthCodeWitPKCE', () => {
         state: expectedState,
       });
       const searchParams = new URLSearchParams(authURL.search);
-
       const state = searchParams.get('state');
-      const expectedChallenge = searchParams.get('code_challenge');
       expect(state).toBe(expectedState);
-      expect(expectedChallenge).toBeDefined();
     });
   });
 
@@ -94,7 +82,7 @@ describe('AuthCodeWitPKCE', () => {
 
       await expect(async () => {
         await client.handleRedirectFromAuthDomain(callbackURL);
-      }).rejects.toThrow('Stored state not found');
+      }).rejects.toThrow('Authentication flow state not found');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
 
@@ -112,11 +100,8 @@ describe('AuthCodeWitPKCE', () => {
       const callbackURL = new URL(
         `${clientConfig.redirectURL}?state=state&code=code`
       );
-      const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-state`;
-      sessionStore.setItem(
-        codeVerifierKey,
-        JSON.stringify({ codeVerifier: 'code-verifier' })
-      );
+      const stateKey = AuthorizationCode.STATE_KEY;
+      sessionStore.setItem(stateKey, 'state');
       await client.handleRedirectFromAuthDomain(callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
@@ -176,8 +161,9 @@ describe('AuthCodeWitPKCE', () => {
 
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: 'refresh_token',
         client_id: clientConfig.clientId,
+        client_secret: clientSecret,
+        refresh_token: 'refresh_token',
       });
 
       const headers = new Headers();
@@ -190,7 +176,7 @@ describe('AuthCodeWitPKCE', () => {
       await client.getToken();
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
-        { method: 'POST', headers, body, credentials: 'include' }
+        { method: 'POST', headers, body, credentials: undefined }
       );
     });
 
@@ -224,6 +210,59 @@ describe('AuthCodeWitPKCE', () => {
       expect(foundAccessToken).toBe(newAccessToken.token);
       expect(foundRefreshToken).toBe(newRefreshToken);
       expect(foundIdToken).toBe(newIdToken.token);
+    });
+  });
+
+  describe('getUserProfile()', () => {
+    afterEach(() => {
+      mocks.fetchClient.mockClear();
+      sessionStore.clear();
+      memoryStore.clear();
+    });
+
+    it('fetches user profile using the available access token', async () => {
+      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      memoryStore.setItem('access_token', mockAccessToken.token);
+
+      const headers = new Headers();
+      headers.append('Authorization', `Bearer ${mockAccessToken.token}`);
+      headers.append('Accept', 'application/json');
+
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          family_name: 'family_name',
+          given_name: 'give_name',
+          email: 'test@test.com',
+          picture: null,
+          id: 'id',
+        }),
+      });
+
+      await client.getUserProfile();
+      expect(mocks.fetchClient).toHaveBeenCalledWith(
+        `${clientConfig.authDomain}/oauth2/v2/user_profile`,
+        { method: 'GET', headers }
+      );
+    });
+
+    it('commits fetched user details to memory store', async () => {
+      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      memoryStore.setItem('access_token', mockAccessToken.token);
+      const userDetails = {
+        family_name: 'family_name',
+        given_name: 'give_name',
+        email: 'test@test.com',
+        picture: null,
+        id: 'id',
+      };
+
+      mocks.fetchClient.mockResolvedValue({
+        json: () => userDetails,
+      });
+
+      await client.getUserProfile();
+      expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
+      expect(memoryStore.getItem('user')).toStrictEqual(userDetails);
     });
   });
 });
