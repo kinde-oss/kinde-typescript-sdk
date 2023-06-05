@@ -12,12 +12,15 @@ import {
 describe('token-claims', () => {
   let mockAccessToken: ReturnType<typeof mocks.getMockAccessToken>;
   let mockIdToken: ReturnType<typeof mocks.getMockIdToken>;
+  const authDomain = 'https://local-testing@kinde.com';
 
   beforeEach(() => {
     mockAccessToken = mocks.getMockAccessToken();
     mockIdToken = mocks.getMockIdToken();
     memoryStore.setItem('access_token_payload', mockAccessToken.payload);
     memoryStore.setItem('id_token_payload', mockIdToken.payload);
+    memoryStore.setItem('access_token', mockAccessToken.token);
+    memoryStore.setItem('id_token', mockIdToken.token);
   });
 
   afterEach(() => {
@@ -37,6 +40,22 @@ describe('token-claims', () => {
       const claimName = 'non-existant-claim';
       const claimValue = getClaimValue(claimName);
       expect(claimValue).toBe(null);
+    });
+
+    it('throws error if access token is expired or not present', () => {
+      const mockExpiredAccessToken = mocks.getMockAccessToken(authDomain, true);
+      memoryStore.setItem('access_token', mockExpiredAccessToken.token);
+      expect(() => getClaimValue('claim')).toThrowError(
+        'No authenticating credential found, when requesting claim claim'
+      );
+    });
+
+    it('throws error if id token is expired or not present', () => {
+      const mockExpiredIdToken = mocks.getMockIdToken(authDomain, true);
+      memoryStore.setItem('id_token', mockExpiredIdToken.token);
+      expect(() => getClaimValue('claim', 'id_token')).toThrowError(
+        'No authenticating credential found, when requesting claim claim'
+      );
     });
   });
 

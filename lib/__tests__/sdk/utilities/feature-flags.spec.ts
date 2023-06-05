@@ -13,6 +13,7 @@ describe('feature-flags', () => {
   beforeEach(() => {
     mockAccessToken = mocks.getMockAccessToken();
     memoryStore.setItem('access_token_payload', mockAccessToken.payload);
+    memoryStore.setItem('access_token', mockAccessToken.token);
   });
 
   afterEach(() => {

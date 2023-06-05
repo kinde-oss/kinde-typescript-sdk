@@ -1,3 +1,4 @@
+import { isTokenExpired } from './token-utils';
 import { type TokenType } from './types';
 import { memoryStore } from '../stores';
 
@@ -5,6 +6,12 @@ export const getClaimValue = (
   claim: string,
   type: TokenType = 'access_token'
 ): unknown | null => {
+  const token = memoryStore.getItem(type) as string | null;
+  if (isTokenExpired(token))
+    throw new Error(
+      `No authenticating credential found, when requesting claim ${claim}`
+    );
+
   const tokenPayload = memoryStore.getItem(`${type}_payload`) as Record<
     string,
     unknown
