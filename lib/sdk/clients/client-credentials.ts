@@ -1,5 +1,5 @@
-import type { CCClientOptions } from '../oauth2-flows';
 import { ClientCredentials } from '../oauth2-flows';
+import type { CCClientOptions } from './types';
 import * as utilities from '../utilities';
 import { memoryStore } from '../stores';
 

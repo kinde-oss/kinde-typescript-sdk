@@ -6,7 +6,7 @@ import { sessionStore } from '../stores';
 
 import type {
   OAuth2CodeExchangeResponse,
-  AuthCodeClientOptions,
+  AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types';
 
@@ -20,7 +20,10 @@ export class AuthorizationCode {
   public readonly tokenEndpoint: string;
   protected state?: string;
 
-  constructor(protected readonly config: AuthCodeClientOptions) {
+  constructor(
+    protected readonly config: AuthorizationCodeOptions,
+    private readonly clientSecret: string
+  ) {
     const { authDomain, logoutRedirectURL } = config;
     this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
     this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
@@ -78,7 +81,7 @@ export class AuthorizationCode {
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       client_id: this.config.clientId,
-      client_secret: this.config.clientSecret!,
+      client_secret: this.clientSecret,
       refresh_token: refreshToken!,
     });
 
@@ -100,7 +103,7 @@ export class AuthorizationCode {
     const body = new URLSearchParams({
       grant_type: 'authorization_code',
       client_id: this.config.clientId,
-      client_secret: this.config.clientSecret!,
+      client_secret: this.clientSecret,
       redirect_uri: this.config.redirectURL,
       code: code!,
     });

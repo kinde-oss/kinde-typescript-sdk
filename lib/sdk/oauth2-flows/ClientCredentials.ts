@@ -1,4 +1,4 @@
-import type { CCClientOptions, OAuth2CCTokenResponse } from './types';
+import type { ClientCredentialsOptions, OAuth2CCTokenResponse } from './types';
 import { getSDKHeader } from '../sdk-version';
 import * as utilities from '../utilities';
 
@@ -7,7 +7,7 @@ export class ClientCredentials {
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
 
-  constructor(private readonly config: CCClientOptions) {
+  constructor(private readonly config: ClientCredentialsOptions) {
     const { authDomain, logoutRedirectURL } = config;
     this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;

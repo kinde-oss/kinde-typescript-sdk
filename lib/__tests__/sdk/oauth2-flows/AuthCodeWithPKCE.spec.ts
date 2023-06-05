@@ -1,4 +1,4 @@
-import type { PKCEClientOptions } from '../../../sdk/oauth2-flows';
+import type { AuthorizationCodeOptions } from '../../../sdk/oauth2-flows';
 import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
 import { memoryStore, sessionStore } from '../../../sdk/stores';
 import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
@@ -6,7 +6,7 @@ import { getSDKHeader } from '../../../sdk/sdk-version';
 import * as mocks from '../../mocks';
 
 describe('AuthCodeWitPKCE', () => {
-  const clientConfig: PKCEClientOptions = {
+  const clientConfig: AuthorizationCodeOptions = {
     authDomain: 'https://local-testing@kinde.com',
     redirectURL: 'https://app-domain.com',
     logoutRedirectURL: 'http://app-domain.com',

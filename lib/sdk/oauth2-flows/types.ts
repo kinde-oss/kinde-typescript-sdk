@@ -18,23 +18,19 @@ export interface OAuth2CCTokenResponse {
   expires_in: string;
 }
 
-export interface CommonClientOptions {
+export interface OAuth2FlowOptions {
   clientId: string;
   logoutRedirectURL: string;
   authDomain: string;
 }
 
-export interface CCClientOptions extends CommonClientOptions {
-  clientSecret: string;
-}
-
-export interface AuthCodeClientOptions extends CommonClientOptions {
-  clientSecret?: string;
+export interface AuthorizationCodeOptions extends OAuth2FlowOptions {
   redirectURL: string;
 }
 
-export interface PKCEClientOptions
-  extends Omit<AuthCodeClientOptions, 'clientSecret'> {}
+export interface ClientCredentialsOptions extends OAuth2FlowOptions {
+  clientSecret: string;
+}
 
 export interface AuthURLOptions {
   start_page?: string;

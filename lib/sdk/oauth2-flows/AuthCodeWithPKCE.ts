@@ -4,8 +4,8 @@ import { sessionStore } from '../stores';
 
 import type {
   OAuth2CodeExchangeResponse,
-  PKCEClientOptions,
   AuthURLOptions,
+  AuthorizationCodeOptions,
 } from './types';
 
 export class AuthCodeWithPKCE extends AuthorizationCode {
@@ -13,8 +13,8 @@ export class AuthCodeWithPKCE extends AuthorizationCode {
   private codeChallenge?: string;
   private codeVerifier?: string;
 
-  constructor(protected readonly config: PKCEClientOptions) {
-    super(config);
+  constructor(protected readonly config: AuthorizationCodeOptions) {
+    super(config, '');
     this.config = config;
   }
 
