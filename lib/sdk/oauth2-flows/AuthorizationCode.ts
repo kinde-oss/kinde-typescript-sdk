@@ -168,7 +168,7 @@ export class AuthorizationCode {
     }
 
     if (options.is_create_org !== undefined) {
-      searchParams.append('org_name', options.org_name!);
+      searchParams.append('org_name', options.org_name ?? '');
       searchParams.append('is_create_org', 'true');
     }
 
