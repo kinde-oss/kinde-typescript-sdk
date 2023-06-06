@@ -37,7 +37,7 @@ export type FeatureFlags = Record<
 >;
 
 export interface GetFlagType {
-  type: 'string' | 'boolean' | 'number';
+  type?: 'string' | 'boolean' | 'number';
   value: FlagType[keyof FlagType];
   is_default: boolean;
   code: string;

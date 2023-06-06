@@ -16,23 +16,30 @@ export const getFlag = (
   const flag = featureFlags[code];
 
   if (flag === undefined && defaultValue === undefined) {
-    const message = `Flag ${code} was not found, and no default value has been provided`;
-    throw new Error(message);
+    throw new Error(
+      `Flag ${code} was not found, and no default value has been provided`
+    );
   }
 
   if (flag?.t !== undefined && type !== undefined && type !== flag?.t) {
-    const message = `Flag ${code} is of type ${
-      FlagDataType[flag.t]
-    }, expected type ${FlagDataType[type]}`;
-    throw new Error(message);
+    throw new Error(
+      `Flag ${code} is of type ${FlagDataType[flag.t]}, expected type is ${
+        FlagDataType[type]
+      }`
+    );
   }
 
-  return {
-    type: FlagDataType[flag!.t ?? type],
+  const response: GetFlagType = {
     is_default: flag?.v === undefined,
     value: flag?.v ?? defaultValue!,
     code,
   };
+
+  if (!response.is_default) {
+    response.type = FlagDataType[flag?.t ?? type!];
+  }
+
+  return response;
 };
 
 export const getIntegerFlag = (code: string, defaultValue?: number): number => {
