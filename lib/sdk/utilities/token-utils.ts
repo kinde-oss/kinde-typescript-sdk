@@ -47,7 +47,7 @@ export const getAccessToken = (): string | null => {
   return memoryStore.getItem('access_token') as string | null;
 };
 
-export const getUserFromMemory = (): any => {
+export const getUserFromMemory = (): UserType | null => {
   return memoryStore.getItem('user') as UserType | null;
 };
 

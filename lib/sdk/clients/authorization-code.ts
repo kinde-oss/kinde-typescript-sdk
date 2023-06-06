@@ -60,7 +60,7 @@ const createAuthorizationCodeClient = (
         'Cannot get user details, no authentication credential found'
       );
     }
-    return utilities.getUserFromMemory();
+    return utilities.getUserFromMemory()!;
   };
 
   const getToken = async (): Promise<string> => {
