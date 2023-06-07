@@ -19,7 +19,6 @@
     "build": "tsc && tsc -p tsconfig.cjs.json",
     "postbuild": "./sdk-version.sh clean",
     "prebuild": "./sdk-version.sh && rimraf dist dist-cjs",
-    "dev": "nodemon --exec ts-node ./lib/index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier . --check",
@@ -58,11 +57,9 @@
     "jest-environment-jsdom": "^29.5.0",
     "jsdom": "^22.0.0",
     "lint-staged": "^13.2.2",
-    "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.0",
-    "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
 }
