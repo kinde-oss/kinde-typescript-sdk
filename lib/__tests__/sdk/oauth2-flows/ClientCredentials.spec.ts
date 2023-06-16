@@ -86,6 +86,38 @@ describe('ClientCredentials', () => {
       });
     });
 
+    it('overrides scope and audience in token request body is provided', async () => {
+      const { token: mockAccessToken } = mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({ access_token: mockAccessToken }),
+      });
+
+      const expectedScope = 'test-scope';
+      const expectedAudience = 'test-audience';
+      const client = new ClientCredentials({
+        ...clientConfig,
+        audience: expectedAudience,
+        scope: expectedScope,
+      });
+
+      const expectedBody = new URLSearchParams({
+        grant_type: 'client_credentials',
+        scope: expectedScope,
+        client_id: clientConfig.clientId,
+        client_secret: clientConfig.clientSecret,
+        audience: expectedAudience,
+      });
+
+      await client.getToken();
+      expect(mocks.fetchClient).toHaveBeenCalledWith(tokenEndpoint, {
+        method: 'POST',
+        headers,
+        body: expectedBody,
+      });
+    });
+
     it('commits access token to memory, when a new one is fetched', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({

@@ -38,6 +38,38 @@ describe('AuthorizationCode', () => {
       );
     });
 
+    it('uses provided scope and audience if given in url options', async () => {
+      const expectedScope = 'test-scope';
+      const expectedAudience = 'test-audience';
+      const testClient = new AuthorizationCode(
+        {
+          ...clientConfig,
+          audience: expectedAudience,
+          scope: expectedScope,
+        },
+        'client-secret'
+      );
+      const authURL = await testClient.createAuthorizationURL();
+      const searchParams = new URLSearchParams(authURL.search);
+      expect(searchParams.get('audience')).toBe(expectedAudience);
+      expect(searchParams.get('scope')).toBe(expectedScope);
+    });
+
+    it('overrides optional url search params if they are provided', async () => {
+      const expectedParams = {
+        is_create_org: true,
+        start_page: 'test-start-page',
+        org_code: 'test-org-code',
+        org_name: 'test-org-name',
+      };
+
+      const authURL = await client.createAuthorizationURL(expectedParams);
+      const searchParams = new URLSearchParams(authURL.search);
+      Object.entries(expectedParams).forEach(([key, expectedValue]) => {
+        expect(searchParams.get(key)).toBe(String(expectedValue));
+      });
+    });
+
     it('saves state to session storage again state', async () => {
       const authURL = await client.createAuthorizationURL();
       const searchParams = new URLSearchParams(authURL.search);

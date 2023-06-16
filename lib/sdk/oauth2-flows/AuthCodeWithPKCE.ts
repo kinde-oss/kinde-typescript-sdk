@@ -89,7 +89,6 @@ export class AuthCodeWithPKCE extends AuthorizationCode {
     return new URLSearchParams({
       state: this.state!,
       client_id: this.config.clientId,
-      scope: AuthorizationCode.DEFAULT_TOKEN_SCOPES,
       redirect_uri: this.config.redirectURL,
       response_type: 'code',
       code_challenge: this.codeChallenge!,

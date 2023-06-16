@@ -26,14 +26,6 @@ describe('AuthCodeWitPKCE', () => {
       sessionStore.clear();
     });
 
-    it('uses default scopes if none is provided in the url options', async () => {
-      const authURL = await client.createAuthorizationURL();
-      const searchParams = new URLSearchParams(authURL.search);
-      expect(searchParams.get('scope')).toBe(
-        AuthCodeWithPKCE.DEFAULT_TOKEN_SCOPES
-      );
-    });
-
     it('saves generated code verifier to session storage again state', async () => {
       const authURL = await client.createAuthorizationURL();
       const searchParams = new URLSearchParams(authURL.search);

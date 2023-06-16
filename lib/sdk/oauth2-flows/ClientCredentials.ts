@@ -40,12 +40,16 @@ export class ClientCredentials {
   }
 
   private generateTokenURLParams(): URLSearchParams {
-    const searchParams = {
+    const searchParams = new URLSearchParams({
       grant_type: 'client_credentials',
-      scope: ClientCredentials.DEFAULT_TOKEN_SCOPES,
+      scope: this.config.scope ?? ClientCredentials.DEFAULT_TOKEN_SCOPES,
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
-    };
+    });
+
+    if (this.config.audience !== undefined) {
+      searchParams.append('audience', this.config.audience);
+    }
 
     return new URLSearchParams(searchParams);
   }
