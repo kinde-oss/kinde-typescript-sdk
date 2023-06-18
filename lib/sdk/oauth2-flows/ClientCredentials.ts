@@ -1,6 +1,6 @@
 import type { ClientCredentialsOptions, OAuth2CCTokenResponse } from './types';
-import { getSDKHeader } from '../sdk-version';
 import * as utilities from '../utilities';
+import { getSDKHeader } from '../version';
 
 export class ClientCredentials {
   public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';

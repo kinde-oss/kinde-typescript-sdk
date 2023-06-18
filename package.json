@@ -17,8 +17,8 @@
   },
   "scripts": {
     "build": "tsc && tsc -p tsconfig.cjs.json",
-    "postbuild": "./sdk-version.sh clean",
-    "prebuild": "./sdk-version.sh && rimraf dist dist-cjs",
+    "postbuild": "node sdk-version.js clean",
+    "prebuild": "node sdk-version.js && rimraf dist dist-cjs",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier . --check",

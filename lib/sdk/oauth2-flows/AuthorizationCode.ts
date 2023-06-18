@@ -1,7 +1,7 @@
 import { isNodeEnvironment } from '../environment';
-import { getSDKHeader } from '../sdk-version';
 import type { UserType } from '../utilities';
 import * as utilities from '../utilities';
+import { getSDKHeader } from '../version';
 import { sessionStore } from '../stores';
 
 import type {

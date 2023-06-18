@@ -1,7 +1,7 @@
 import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import { commitTokenToMemory } from '../../../sdk/utilities';
-import { getSDKHeader } from '../../../sdk/sdk-version';
+import { getSDKHeader } from '../../../sdk/version';
 import { memoryStore } from '../../../sdk/stores';
 import * as mocks from '../../mocks';
 

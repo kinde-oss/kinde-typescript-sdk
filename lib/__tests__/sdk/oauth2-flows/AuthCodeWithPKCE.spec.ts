@@ -2,7 +2,7 @@ import type { AuthorizationCodeOptions } from '../../../sdk/oauth2-flows';
 import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
 import { memoryStore, sessionStore } from '../../../sdk/stores';
 import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
-import { getSDKHeader } from '../../../sdk/sdk-version';
+import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
 describe('AuthCodeWitPKCE', () => {

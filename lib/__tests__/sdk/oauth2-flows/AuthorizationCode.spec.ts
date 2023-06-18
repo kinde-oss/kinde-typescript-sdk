@@ -1,10 +1,11 @@
+import { memoryStore, sessionStore } from '../../../sdk/stores';
+import { getSDKHeader } from '../../../sdk/version';
+import * as mocks from '../../mocks';
+
 import {
   AuthorizationCode,
   type AuthorizationCodeOptions,
 } from '../../../sdk/oauth2-flows';
-import { memoryStore, sessionStore } from '../../../sdk/stores';
-import { getSDKHeader } from '../../../sdk/sdk-version';
-import * as mocks from '../../mocks';
 
 describe('AuthorizationCode', () => {
   const clientSecret = 'client-secret' as const;
