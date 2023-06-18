@@ -15,8 +15,8 @@ OAuth2.0 flows.
   required.
 
 ## Installations and Requirements
-This SDK has been written to be used with node version `18.x.x` or later in mind and 
-can be installed using any appropriate package manager be it `npm`, `yarn` or 
+This SDK has been written to be used with node version `v18.16.x` or later in mind 
+and can be installed using any appropriate package manager be it `npm`, `yarn` or 
 `pnpm`.
 
 ```bash
@@ -131,6 +131,46 @@ const clientOptions: CCClientOptions = {
 const client = createKindeClient<CCClient, CCClientOptions>(
   GrantType.CLIENT_CREDENTIALS, clientOptions
 )
+```
+## Overriding `audience` and `scope`
+Regardless of the grant type in question the the client options type for the 
+`createKindeClient` i.e. the following types, all accept the `audience` and `scope` 
+optional parameters.
+- `ACCClientOptions`
+- `PKCEClientOptions`
+- `CCClientOptions`  
+
+The `audience` parameter defines who the tokens received post-authentication are
+intended for, and the `scope` parameter defining what actions the received token is
+permitted to perform, in the event `scope` is not provided it is assigned the 
+following default value.
+```ts
+'openid profile email offline'
+```
+
+An example demonstrating overriding `audience` and `scope` for an `AUTHORIZATION_CODE`
+client is provided below.
+```ts
+import { 
+  createKindeClient, 
+  GrantType,
+  type ACClientOptions,
+  type ACClient, 
+} from "@kinde-oss/kinde-typescript-sdk";
+
+const clientOptions: ACClientOptions = {
+  authDomain: process.env.KINDE_AUTH_DOMAIN,
+  clientId: process.env.KINDE_CLIENT_ID,
+  clientSecret: process.env.KINDE_CLIENT_SECRET,
+  logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL,
+  redirectURL: process.env.KINDE_REDIRECT_URL,
+  scope: 'openid email offline',
+  audience: 'api.example.com/v1'
+};
+
+const client = createKindeClient<ACClient, ACClientOptions>(
+  GrantType.AUTHORIZATION_CODE, clientOptions
+);
 ```
 
 ## Client Methods
@@ -398,19 +438,17 @@ register(options?: AuthURLOptions): Promise<URL>
 ```
 
 ```ts
-interface AuthURLOptions {
+export interface AuthURLOptions {
   start_page?: string;
-  audience?: string;
   is_create_org?: boolean;
   org_name?: string;
+  org_code?: string;
   state?: string;
-  scope?: string;
 }
 ```
-
-Notice that you are able to override the `state`, `scope` and `audience` 
-parameters, with the default value for the scope parameter set to 
-`openid profile email offline`.
+Notice that you are able to override the `state` parameter in `AuthURLOptions`,
+if not provided then the SDK will assign a random string to this value, this
+applies to the `login` method discussed below as well.
 
 ### `login`
 The method returns the login URL, your app should redirect to this URL when 
