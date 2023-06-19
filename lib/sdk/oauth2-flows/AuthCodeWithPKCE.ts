@@ -1,4 +1,4 @@
-import { AuthorizationCode } from './AuthorizationCode';
+import { AuthCodeAbstract } from './AuthCodeAbstract';
 import * as utilities from '../utilities';
 import { sessionStore } from '../stores';
 
@@ -8,14 +8,13 @@ import type {
   AuthorizationCodeOptions,
 } from './types';
 
-export class AuthCodeWithPKCE extends AuthorizationCode {
+export class AuthCodeWithPKCE extends AuthCodeAbstract {
   public static STATE_KEY: string = 'acwpf-state-key';
   private codeChallenge?: string;
   private codeVerifier?: string;
 
   constructor(protected readonly config: AuthorizationCodeOptions) {
-    super(config, '');
-    this.config = config;
+    super(config);
   }
 
   async createAuthorizationURL(options: AuthURLOptions = {}) {
