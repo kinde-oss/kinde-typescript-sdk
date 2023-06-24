@@ -1,8 +1,7 @@
-import * as featureFlagUtilities from './feature-flags';
-import * as tokenClaimUtilities from './token-claims';
+import * as featureFlags from './feature-flags';
+import * as tokenClaims from './token-claims';
 
-export { featureFlagUtilities, tokenClaimUtilities };
-
+export { featureFlags, tokenClaims };
 export * from './feature-flags';
 export * from './code-challenge';
 export * from './random-string';

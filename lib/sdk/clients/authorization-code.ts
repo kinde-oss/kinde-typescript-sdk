@@ -87,8 +87,8 @@ const createAuthorizationCodeClient = (
   };
 
   return {
-    ...utilities.featureFlagUtilities,
-    ...utilities.tokenClaimUtilities,
+    ...utilities.featureFlags,
+    ...utilities.tokenClaims,
     handleRedirectToApp,
     isAuthenticated,
     getUserProfile,

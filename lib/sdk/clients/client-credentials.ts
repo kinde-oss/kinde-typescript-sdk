@@ -21,8 +21,8 @@ const createCCClient = (options: CCClientOptions) => {
   };
 
   return {
-    ...utilities.featureFlagUtilities,
-    ...utilities.tokenClaimUtilities,
+    ...utilities.featureFlags,
+    ...utilities.tokenClaims,
     isAuthenticated,
     getToken,
     logout,
