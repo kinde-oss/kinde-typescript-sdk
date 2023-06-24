@@ -1,13 +1,13 @@
-import { type AuthURLOptions } from '../oauth2-flows/types';
-import { type SessionManager } from '../session-managers';
-import type { UserType } from '../utilities';
-import * as utilities from '../utilities';
+import { type AuthURLOptions } from '../../oauth2-flows/types';
+import { type SessionManager } from '../../session-managers';
+import type { UserType } from '../../utilities';
+import * as utilities from '../../utilities';
 
 import {
   type AuthorizationCodeOptions,
   AuthCodeWithPKCE,
   AuthorizationCode,
-} from '../oauth2-flows';
+} from '../../oauth2-flows';
 
 const createAuthorizationCodeClient = (
   options: AuthorizationCodeOptions & { clientSecret?: string },

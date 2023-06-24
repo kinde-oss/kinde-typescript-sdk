@@ -1,5 +1,5 @@
-import { type default as createAuthCodeClient } from './authorization-code';
-import { type default as createCCClient } from './client-credentials';
+import { type default as createAuthCodeClient } from './server/authorization-code';
+import { type default as createCCClient } from './server/client-credentials';
 
 import type {
   ClientCredentialsOptions,
