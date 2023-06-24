@@ -1,3 +1,4 @@
+import { type SessionManager } from '../session-managers';
 import { getClaimValue } from './token-claims';
 
 import {
@@ -8,11 +9,13 @@ import {
 } from './types';
 
 export const getFlag = (
+  sessionManager: SessionManager,
   code: string,
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): GetFlagType => {
-  const featureFlags = (getClaimValue('feature_flags') as FeatureFlags) ?? {};
+  const featureFlags =
+    (getClaimValue(sessionManager, 'feature_flags') as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
   if (flag === undefined && defaultValue === undefined) {
@@ -42,17 +45,26 @@ export const getFlag = (
   return response;
 };
 
-export const getIntegerFlag = (code: string, defaultValue?: number): number => {
-  return getFlag(code, defaultValue, 'i').value as number;
+export const getIntegerFlag = (
+  sessionManager: SessionManager,
+  code: string,
+  defaultValue?: number
+): number => {
+  return getFlag(sessionManager, code, defaultValue, 'i').value as number;
 };
 
-export const getStringFlag = (code: string, defaultValue?: string): string => {
-  return getFlag(code, defaultValue, 's').value as string;
+export const getStringFlag = (
+  sessionManager: SessionManager,
+  code: string,
+  defaultValue?: string
+): string => {
+  return getFlag(sessionManager, code, defaultValue, 's').value as string;
 };
 
 export const getBooleanFlag = (
+  sessionManager: SessionManager,
   code: string,
   defaultValue?: boolean
 ): boolean => {
-  return getFlag(code, defaultValue, 'b').value as boolean;
+  return getFlag(sessionManager, code, defaultValue, 'b').value as boolean;
 };

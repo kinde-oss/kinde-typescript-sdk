@@ -1,6 +1,7 @@
 import type { ClientCredentialsOptions, OAuth2CCTokenResponse } from './types';
 import * as utilities from '../utilities';
 import { getSDKHeader } from '../version';
+import { type SessionManager } from '../session-managers';
 
 export class ClientCredentials {
   public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
@@ -14,15 +15,19 @@ export class ClientCredentials {
     this.config = config;
   }
 
-  async getToken(): Promise<string> {
-    const accessToken = utilities.getAccessToken();
+  async getToken(sessionManager: SessionManager): Promise<string> {
+    const accessToken = utilities.getAccessToken(sessionManager);
     const isTokenExpired = utilities.isTokenExpired(accessToken);
     if (accessToken !== null && !isTokenExpired) {
       return accessToken;
     }
 
     const payload = await this.fetchAccessTokenFor();
-    utilities.commitTokenToMemory(payload.access_token, 'access_token');
+    utilities.commitTokenToMemory(
+      sessionManager,
+      payload.access_token,
+      'access_token'
+    );
     return payload.access_token;
   }
 

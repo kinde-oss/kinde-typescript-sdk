@@ -1,6 +1,11 @@
+import { isBrowserEnvironment } from '../environment';
 import { AuthCodeAbstract } from './AuthCodeAbstract';
 import * as utilities from '../utilities';
-import { sessionStore } from '../stores';
+
+import {
+  type BrowserSessionManager,
+  type SessionManager,
+} from '../session-managers';
 
 import type {
   OAuth2CodeExchangeResponse,
@@ -17,14 +22,22 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     super(config);
   }
 
-  async createAuthorizationURL(options: AuthURLOptions = {}) {
+  async createAuthorizationURL(
+    sessionManager: SessionManager,
+    options: AuthURLOptions = {}
+  ) {
     const challengeSetup = await utilities.setupCodeChallenge();
     const { challenge, verifier } = challengeSetup;
     this.codeChallenge = challenge;
     this.codeVerifier = verifier;
 
     this.state = options.state ?? utilities.generateRandomString();
-    sessionStore.setItem(
+    const setItem = isBrowserEnvironment()
+      ? (sessionManager as unknown as BrowserSessionManager).setItemBrowser
+      : sessionManager.setSessionItem;
+
+    setItem.call(
+      sessionManager,
       this.getCodeVerifierKey(this.state),
       JSON.stringify({ codeVerifier: this.codeVerifier })
     );
@@ -35,8 +48,8 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     return authURL;
   }
 
-  protected async refreshTokens() {
-    const refreshToken = utilities.getRefreshToken();
+  protected async refreshTokens(sessionManager: SessionManager) {
+    const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: refreshToken!,
@@ -44,11 +57,12 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(body, true);
-    utilities.commitTokensToMemory(tokens);
+    utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
 
   protected async exchangeAuthCodeForTokens(
+    sessionManager: SessionManager,
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = super.getCallbackURLParams(callbackURL);
@@ -57,7 +71,14 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       throw new Error('Received state does not match stored state');
     }
 
-    const storedState = sessionStore.getItem(storedStateKey) as string | null;
+    const getItem = isBrowserEnvironment()
+      ? (sessionManager as unknown as BrowserSessionManager)
+          .getSessionItemBrowser
+      : sessionManager.getSessionItem;
+
+    const storedState = getItem.call(sessionManager, storedStateKey) as
+      | string
+      | null;
     if (storedState === null) {
       throw new Error('Stored state not found');
     }
@@ -73,10 +94,15 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       code: code!,
     });
 
+    const removeItem = isBrowserEnvironment()
+      ? (sessionManager as unknown as BrowserSessionManager)
+          .removeSessionItemBrowser
+      : sessionManager.removeSessionItem;
+
     try {
       return await this.fetchTokensFor(body);
     } finally {
-      sessionStore.removeItem(this.getCodeVerifierKey(state!));
+      removeItem.call(sessionManager, this.getCodeVerifierKey(state!));
     }
   }
 

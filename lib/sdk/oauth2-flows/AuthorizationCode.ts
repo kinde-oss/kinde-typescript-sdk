@@ -1,6 +1,6 @@
+import { type SessionManager } from '../session-managers';
 import { AuthCodeAbstract } from './AuthCodeAbstract';
 import * as utilities from '../utilities';
-import { sessionStore } from '../stores';
 
 import type {
   OAuth2CodeExchangeResponse,
@@ -18,17 +18,20 @@ export class AuthorizationCode extends AuthCodeAbstract {
     super(config);
   }
 
-  async createAuthorizationURL(options: AuthURLOptions = {}) {
+  async createAuthorizationURL(
+    sessionManager: SessionManager,
+    options: AuthURLOptions = {}
+  ) {
     this.state = options.state ?? utilities.generateRandomString();
-    sessionStore.setItem(AuthorizationCode.STATE_KEY, this.state);
+    sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, this.state);
     const authURL = new URL(this.authorizationEndpoint);
     const authParams = this.generateAuthURLParams(options);
     authURL.search = authParams.toString();
     return authURL;
   }
 
-  protected async refreshTokens() {
-    const refreshToken = utilities.getRefreshToken();
+  protected async refreshTokens(sessionManager: SessionManager) {
+    const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       client_id: this.config.clientId,
@@ -37,16 +40,19 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(body);
-    utilities.commitTokensToMemory(tokens);
+    utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
 
   protected async exchangeAuthCodeForTokens(
+    sessionManager: SessionManager,
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = this.getCallbackURLParams(callbackURL);
     const stateKey = AuthorizationCode.STATE_KEY;
-    const storedState = sessionStore.getItem(stateKey) as string | null;
+    const storedState = sessionManager.getSessionItem(stateKey) as
+      | string
+      | null;
     if (storedState === null || storedState !== state) {
       throw new Error('Authentication flow state not found');
     }
@@ -62,7 +68,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     try {
       return await this.fetchTokensFor(body);
     } finally {
-      sessionStore.removeItem(stateKey);
+      sessionManager.removeSessionItem(stateKey);
     }
   }
 

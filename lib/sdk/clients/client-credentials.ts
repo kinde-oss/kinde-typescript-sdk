@@ -1,23 +1,23 @@
+import { type SessionManager } from '../session-managers';
 import { ClientCredentials } from '../oauth2-flows';
 import type { CCClientOptions } from './types';
 import * as utilities from '../utilities';
-import { memoryStore } from '../stores';
 
 const createCCClient = (options: CCClientOptions) => {
   const client = new ClientCredentials(options);
 
-  const isAuthenticated = () => {
-    const accessToken = utilities.getAccessToken();
+  const isAuthenticated = (sessionManager: SessionManager) => {
+    const accessToken = utilities.getAccessToken(sessionManager);
     return !utilities.isTokenExpired(accessToken);
   };
 
-  const getToken = async (): Promise<string> => {
-    return await client.getToken();
+  const logout = (sessionManager: SessionManager) => {
+    sessionManager.destroySession();
+    return client.logoutEndpoint;
   };
 
-  const logout = () => {
-    memoryStore.clear();
-    return client.logoutEndpoint;
+  const getToken = async (sessionManager: SessionManager): Promise<string> => {
+    return await client.getToken(sessionManager);
   };
 
   return {

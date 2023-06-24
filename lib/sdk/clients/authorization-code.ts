@@ -1,5 +1,5 @@
 import { type AuthURLOptions } from '../oauth2-flows/types';
-import { sessionStore, memoryStore } from '../stores';
+import { type SessionManager } from '../session-managers';
 import type { UserType } from '../utilities';
 import * as utilities from '../utilities';
 
@@ -17,59 +17,72 @@ const createAuthorizationCodeClient = (
     ? new AuthorizationCode(options, options.clientSecret!)
     : new AuthCodeWithPKCE(options);
 
-  const login = async (options?: AuthURLOptions) => {
-    return await client.createAuthorizationURL(options);
+  const login = async (
+    sessionManager: SessionManager,
+    options?: AuthURLOptions
+  ) => {
+    return await client.createAuthorizationURL(sessionManager, options);
   };
 
-  const register = async (options?: AuthURLOptions) => {
-    return await client.createAuthorizationURL({
+  const register = async (
+    sessionManager: SessionManager,
+    options?: AuthURLOptions
+  ) => {
+    return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
     });
   };
 
-  const createOrg = async (options?: AuthURLOptions) => {
-    return await client.createAuthorizationURL({
+  const createOrg = async (
+    sessionManager: SessionManager,
+    options?: AuthURLOptions
+  ) => {
+    return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
       is_create_org: true,
     });
   };
 
-  const handleRedirectToApp = async (callbackURL: URL) => {
-    await client.handleRedirectFromAuthDomain(callbackURL);
+  const handleRedirectToApp = async (
+    sessionManager: SessionManager,
+    callbackURL: URL
+  ) => {
+    await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
   };
 
-  const isAuthenticated = () => {
-    const accessToken = utilities.getAccessToken();
+  const isAuthenticated = (sessionManager: SessionManager) => {
+    const accessToken = utilities.getAccessToken(sessionManager);
     return !utilities.isTokenExpired(accessToken);
   };
 
-  const getUserProfile = async (): Promise<UserType> => {
-    if (!isAuthenticated()) {
+  const getUserProfile = async (
+    sessionManager: SessionManager
+  ): Promise<UserType> => {
+    if (!isAuthenticated(sessionManager)) {
       throw new Error(
         'Cannot fetch user profile, no authentication credential found'
       );
     }
-    return await client.getUserProfile();
+    return await client.getUserProfile(sessionManager);
   };
 
-  const getUser = () => {
-    if (!isAuthenticated()) {
+  const getUser = (sessionManager: SessionManager) => {
+    if (!isAuthenticated(sessionManager)) {
       throw new Error(
         'Cannot get user details, no authentication credential found'
       );
     }
-    return utilities.getUserFromMemory()!;
+    return utilities.getUserFromMemory(sessionManager)!;
   };
 
-  const getToken = async (): Promise<string> => {
-    return await client.getToken();
+  const getToken = async (sessionManager: SessionManager): Promise<string> => {
+    return await client.getToken(sessionManager);
   };
 
-  const logout = () => {
-    sessionStore.clear();
-    memoryStore.clear();
+  const logout = (sessionManager: SessionManager) => {
+    sessionManager.destroySession();
     return client.logoutEndpoint;
   };
 

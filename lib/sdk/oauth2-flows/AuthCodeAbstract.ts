@@ -1,3 +1,4 @@
+import { type SessionManager } from '../session-managers';
 import { isNodeEnvironment } from '../environment';
 import type { UserType } from '../utilities';
 import * as utilities from '../utilities';
@@ -25,37 +26,51 @@ export abstract class AuthCodeAbstract {
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
   }
 
-  public abstract createAuthorizationURL(options: AuthURLOptions): Promise<URL>;
-  protected abstract refreshTokens(): Promise<OAuth2CodeExchangeResponse>;
   protected abstract getBaseAuthURLParams(): URLSearchParams;
 
+  public abstract createAuthorizationURL(
+    sessionManager: SessionManager,
+    options: AuthURLOptions
+  ): Promise<URL>;
+
   protected abstract exchangeAuthCodeForTokens(
+    sessionManager: SessionManager,
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse>;
 
-  async handleRedirectFromAuthDomain(callbackURL: URL) {
-    const tokens = await this.exchangeAuthCodeForTokens(callbackURL);
-    utilities.commitTokensToMemory(tokens);
+  protected abstract refreshTokens(
+    sessionManager: SessionManager
+  ): Promise<OAuth2CodeExchangeResponse>;
+
+  async handleRedirectFromAuthDomain(
+    sessionManager: SessionManager,
+    callbackURL: URL
+  ) {
+    const tokens = await this.exchangeAuthCodeForTokens(
+      sessionManager,
+      callbackURL
+    );
+    utilities.commitTokensToMemory(sessionManager, tokens);
   }
 
-  public async getToken() {
-    const accessToken = utilities.getAccessToken();
+  public async getToken(sessionManager: SessionManager) {
+    const accessToken = utilities.getAccessToken(sessionManager);
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
       return accessToken!;
     }
 
-    const refreshToken = utilities.getRefreshToken();
+    const refreshToken = utilities.getRefreshToken(sessionManager);
     if (refreshToken === null && isNodeEnvironment()) {
       throw Error('Cannot persist session no valid refresh token found');
     }
 
-    const tokens = await this.refreshTokens();
+    const tokens = await this.refreshTokens(sessionManager);
     return tokens.access_token;
   }
 
-  async getUserProfile() {
-    const accessToken = await this.getToken();
+  async getUserProfile(sessionManager: SessionManager) {
+    const accessToken = await this.getToken(sessionManager);
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${accessToken}`);
     headers.append('Accept', 'application/json');
@@ -64,7 +79,7 @@ export abstract class AuthCodeAbstract {
     const config: RequestInit = { method: 'GET', headers };
     const response = await fetch(targetURL, config);
     const payload = (await response.json()) as UserType;
-    utilities.commitUserToMemory(payload);
+    utilities.commitUserToMemory(sessionManager, payload);
     return payload;
   }
 

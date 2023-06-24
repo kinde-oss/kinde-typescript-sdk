@@ -1,3 +1,5 @@
+import { type SessionManager } from '../sdk/session-managers';
+
 export const fetchClient = jest.fn().mockImplementation(
   async () =>
     await Promise.resolve({
@@ -67,5 +69,27 @@ export const getMockIdToken = (
     payload: tokenPayload,
   };
 };
+
+class ServerSessionManager implements SessionManager {
+  private memCache: Record<string, unknown> = {};
+
+  destroySession(): void {
+    this.memCache = {};
+  }
+
+  getSessionItem(itemKey: string) {
+    return this.memCache[itemKey] ?? null;
+  }
+
+  setSessionItem(itemKey: string, itemValue: unknown): void {
+    this.memCache[itemKey] = itemValue;
+  }
+
+  removeSessionItem(itemKey: string): void {
+    delete this.memCache[itemKey];
+  }
+}
+
+export const sessionManager = new ServerSessionManager();
 
 global.fetch = fetchClient;

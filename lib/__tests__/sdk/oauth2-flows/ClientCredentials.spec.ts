@@ -2,7 +2,6 @@ import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import { commitTokenToMemory } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
-import { memoryStore } from '../../../sdk/stores';
 import * as mocks from '../../mocks';
 
 describe('ClientCredentials', () => {
@@ -12,6 +11,8 @@ describe('ClientCredentials', () => {
     clientSecret: 'client-secret',
     clientId: 'client-id',
   };
+
+  const { sessionManager } = mocks;
 
   describe('new ClientCredentials()', () => {
     it('can construct ClientCredentials instance', () => {
@@ -37,17 +38,17 @@ describe('ClientCredentials', () => {
     );
 
     afterEach(() => {
+      sessionManager.destroySession();
       mocks.fetchClient.mockClear();
-      memoryStore.clear();
     });
 
     it('return access token if an unexpired token is available in memory', async () => {
       const { authDomain } = clientConfig;
       const { token: mockAccessToken } = mocks.getMockAccessToken(authDomain);
-      commitTokenToMemory(mockAccessToken, 'access_token');
+      commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
 
       const client = new ClientCredentials(clientConfig);
-      const accessToken = await client.getToken();
+      const accessToken = await client.getToken(sessionManager);
       expect(mocks.fetchClient).not.toHaveBeenCalled();
       expect(accessToken).toBe(mockAccessToken);
     });
@@ -61,7 +62,7 @@ describe('ClientCredentials', () => {
       });
 
       const client = new ClientCredentials(clientConfig);
-      const accessToken = await client.getToken();
+      const accessToken = await client.getToken(sessionManager);
       expect(accessToken).toBe(mockAccessToken);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
     });
@@ -76,7 +77,7 @@ describe('ClientCredentials', () => {
       });
 
       const client = new ClientCredentials(clientConfig);
-      const accessToken = await client.getToken();
+      const accessToken = await client.getToken(sessionManager);
       expect(accessToken).toBe(mockAccessToken);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
       expect(mocks.fetchClient).toHaveBeenCalledWith(tokenEndpoint, {
@@ -110,7 +111,7 @@ describe('ClientCredentials', () => {
         audience: expectedAudience,
       });
 
-      await client.getToken();
+      await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledWith(tokenEndpoint, {
         method: 'POST',
         headers,
@@ -125,9 +126,11 @@ describe('ClientCredentials', () => {
       });
 
       const client = new ClientCredentials(clientConfig);
-      await client.getToken();
+      await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
-      expect(memoryStore.getItem('access_token')).toBe(mockAccessToken);
+      expect(sessionManager.getSessionItem('access_token')).toBe(
+        mockAccessToken
+      );
     });
   });
 });
