@@ -27,7 +27,7 @@ export class BrowserSessionManager implements SessionManager {
     this.memCache[key] = itemValue;
   }
 
-  setItemBrowser(itemKey: string, itemValue: unknown): void {
+  setSessionItemBrowser(itemKey: string, itemValue: unknown): void {
     const key = this.generateItemKey(itemKey);
     const isString = typeof itemValue === 'string';
     const value = !isString ? JSON.stringify(itemValue) : itemValue;

@@ -33,7 +33,8 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
 
     this.state = options.state ?? utilities.generateRandomString();
     const setItem = isBrowserEnvironment()
-      ? (sessionManager as unknown as BrowserSessionManager).setItemBrowser
+      ? (sessionManager as unknown as BrowserSessionManager)
+          .setSessionItemBrowser
       : sessionManager.setSessionItem;
 
     setItem.call(
