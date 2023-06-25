@@ -8,6 +8,12 @@ import type {
   AuthURLOptions,
 } from './types';
 
+/**
+ * Class provides implementation for the authorization code OAuth2.0 flow.
+ * @class AuthorizationCode
+ * @param {AuthorizationCodeOptions} config
+ * @param {string} clientSecret
+ */
 export class AuthorizationCode extends AuthCodeAbstract {
   public static STATE_KEY: string = 'ac-state-key';
 
@@ -18,6 +24,14 @@ export class AuthorizationCode extends AuthCodeAbstract {
     super(config);
   }
 
+  /**
+   * Method provides implementation for `createAuthorizationURL` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {AuthURLOptions} options
+   * @returns {Promise<URL>} required authorization URL
+   */
   async createAuthorizationURL(
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
@@ -30,6 +44,13 @@ export class AuthorizationCode extends AuthCodeAbstract {
     return authURL;
   }
 
+  /**
+   * Method provides implementation for `refreshTokens` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected async refreshTokens(sessionManager: SessionManager) {
     const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
@@ -44,6 +65,14 @@ export class AuthorizationCode extends AuthCodeAbstract {
     return tokens;
   }
 
+  /**
+   * Method provides implementation for `exchangeAuthCodeForTokens` method mandated
+   * by `AuthCodeAbstract` parent class, see corresponding comment in parent class
+   * for further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {URL} callbackURL
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected async exchangeAuthCodeForTokens(
     sessionManager: SessionManager,
     callbackURL: URL
@@ -72,6 +101,12 @@ export class AuthorizationCode extends AuthCodeAbstract {
     }
   }
 
+  /**
+   * Method provides implementation for `getBaseAuthURLParams` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class
+   * for further explanation.
+   * @returns {URLSearchParams} Required query parameters
+   */
   protected getBaseAuthURLParams() {
     return new URLSearchParams({
       state: this.state!,

@@ -8,6 +8,15 @@ import {
   FlagDataType,
 } from './types';
 
+/**
+ * Method extracts the provided feature flag from the access token in the
+ * current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {FlagType[keyof FlagType]} defaultValue
+ * @param {keyof FlagType} type
+ * @returns {GetFlagType}
+ */
 export const getFlag = (
   sessionManager: SessionManager,
   code: string,
@@ -45,6 +54,14 @@ export const getFlag = (
   return response;
 };
 
+/**
+ * Method extracts the provided number feature flag from the access token in
+ * the current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {number} defaultValue
+ * @returns {number} integer flag value
+ */
 export const getIntegerFlag = (
   sessionManager: SessionManager,
   code: string,
@@ -53,6 +70,14 @@ export const getIntegerFlag = (
   return getFlag(sessionManager, code, defaultValue, 'i').value as number;
 };
 
+/**
+ * Method extracts the provided string feature flag from the access token in
+ * the current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {string} defaultValue
+ * @returns {string} string flag value
+ */
 export const getStringFlag = (
   sessionManager: SessionManager,
   code: string,
@@ -61,6 +86,14 @@ export const getStringFlag = (
   return getFlag(sessionManager, code, defaultValue, 's').value as string;
 };
 
+/**
+ * Method extracts the provided boolean feature flag from the access token in
+ * the current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {boolean} defaultValue
+ * @returns {boolean} boolean flag value
+ */
 export const getBooleanFlag = (
   sessionManager: SessionManager,
   code: string,

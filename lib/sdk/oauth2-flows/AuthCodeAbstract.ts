@@ -10,6 +10,13 @@ import type {
   AuthURLOptions,
 } from './types';
 
+/**
+ * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows
+ * for authorization_code grant type, this includes the basic Authorization Code flow
+ * and the PKCE extention code flow.
+ * @class AuthCodeAbstract
+ * @param {AuthorizationCodeOptions} config
+ */
 export abstract class AuthCodeAbstract {
   public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
   public readonly authorizationEndpoint: string;
@@ -26,22 +33,58 @@ export abstract class AuthCodeAbstract {
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
   }
 
+  /**
+   * Abstract method will return the initial set of query parameters required for
+   * creating the authorization URL in child class for the kinde client's register
+   * and login methods.
+   * @returns {URLSearchParams} Required query parameters
+   */
   protected abstract getBaseAuthURLParams(): URLSearchParams;
 
+  /**
+   * Abstract method mandates implementation of logic required for creating auth URL
+   * in kinde client's login and register methods, as well saving state parameter to
+   * the session using the provided sessionManager.
+   * @param {SessionManager} sessionManager
+   * @param {AuthURLOptions} options
+   * @returns {Promise<URL>} required authorization URL
+   */
   public abstract createAuthorizationURL(
     sessionManager: SessionManager,
     options: AuthURLOptions
   ): Promise<URL>;
 
+  /**
+   * Abstract method will implement logic required for exchanging received auth code
+   * post user-authentication with authorization server to receive access, refresh
+   * and id tokens from this exchange.
+   * @param {SessionManager} sessionManager
+   * @param {URL} callbackURL
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected abstract exchangeAuthCodeForTokens(
     sessionManager: SessionManager,
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse>;
 
+  /**
+   * Abstract method will implement logic in child classes for refreshing access token
+   * using refresh token available in current session.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected abstract refreshTokens(
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse>;
 
+  /**
+   * Method handles redirection logic to after authorization server redirects back
+   * to application, this method makes use of the @see {exchangeAuthCodeForTokens}
+   * method above and saves the received tokens to the current session.
+   * @param {SessionManager} sessionManager
+   * @param {URL} callbackURL
+   * @returns {Promise<void>}
+   */
   async handleRedirectFromAuthDomain(
     sessionManager: SessionManager,
     callbackURL: URL
@@ -53,6 +96,14 @@ export abstract class AuthCodeAbstract {
     utilities.commitTokensToMemory(sessionManager, tokens);
   }
 
+  /**
+   * Method retrieves the access token, if the token present in the current session
+   * is unexpired it will be returned otherwise, a new one will be obtained using
+   * the refresh token if the refresh token is not available either an error will
+   * be thrown.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<string>}
+   */
   public async getToken(sessionManager: SessionManager) {
     const accessToken = utilities.getAccessToken(sessionManager);
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
@@ -69,6 +120,12 @@ export abstract class AuthCodeAbstract {
     return tokens.access_token;
   }
 
+  /**
+   * Method makes use of the user profile V2 endpoint to fetch the authenticated
+   * user's profile information.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<UserType>}
+   */
   async getUserProfile(sessionManager: SessionManager) {
     const accessToken = await this.getToken(sessionManager);
     const headers = new Headers();
@@ -83,6 +140,14 @@ export abstract class AuthCodeAbstract {
     return payload;
   }
 
+  /**
+   * A helper method employed by @see {exchangeAuthCodeForTokens} method in child
+   * classes to extract code and state parameters from the received callback URL
+   * an exception is raised in the event the callback URL contains an error query
+   * parameter.
+   * @param {URL} callbackURL
+   * @returns {[string, string]} c
+   */
   protected getCallbackURLParams(callbackURL: URL) {
     const searchParams = new URLSearchParams(callbackURL.search);
     const state = searchParams.get('state')!;
@@ -96,6 +161,13 @@ export abstract class AuthCodeAbstract {
     return [code, state];
   }
 
+  /**
+   * Method implements logic for fetching tokens from the authorization server using
+   * the provided body, the `useCookies` is used exclusively on the browser.
+   * @param {URLSearchParams} body
+   * @param {boolean} useCookies
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected async fetchTokensFor(
     body: URLSearchParams,
     useCookies: boolean = false
@@ -117,6 +189,12 @@ export abstract class AuthCodeAbstract {
     return await response.json();
   }
 
+  /**
+   * Helper method employed by @see {createAuthorizationURL} method above for
+   * generating the aforementioned authorization URL.
+   * @param {AuthURLOptions}
+   * @returns {URLSearchParams}
+   */
   protected generateAuthURLParams(
     options: AuthURLOptions = {}
   ): URLSearchParams {

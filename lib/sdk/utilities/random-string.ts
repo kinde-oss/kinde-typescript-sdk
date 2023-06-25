@@ -1,5 +1,10 @@
 import { crypto, isBrowserEnvironment } from '../environment';
 
+/**
+ * Creates a random string of provided length for the browser.
+ * @param {number} length
+ * @returns {string} required secret
+ */
 const randomStringInBrowser = (length: number = 50): string => {
   const array = new Uint32Array(length);
   crypto.getRandomValues(array);
@@ -8,6 +13,11 @@ const randomStringInBrowser = (length: number = 50): string => {
   ).join('');
 };
 
+/**
+ * Creates a random string of provided length for the server.
+ * @param {number} length
+ * @returns {string} required secret
+ */
 const randomStringInNodejs = (length: number = 50): string => {
   return crypto.randomBytes(length).toString('hex');
 };

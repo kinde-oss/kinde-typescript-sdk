@@ -13,6 +13,14 @@ import type {
   AuthorizationCodeOptions,
 } from './types';
 
+/**
+ * Class provides implementation for the authorization code with PKCE extension
+ * OAuth2.0 flow, please note the use of the `isBrowserEnvironment()` method
+ * in certain methods of this class, this is because this class is intended to
+ * be used on both the browser and server.
+ * @class AuthCodeWithPKCE
+ * @param {AuthorizationCodeOptions} config
+ */
 export class AuthCodeWithPKCE extends AuthCodeAbstract {
   public static STATE_KEY: string = 'acwpf-state-key';
   private codeChallenge?: string;
@@ -22,6 +30,14 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     super(config);
   }
 
+  /**
+   * Method provides implementation for `createAuthorizationURL` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {AuthURLOptions} options
+   * @returns {Promise<URL>} required authorization URL
+   */
   async createAuthorizationURL(
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
@@ -49,6 +65,13 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     return authURL;
   }
 
+  /**
+   * Method provides implementation for `refreshTokens` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected async refreshTokens(sessionManager: SessionManager) {
     const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
@@ -62,6 +85,14 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     return tokens;
   }
 
+  /**
+   * Method provides implementation for `exchangeAuthCodeForTokens` method mandated
+   * by `AuthCodeAbstract` parent class, see corresponding comment in parent class
+   * for further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {URL} callbackURL
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected async exchangeAuthCodeForTokens(
     sessionManager: SessionManager,
     callbackURL: URL
@@ -107,10 +138,22 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     }
   }
 
+  /**
+   * Method generates the key against which the code verifier is stored in session
+   * storage.
+   * @param {string} state
+   * @returns {string} - required code verifer key
+   */
   private getCodeVerifierKey(state: string): string {
     return `${AuthCodeWithPKCE.STATE_KEY}-${state}`;
   }
 
+  /**
+   * Method provides implementation for `getBaseAuthURLParams` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class
+   * for further explanation.
+   * @returns {URLSearchParams} Required query parameters
+   */
   protected getBaseAuthURLParams() {
     return new URLSearchParams({
       state: this.state!,
