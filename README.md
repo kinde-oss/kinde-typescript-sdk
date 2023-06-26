@@ -69,10 +69,14 @@ The client secret provided to you by Kinde when you setup your **backend** app,
 please note that this is exclusive to the `AUTHORIZATION_CODE` and `CLIENT_CREDENTIALS` 
 flows.
 
-**Creating a Authorization Code Client**
+The `@kinde-oss/kinde-typescript-sdk` package is intended to work on both browser
+and Node.js environments, consequently for both environments the SDK provides 
+different clients, we provide examples below to demonstrate this.
+
+**Creating a Authorization Code server client**
 ```ts
 import { 
-  createKindeClient, 
+  createKindeServerClient, 
   GrantType,
   type ACClientOptions,
   type ACClient, 
@@ -86,15 +90,15 @@ const clientOptions: ACClientOptions = {
   redirectURL: process.env.KINDE_REDIRECT_URL
 };
 
-const client = createKindeClient<ACClient, ACClientOptions>(
+const client = createKindeServerClient<ACClient, ACClientOptions>(
   GrantType.AUTHORIZATION_CODE, clientOptions
 );
 ```
 
-**Creating a PKCE Client**  
+**Creating a PKCE server client**  
 ```ts
 import { 
-  createKindeClient, 
+  createKindeServerClient, 
   GrantType,
   type PKCEClientOptions,
   type ACClient, 
@@ -107,15 +111,15 @@ const clientOptions: PKCEClientOptions = {
   redirectURL: process.env.KINDE_REDIRECT_URL
 };
 
-const client = createKindeClient<ACClient, PKCEClientOptions>(
+const client = createKindeServerClient<ACClient, PKCEClientOptions>(
   GrantType.PKCE, clientOptions
 );
 ```
 
-**Creating a Client Credentials Client**
+**Creating a Client Credentials server client**
 ```ts
 import { 
-  createKindeClient, 
+  createKindeServerClient, 
   GrantType,
   type CCClientOptions,
   type CCClient, 
@@ -128,17 +132,36 @@ const clientOptions: CCClientOptions = {
   logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL
 };
 
-const client = createKindeClient<CCClient, CCClientOptions>(
+const client = createKindeServerClient<CCClient, CCClientOptions>(
   GrantType.CLIENT_CREDENTIALS, clientOptions
 )
 ```
+
+**Creating a Browser Client**  
+Of the many OAuth2.0 flows mentioned above in the introduction, the only secure flow
+available for public clients is the Authorization Code flow with PKCE extension thus
+the creation of a browser client is considerably more straightforward as mentioned
+below.
+
+```ts
+import { createKindeServerClient, 
+  type PKCEClientOptions,
+} from "@kinde-oss/kinde-typescript-sdk";
+
+const clientOptions: PKCEClientOptions = {
+  authDomain: process.env.KINDE_AUTH_DOMAIN,
+  clientId: process.env.KINDE_CLIENT_ID,
+  logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL,
+  redirectURL: process.env.KINDE_REDIRECT_URL
+};
+
+const client = createKindeBrowserClient(clientOptions);
+```
+
 ## Overriding `audience` and `scope`
-Regardless of the grant type in question the the client options type for the 
-`createKindeClient` i.e. the following types, all accept the `audience` and `scope` 
-optional parameters.
-- `ACCClientOptions`
-- `PKCEClientOptions`
-- `CCClientOptions`  
+Regardless of the environment in question for both client creation methods i.e.
+`createKindeServerClient` and `createKindeBrowserClient` , the `clientOptions`
+parameter accepts the `audience` and `scope` optional parameters.
 
 The `audience` parameter defines who the tokens received post-authentication are
 intended for, and the `scope` parameter defining what actions the received token is
@@ -149,10 +172,12 @@ following default value.
 ```
 
 An example demonstrating overriding `audience` and `scope` for an `AUTHORIZATION_CODE`
-client is provided below.
+client is provided below, however this is valid for `PKCE` and `CLIENT_CREDENTIALS`
+grant type as well.
+
 ```ts
 import { 
-  createKindeClient, 
+  createKindeServerClient, 
   GrantType,
   type ACClientOptions,
   type ACClient, 
@@ -168,14 +193,32 @@ const clientOptions: ACClientOptions = {
   audience: 'api.example.com/v1'
 };
 
-const client = createKindeClient<ACClient, ACClientOptions>(
+const client = createKindeServerClient<ACClient, ACClientOptions>(
   GrantType.AUTHORIZATION_CODE, clientOptions
 );
 ```
 
-## Client Methods
-Please note that depending on the provided grant type the created client will
-expose different methods, however certain methods are common to all oauth2 flows,
+An example demonstrating this on the browser is provided below.
+```ts
+import { createKindeServerClient, 
+  type PKCEClientOptions,
+} from "@kinde-oss/kinde-typescript-sdk";
+
+const clientOptions: PKCEClientOptions = {
+  authDomain: process.env.KINDE_AUTH_DOMAIN,
+  clientId: process.env.KINDE_CLIENT_ID,
+  logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL,
+  redirectURL: process.env.KINDE_REDIRECT_URL,
+  scope: 'openid email offline',
+  audience: 'api.example.com/v1'
+};
+
+const client = createKindeBrowserClient(clientOptions);
+```
+
+## Server Client Methods
+Please note that depending on the provided grant type the created server client
+will expose different methods, however certain methods are common to all oauth2 flows,
 which we have listed below, for details on what these methods are please refere 
 to the detailed SDK reference provided below.
 
@@ -187,36 +230,48 @@ In addition to the above both clients expose certain utility methods for handlin
 token claims and feature flags we discuss them further below.
 
 ## Registration, Login and Logout
-We present an example below of using a Kinde client for perfoming authentication. A 
-backend scenario of using `AUTHORIZATION_CODE` or `PKCE` with the express framework 
+We present an example below of using a Kinde server client for perfoming authentication. 
+A backend scenario of using `AUTHORIZATION_CODE` or `PKCE` with the express framework 
 may look something like the following.
 
 ```ts
+import { sessionManager } from "./middlewares";
 import { client } from "./kinde-client";
+import session from "express-session";
 import * as config from "./config";
 import { Express } from "express";
 import { join } from "path";
 
 const app = express();
 
+const sessionConfig = {
+  secret: "secret",
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 },
+  resave: false,
+};
+
+app.use(session(sessionConfig));
+app.use(sessionManager);
+
 app.get("/callback", async (req, res) => {
   const callbackURL = new URL(join(config.appBaseURL, req.url));
-  await client.handleRedirectToApp(callbackURL);
+  await client.handleRedirectToApp(req, callbackURL);
   res.redirect("/");
 });
 
 app.get("/register", async (req, res) => {
-  const registrationURL = (await client.register()).toString();
+  const registrationURL = (await client.register(req)).toString();
   res.redirect(registrationURL);
 });
 
 app.get("/login", async (req, res) => {
-  const loginURL = (await client.login()).toString();
+  const loginURL = (await client.login(req)).toString();
   res.redirect(loginURL);
 });
 
 app.get("/logout", async (req, res) => {
-  const logoutURL = client.logout();
+  const logoutURL = client.logout(req);
   res.redirect(logoutURL);
 });
 ```
@@ -226,6 +281,76 @@ itself, since this SDK is intended to be used both on the server and client side
 it performs only the necessary work required for authentication, we leave it to
 end-user to perform the necessary redirection.
 
+## Server session management
+You may have noticed the `sessionManager` import in the above example it is 
+important to expand on this, the implementation of this middleware is as follows. 
+Why is this required ?
+
+```ts
+export const sessionManager = (
+  req: Request, res: Response, next: NextFunction
+) => {
+  req.setSessionItem = (itemKey: string, itemValue: unknown) => {
+    req.session[itemKey] = itemValue;
+  }
+
+  req.getSessionItem = (itemKey: string) => {
+    return req.session[itemKey] ?? null;
+  }
+
+  req.removeSessionItem = (itemKey: string) => {
+    delete req.session[itemKey];
+  }
+
+  req.destroySession = () => {
+    req.session.destroy(error => console.error(error));
+  }
+
+  next();
+}
+```
+This SDK is intended to be framework agnostic, consequently we export a custom
+interface called `SessionManager` to enforce a contract between the end-user 
+framework and the SDK, this allows the SDK to interact with the session store
+which is external to the SDK in a controller manner, the definition of this
+interface is as follows.
+
+```ts
+interface SessionManager {
+  getSessionItem: (itemKey: string) => unknown | null;
+  setSessionItem: (itemKey: string, itemValue: unknown) => void;
+  removeSessionItem: (itemKey: string) => void;
+  destroySession: () => void;
+}
+```
+
+To ensure that `req` object has the correct typings in order to implement this 
+inteface as in the above example, please create a `custom.d.ts` declaration file 
+in your `src` directory with the following definitions, please be sure to add 
+the `custom.d.ts` file to the `files` key of your project's `tsconfig.json` 
+file.
+
+```ts
+import { SessionManager } from "@kinde-oss/kinde-typescript-sdk";
+import { Session, SessionData } from "express-session";
+
+declare module 'express-session' {
+  interface SessionData {
+    [key: string]: unknown
+  }
+}
+
+declare global {
+  namespace Express {
+    export interface Request extends SessionManager {
+      session: Session & Partial<SessionData>;
+      sessionID: string;
+    }
+  }
+}
+```
+
+## Securing Protected Routes
 We can also make use of the `isAuthenticated` method to arrive at a middleware for
 protected routes.
 
@@ -242,7 +367,7 @@ export const isAuthenticated = (
   res: Response, 
   next: NextFunction
 ) => {
-  if (client.isAuthenticated()) {
+  if (client.isAuthenticated(req)) {
     return next();
   }
   next(new Error("not authenticated"));
@@ -259,7 +384,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/user", isAuthenticated, async (req, res) => {
-  res.send({ user: client.getUser() });
+  res.send({ user: client.getUser(req) });
 });
 ```
 ## Getting User Information
@@ -286,7 +411,7 @@ been setup.
 
 **User**
 ```ts
-client.getUser();
+client.getUser(req);
 // {
 //   "family_name": "last",
 //   "given_name": "first",
@@ -298,10 +423,10 @@ client.getUser();
 
 **User Organizations**  
 ```ts
-client.getOrganization();
+client.getOrganization(req);
 // { orgCode: 'org_1234' }
 
-client.getUserOrganizations();
+client.getUserOrganizations(req);
 // { 
 //   orgCodes: [
 //     'org_1234', 
@@ -312,10 +437,10 @@ client.getUserOrganizations();
 
 **User permissions**
 ```ts
-client.getPermission('create:todos');
+client.getPermission(req, 'create:todos');
 // { orgCode: 'org_1234', isGranted: true }
 
-client.getPermissions();
+client.getPermissions(req);
 // { 
 //   orgCode: 'org_1234', 
 //   permissions: [
@@ -374,10 +499,10 @@ The client provides `getClaim` and `getClaimValue` methods that allow use to ext
 the claims within this payload like so, the user organization and permission methods
 mentioned above in fact make use of these methods.
 ```ts
-client.getClaim('aud');
+client.getClaim(req, 'aud');
 // { name: "aud", value: ["local-testing@kinde.com"] }
 
-client.getClaimValue('aud')
+client.getClaimValue(req, 'aud')
 // ["local-testing@kinde.com"]
 ```
 
@@ -385,10 +510,10 @@ By default the `getClaim` and `getClaimValue` look for the requested claim in th
 access token however you can provide a second parameter to change target token for
 example. 
 ```ts
-client.getClaim('email', 'id_token');
+client.getClaim(req, 'email', 'id_token');
 // { name: "email", value: "first.last@test.com" }
 
-client.getClaimValue('email', 'id_token')
+client.getClaimValue(req, 'email', 'id_token')
 // "first.last@test.com"
 ```
 
@@ -396,7 +521,7 @@ Feature flags are special claims that reside within the access token and the SDK
 provides methods for extracting them from the access token. Consider the examples
 below.
 ```ts
-client.getFeatureFlag('theme')
+client.getFeatureFlag(req, 'theme')
 // {
 //   "is_default": false 
 //   "value": "pink",
@@ -406,12 +531,12 @@ client.getFeatureFlag('theme')
 ```
 
 ```ts
-client.getFeatureFlag('no-feature-flag')
+client.getFeatureFlag(req, 'no-feature-flag')
 // Error: "Flag no-feature-flag was not found, and no default value has been provided"
 ```
 
 ```ts
-client.getFeatureFlag('no-feature-flag', 'default-value')
+client.getFeatureFlag(req, 'no-feature-flag', 'default-value')
 // {
 //   "is_default": true
 //   "code": "no-feature-flag",
@@ -420,13 +545,13 @@ client.getFeatureFlag('no-feature-flag', 'default-value')
 ```
 
 ```ts
-client.getFeatureFlag('theme', 'default-theme', 'b')
+client.getFeatureFlag(req, 'theme', 'default-theme', 'b')
 // Error: "Flag theme is of type string, expected type is boolean
 ```
 
-## SDK API Reference
-We first discuss the methods provided by `createKindeClient` for grant types
-`AUTHORIZATION_CODE` and `PKCE`.
+## SDK Server API Reference
+We first discuss the methods provided by `createKindeServerClient` for grant 
+types `AUTHORIZATION_CODE` and `PKCE`.
 
 ### `register`
 The method returns the registration URL, your app should redirect to this URL
@@ -434,7 +559,10 @@ when you are registering new users, post registration Kinde will redirect the
 user back to your application at the callback route that you have configured. 
 The app takes the following options as an argument. 
 ```ts
-register(options?: AuthURLOptions): Promise<URL>
+register(
+  sessionManager: SessionManager, 
+  options?: AuthURLOptions
+): Promise<URL>
 ```
 
 ```ts
@@ -456,7 +584,10 @@ you are signing in a user, post authentication Kinde will redirect the user
 back to your application at the callback route that you have configured. 
 The app takes the following options as argument.
 ```ts
-login(options?: AuthURLOptions): Promise<URL>
+login(
+  sessionManager: SessionManager, 
+  options?: AuthURLOptions
+): Promise<URL>
 ```
 
 ### `createOrg`
@@ -464,7 +595,10 @@ This method will return a registration URL, with the `is_create_org` parameter,
 do make sure to provide the `org_name` as part of the `options` argument, this 
 will create the provide organization as part of the registration process.
 ```ts
-createOrg(options?: AuthURLOptions): Promise<URL>
+createOrg(
+  sessionManager: SessionManager, 
+  options?: AuthURLOptions
+): Promise<URL>
 ```
 
 ### `handleRedirectToApp`
@@ -473,7 +607,10 @@ to post registration or login, validates state query parameter and exchanges the
 obtained authorization code to get the access, refresh and Id tokens. In addition
 it commits those tokens to memory.
 ```ts
-handleRedirectToApp(callbackURL: URL): Promise<void>
+handleRedirectToApp(
+  sessionManager: SessionManager, 
+  callbackURL: URL
+): Promise<void>
 ```
 
 ### `logout`
@@ -482,21 +619,21 @@ the responsibility of the end-user application to redirect the user to this URL
 to terminate the user's session.
 
 ```ts
-logout(): string 
+logout(sessionManager: SessionManager): string 
 ```
 
 ### `isAuthenticated`
 This method indicates whether an **unexpired access token** exists in memory,
 effectively communicating if some user is presently signed in or not.
 ```ts
-isAuthenticated(): boolean
+isAuthenticated(sessionManager: SessionManager): boolean
 ```
 
 ### `getUser`
 This method extracts the user details from the Id token obtained post authentication,
 it will throw an error if invoked prior to authentication.
 ```ts
-getUser(): Promise<UserType>
+getUser(sessionManager: SessionManager): Promise<UserType>
 ```
 
 ```ts
@@ -514,14 +651,14 @@ This method returns the access token obtained post authentication, if the access
 token is expired it will refresh the access token using the available refresh 
 token if neither are available an error will be thrown.
 ```ts
-getToken(): Promise<string>
+getToken(sessionManager: SessionManager): Promise<string>
 ```
 
 ### `getUserProfile`
 This method extracts makes use of the `getToken` method above to fetch user details
 it will throw an error if invoked prior to authentication.
 ```ts
-getUserProfile(): Promise<UserType>
+getUserProfile(sessionManager: SessionManager): Promise<UserType>
 ```
 
 Apart from the token claims and feature flag utility methods common to all clients. 
@@ -536,7 +673,11 @@ utilities above, to avoid duplication will present only there signatures here.
 
 ### `getClaim`
 ```ts
-getClaim(claim: string, tokenType: TokenType): { 
+getClaim(
+  sessionManager: SessionManager, 
+  claim: string, 
+  tokenType: TokenType
+): { 
   name: string, 
   value: unknown | null,
 };
@@ -553,37 +694,40 @@ type TokenType =
 ### `getClaimValue`
 ```ts
 getClaimValue(
-  claim: string, type: TokenType = 'access_token'
+  sessionManager: SessionManager,
+  claim: string, 
+  type: TokenType = 'access_token'
 ): unknown | null
 ```
 
 ### `getPermission`
 ```ts
-getPermission(name: string): { 
+getPermission(sessionManager: SessionManager, name: string): { 
   orgCode: string, isGranted: boolean 
 }
 ```
 
 ### `getPermissions`
 ```ts
-getPermissions(name: string): { 
+getPermissions(sessionManager: SessionManager, name: string): { 
   orgCode: string, isGranted: boolean 
 }
 ```
 
 ### `getUserOrganizations`
 ```ts
-getUserOrganizations(): string[]
+getUserOrganizations(sessionManager: SessionManager): string[]
 ```
 
 ### `getOrganization`
 ```ts
-getOrganization(): string
+getOrganization(sessionManager: SessionManager): string
 ```
 
 ### `getFlag`
 ```ts
 getFlag = (
+  sessionManager: SessionManager,
   code: string,
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
@@ -609,22 +753,51 @@ interface GetFlagType {
 
 ### `getIntegerFlag`
 This is a wrapper method around `getFlag` and is essentially equivalent to
-`getFlag(code, defaultValue, 'i')`
+`getFlag(sessionManager, code, defaultValue, 'i')`
 ```ts
-getIntegerFlag(code: string, defaultValue?: number): number
+getIntegerFlag(
+  sessionManager: SessionManager, 
+  code: string, 
+  defaultValue?: number
+): number
 ```
 
 ### `getStringFlag`
 This is a wrapper method around `getFlag` and is essentially equivalent to
-`getFlag(code, defaultValue, 's')`
+`getFlag(sessionManager, code, defaultValue, 's')`
 ```ts
-getIntegerFlag(code: string, defaultValue?: string): string
+getIntegerFlag(
+  sessionManager: SessionManager, 
+  code: string, 
+  defaultValue?: string
+): string
 ```
 ### `getBooleanFlag`
 This is a wrapper method around `getFlag` and is essentially equivalent to
-`getFlag(code, defaultValue, 'b')`
+`getFlag(sessionManager, code, defaultValue, 'b')`
 ```ts
-getBooleanFlag(code: string, defaultValue?: boolean): boolean
+getBooleanFlag(
+  sessionManager: SessionManager, 
+  code: string, 
+  defaultValue?: boolean
+): boolean
+```
+
+## SDK Browser API Reference
+The methods exposed by `createKindeBrowserClient` are identitical to those exposed
+by the `createKindeServerClient` for the `PKCE` grant type, however the methods
+for the browser client do not accept the `SessionManager` parameter, for this 
+purpose we do not repeat the method reference provided above. It does suffice to
+provide some examples below.
+
+### `login`
+```ts
+login(options?: AuthURLOptions): Promise<URL>
+```
+
+### `getOrganization`
+```ts
+getOrganization(): string
 ```
 
 If you need help connecting to Kinde, please contact us at 
