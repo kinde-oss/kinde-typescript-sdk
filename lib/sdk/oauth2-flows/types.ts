@@ -22,6 +22,8 @@ export interface OAuth2FlowOptions {
   clientId: string;
   logoutRedirectURL: string;
   authDomain: string;
+  audience?: string;
+  scope?: string;
 }
 
 export interface AuthorizationCodeOptions extends OAuth2FlowOptions {
@@ -34,9 +36,8 @@ export interface ClientCredentialsOptions extends OAuth2FlowOptions {
 
 export interface AuthURLOptions {
   start_page?: string;
-  audience?: string;
   is_create_org?: boolean;
   org_name?: string;
+  org_code?: string;
   state?: string;
-  scope?: string;
 }

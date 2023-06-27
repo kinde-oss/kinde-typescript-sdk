@@ -1,3 +1,4 @@
+import { type SessionManager } from '../session-managers';
 import { getClaimValue } from './token-claims';
 
 import {
@@ -7,12 +8,23 @@ import {
   FlagDataType,
 } from './types';
 
+/**
+ * Method extracts the provided feature flag from the access token in the
+ * current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {FlagType[keyof FlagType]} defaultValue
+ * @param {keyof FlagType} type
+ * @returns {GetFlagType}
+ */
 export const getFlag = (
+  sessionManager: SessionManager,
   code: string,
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): GetFlagType => {
-  const featureFlags = (getClaimValue('feature_flags') as FeatureFlags) ?? {};
+  const featureFlags =
+    (getClaimValue(sessionManager, 'feature_flags') as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
   if (flag === undefined && defaultValue === undefined) {
@@ -42,17 +54,50 @@ export const getFlag = (
   return response;
 };
 
-export const getIntegerFlag = (code: string, defaultValue?: number): number => {
-  return getFlag(code, defaultValue, 'i').value as number;
+/**
+ * Method extracts the provided number feature flag from the access token in
+ * the current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {number} defaultValue
+ * @returns {number} integer flag value
+ */
+export const getIntegerFlag = (
+  sessionManager: SessionManager,
+  code: string,
+  defaultValue?: number
+): number => {
+  return getFlag(sessionManager, code, defaultValue, 'i').value as number;
 };
 
-export const getStringFlag = (code: string, defaultValue?: string): string => {
-  return getFlag(code, defaultValue, 's').value as string;
+/**
+ * Method extracts the provided string feature flag from the access token in
+ * the current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {string} defaultValue
+ * @returns {string} string flag value
+ */
+export const getStringFlag = (
+  sessionManager: SessionManager,
+  code: string,
+  defaultValue?: string
+): string => {
+  return getFlag(sessionManager, code, defaultValue, 's').value as string;
 };
 
+/**
+ * Method extracts the provided boolean feature flag from the access token in
+ * the current session.
+ * @param {SessionManager} sessionManager
+ * @param {string} code
+ * @param {boolean} defaultValue
+ * @returns {boolean} boolean flag value
+ */
 export const getBooleanFlag = (
+  sessionManager: SessionManager,
   code: string,
   defaultValue?: boolean
 ): boolean => {
-  return getFlag(code, defaultValue, 'b').value as boolean;
+  return getFlag(sessionManager, code, defaultValue, 'b').value as boolean;
 };

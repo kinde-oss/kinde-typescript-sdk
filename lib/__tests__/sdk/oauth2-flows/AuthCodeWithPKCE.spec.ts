@@ -1,8 +1,7 @@
 import type { AuthorizationCodeOptions } from '../../../sdk/oauth2-flows';
 import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
-import { memoryStore, sessionStore } from '../../../sdk/stores';
 import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
-import { getSDKHeader } from '../../../sdk/sdk-version';
+import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
 describe('AuthCodeWitPKCE', () => {
@@ -14,6 +13,7 @@ describe('AuthCodeWitPKCE', () => {
   };
 
   const client = new AuthCodeWithPKCE(clientConfig);
+  const { sessionManager } = mocks;
 
   describe('new AuthCodeWithPKCE', () => {
     it('can construct AuthCodeWithPKCE instance', () => {
@@ -23,19 +23,11 @@ describe('AuthCodeWitPKCE', () => {
 
   describe('createAuthorizationURL()', () => {
     afterEach(() => {
-      sessionStore.clear();
-    });
-
-    it('uses default scopes if none is provided in the url options', async () => {
-      const authURL = await client.createAuthorizationURL();
-      const searchParams = new URLSearchParams(authURL.search);
-      expect(searchParams.get('scope')).toBe(
-        AuthCodeWithPKCE.DEFAULT_TOKEN_SCOPES
-      );
+      sessionManager.destroySession();
     });
 
     it('saves generated code verifier to session storage again state', async () => {
-      const authURL = await client.createAuthorizationURL();
+      const authURL = await client.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
 
       const state = searchParams.get('state');
@@ -45,7 +37,7 @@ describe('AuthCodeWitPKCE', () => {
 
       const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-${state!}`;
       const codeVerifierState = JSON.parse(
-        sessionStore.getItem(codeVerifierKey)! as string
+        sessionManager.getSessionItem(codeVerifierKey)! as string
       );
       expect(codeVerifierState).toBeDefined();
 
@@ -58,7 +50,7 @@ describe('AuthCodeWitPKCE', () => {
 
     it('uses provided state to generate authorization URL if given', async () => {
       const expectedState = 'test-app-state';
-      const authURL = await client.createAuthorizationURL({
+      const authURL = await client.createAuthorizationURL(sessionManager, {
         state: expectedState,
       });
       const searchParams = new URLSearchParams(authURL.search);
@@ -72,9 +64,8 @@ describe('AuthCodeWitPKCE', () => {
 
   describe('handleRedirectFromAuthDomain()', () => {
     afterEach(() => {
+      sessionManager.destroySession();
       mocks.fetchClient.mockClear();
-      sessionStore.clear();
-      memoryStore.clear();
     });
 
     it('throws an error if callbackURL has an error query param', async () => {
@@ -82,7 +73,7 @@ describe('AuthCodeWitPKCE', () => {
         `${clientConfig.redirectURL}?state=state&code=code&error=error`
       );
       await expect(async () => {
-        await client.handleRedirectFromAuthDomain(callbackURL);
+        await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow('Authorization server reported an error: error');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
@@ -93,7 +84,7 @@ describe('AuthCodeWitPKCE', () => {
       );
 
       await expect(async () => {
-        await client.handleRedirectFromAuthDomain(callbackURL);
+        await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow('Stored state not found');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
@@ -113,16 +104,16 @@ describe('AuthCodeWitPKCE', () => {
         `${clientConfig.redirectURL}?state=state&code=code`
       );
       const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-state`;
-      sessionStore.setItem(
+      sessionManager.setSessionItem(
         codeVerifierKey,
         JSON.stringify({ codeVerifier: 'code-verifier' })
       );
-      await client.handleRedirectFromAuthDomain(callbackURL);
+      await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = memoryStore.getItem('refresh_token');
-      const foundAccessToken = memoryStore.getItem('access_token');
-      const foundIdToken = memoryStore.getItem('id_token');
+      const foundRefreshToken = sessionManager.getSessionItem('refresh_token');
+      const foundAccessToken = sessionManager.getSessionItem('access_token');
+      const foundIdToken = sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(mockAccessToken.token);
       expect(foundRefreshToken).toBe('refresh_token');
@@ -132,15 +123,14 @@ describe('AuthCodeWitPKCE', () => {
 
   describe('getToken()', () => {
     afterEach(() => {
+      sessionManager.destroySession();
       mocks.fetchClient.mockClear();
-      sessionStore.clear();
-      memoryStore.clear();
     });
 
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      memoryStore.setItem('access_token', mockAccessToken.token);
-      const token = await client.getToken();
+      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
@@ -150,9 +140,9 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      memoryStore.setItem('access_token', mockAccessToken.token);
+      sessionManager.setSessionItem('access_token', mockAccessToken.token);
       await expect(async () => {
-        await client.getToken();
+        await client.getToken(sessionManager);
       }).rejects.toThrow('Cannot persist session no valid refresh token found');
     });
 
@@ -171,8 +161,8 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      memoryStore.setItem('access_token', expiredAccessToken.token);
-      memoryStore.setItem('refresh_token', 'refresh_token');
+      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
+      sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -187,7 +177,7 @@ describe('AuthCodeWitPKCE', () => {
         'application/x-www-form-urlencoded; charset=UTF-8'
       );
 
-      await client.getToken();
+      await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
         { method: 'POST', headers, body, credentials: 'include' }
@@ -211,15 +201,15 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      memoryStore.setItem('access_token', expiredAccessToken.token);
-      memoryStore.setItem('refresh_token', 'refresh_token');
+      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
+      sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
-      await client.getToken();
+      await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = memoryStore.getItem('refresh_token');
-      const foundAccessToken = memoryStore.getItem('access_token');
-      const foundIdToken = memoryStore.getItem('id_token');
+      const foundRefreshToken = sessionManager.getSessionItem('refresh_token');
+      const foundAccessToken = sessionManager.getSessionItem('access_token');
+      const foundIdToken = sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
       expect(foundRefreshToken).toBe(newRefreshToken);

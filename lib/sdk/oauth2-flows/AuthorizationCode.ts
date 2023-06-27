@@ -1,8 +1,6 @@
-import { isNodeEnvironment } from '../environment';
-import { getSDKHeader } from '../sdk-version';
-import type { UserType } from '../utilities';
+import { type SessionManager } from '../session-managers';
+import { AuthCodeAbstract } from './AuthCodeAbstract';
 import * as utilities from '../utilities';
-import { sessionStore } from '../stores';
 
 import type {
   OAuth2CodeExchangeResponse,
@@ -10,74 +8,51 @@ import type {
   AuthURLOptions,
 } from './types';
 
-export class AuthorizationCode {
-  public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
+/**
+ * Class provides implementation for the authorization code OAuth2.0 flow.
+ * @class AuthorizationCode
+ * @param {AuthorizationCodeOptions} config
+ * @param {string} clientSecret
+ */
+export class AuthorizationCode extends AuthCodeAbstract {
   public static STATE_KEY: string = 'ac-state-key';
-
-  public readonly authorizationEndpoint: string;
-  public readonly userProfileEndpoint: string;
-  public readonly logoutEndpoint: string;
-  public readonly tokenEndpoint: string;
-  protected state?: string;
 
   constructor(
     protected readonly config: AuthorizationCodeOptions,
     private readonly clientSecret: string
   ) {
-    const { authDomain, logoutRedirectURL } = config;
-    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
-    this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
-    this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
-    this.tokenEndpoint = `${authDomain}/oauth2/token`;
-    this.config = config;
+    super(config);
   }
 
-  async createAuthorizationURL(options: AuthURLOptions = {}) {
+  /**
+   * Method provides implementation for `createAuthorizationURL` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {AuthURLOptions} options
+   * @returns {Promise<URL>} required authorization URL
+   */
+  async createAuthorizationURL(
+    sessionManager: SessionManager,
+    options: AuthURLOptions = {}
+  ) {
     this.state = options.state ?? utilities.generateRandomString();
-    sessionStore.setItem(AuthorizationCode.STATE_KEY, this.state);
+    sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, this.state);
     const authURL = new URL(this.authorizationEndpoint);
     const authParams = this.generateAuthURLParams(options);
     authURL.search = authParams.toString();
     return authURL;
   }
 
-  async handleRedirectFromAuthDomain(callbackURL: URL) {
-    const tokens = await this.exchangeAuthCodeForTokens(callbackURL);
-    utilities.commitTokensToMemory(tokens);
-  }
-
-  async getToken() {
-    const accessToken = utilities.getAccessToken();
-    const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
-    if (!isAccessTokenExpired) {
-      return accessToken!;
-    }
-
-    const refreshToken = utilities.getRefreshToken();
-    if (refreshToken === null && isNodeEnvironment()) {
-      throw Error('Cannot persist session no valid refresh token found');
-    }
-
-    const tokens = await this.refreshTokens();
-    return tokens.access_token;
-  }
-
-  async getUserProfile() {
-    const accessToken = await this.getToken();
-    const headers = new Headers();
-    headers.append('Authorization', `Bearer ${accessToken}`);
-    headers.append('Accept', 'application/json');
-
-    const targetURL = this.userProfileEndpoint;
-    const config: RequestInit = { method: 'GET', headers };
-    const response = await fetch(targetURL, config);
-    const payload = (await response.json()) as UserType;
-    utilities.commitUserToMemory(payload);
-    return payload;
-  }
-
-  protected async refreshTokens() {
-    const refreshToken = utilities.getRefreshToken();
+  /**
+   * Method provides implementation for `refreshTokens` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
+  protected async refreshTokens(sessionManager: SessionManager) {
+    const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       client_id: this.config.clientId,
@@ -86,16 +61,27 @@ export class AuthorizationCode {
     });
 
     const tokens = await this.fetchTokensFor(body);
-    utilities.commitTokensToMemory(tokens);
+    utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
 
+  /**
+   * Method provides implementation for `exchangeAuthCodeForTokens` method mandated
+   * by `AuthCodeAbstract` parent class, see corresponding comment in parent class
+   * for further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {URL} callbackURL
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
   protected async exchangeAuthCodeForTokens(
+    sessionManager: SessionManager,
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = this.getCallbackURLParams(callbackURL);
     const stateKey = AuthorizationCode.STATE_KEY;
-    const storedState = sessionStore.getItem(stateKey) as string | null;
+    const storedState = sessionManager.getSessionItem(stateKey) as
+      | string
+      | null;
     if (storedState === null || storedState !== state) {
       throw new Error('Authentication flow state not found');
     }
@@ -111,75 +97,22 @@ export class AuthorizationCode {
     try {
       return await this.fetchTokensFor(body);
     } finally {
-      sessionStore.removeItem(stateKey);
+      sessionManager.removeSessionItem(stateKey);
     }
   }
 
-  protected getCallbackURLParams(callbackURL: URL) {
-    const searchParams = new URLSearchParams(callbackURL.search);
-    const state = searchParams.get('state')!;
-    const error = searchParams.get('error');
-    const code = searchParams.get('code');
-
-    if (error !== null) {
-      throw new Error(`Authorization server reported an error: ${error}`);
-    }
-
-    return [code, state];
-  }
-
-  protected async fetchTokensFor(
-    body: URLSearchParams,
-    useCookies: boolean = false
-  ): Promise<OAuth2CodeExchangeResponse> {
-    const headers = new Headers();
-    headers.append(...getSDKHeader());
-    headers.append(
-      'Content-Type',
-      'application/x-www-form-urlencoded; charset=UTF-8'
-    );
-
-    const config: RequestInit = {
-      method: 'POST',
-      headers,
-      body,
-      credentials: useCookies ? 'include' : undefined,
-    };
-    const response = await fetch(this.tokenEndpoint, config);
-    return await response.json();
-  }
-
+  /**
+   * Method provides implementation for `getBaseAuthURLParams` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class
+   * for further explanation.
+   * @returns {URLSearchParams} Required query parameters
+   */
   protected getBaseAuthURLParams() {
     return new URLSearchParams({
       state: this.state!,
       client_id: this.config.clientId,
-      scope: AuthorizationCode.DEFAULT_TOKEN_SCOPES,
       redirect_uri: this.config.redirectURL,
       response_type: 'code',
     });
-  }
-
-  protected generateAuthURLParams(
-    options: AuthURLOptions = {}
-  ): URLSearchParams {
-    const searchParams = this.getBaseAuthURLParams();
-    if (options.start_page !== undefined) {
-      searchParams.append('start_page', options.start_page);
-    }
-
-    if (options.is_create_org !== undefined) {
-      searchParams.append('org_name', options.org_name ?? '');
-      searchParams.append('is_create_org', 'true');
-    }
-
-    if (options.audience !== undefined) {
-      searchParams.append('audience', options.audience);
-    }
-
-    if (options.scope !== undefined) {
-      searchParams.append('scope', options.scope);
-    }
-
-    return searchParams;
   }
 }

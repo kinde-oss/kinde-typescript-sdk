@@ -1,4 +1,3 @@
-import { memoryStore } from '../../../sdk/stores';
 import * as mocks from '../../mocks';
 
 import {
@@ -10,6 +9,7 @@ import {
 
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
+  const { sessionManager } = mocks;
 
   describe('commitTokensToMemory', () => {
     it('stores all provided tokens to memory', () => {
@@ -20,33 +20,39 @@ describe('token-utils', () => {
         access_token: mockAccessToken,
         id_token: mockIdToken,
       };
-      commitTokensToMemory(tokenCollection);
+      commitTokensToMemory(sessionManager, tokenCollection);
 
-      expect(memoryStore.getItem('refresh_token')).toBe(
+      expect(sessionManager.getSessionItem('refresh_token')).toBe(
         tokenCollection.refresh_token
       );
-      expect(memoryStore.getItem('access_token')).toBe(mockAccessToken);
-      expect(memoryStore.getItem('id_token')).toBe(mockIdToken);
+      expect(sessionManager.getSessionItem('access_token')).toBe(
+        mockAccessToken
+      );
+      expect(sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
     });
   });
 
   describe('commitTokenToMemory()', () => {
     afterEach(() => {
-      memoryStore.clear();
+      sessionManager.destroySession();
     });
 
     it('stores provided token to memory', () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      commitTokenToMemory(mockAccessToken, 'access_token');
-      expect(memoryStore.getItem('access_token')).toBe(mockAccessToken);
+      commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
+      expect(sessionManager.getSessionItem('access_token')).toBe(
+        mockAccessToken
+      );
     });
 
     it('stores user information if provide token is an id token', () => {
       const { token: mockIdToken, payload: idTokenPayload } =
         mocks.getMockIdToken(domain);
-      commitTokenToMemory(mockIdToken, 'id_token');
+      commitTokenToMemory(sessionManager, mockIdToken, 'id_token');
 
-      const storedUser = JSON.parse(memoryStore.getItem('user') as string);
+      const storedUser = JSON.parse(
+        sessionManager.getSessionItem('user') as string
+      );
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
@@ -55,7 +61,7 @@ describe('token-utils', () => {
         picture: null,
       };
 
-      expect(memoryStore.getItem('id_token')).toBe(mockIdToken);
+      expect(sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
       expect(storedUser).toStrictEqual(expectedUser);
     });
   });
