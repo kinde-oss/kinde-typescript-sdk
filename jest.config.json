@@ -1,0 +1,23 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "roots": [
+    "<rootDir>/lib"
+  ],
+  "testMatch": [
+    "**/__tests__/**/*.ts",
+    "**/?(*.)+(spec|test).ts"
+  ],
+  "testPathIgnorePatterns": [
+    "<rootDir>/lib/__tests__/mocks.ts"
+  ],
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "moduleFileExtensions": [
+    "ts",
+    "js",
+    "json"
+  ]
+}
+

@@ -1,0 +1,25 @@
+env:
+  browser: true
+  es2021: true
+extends:
+  - standard-with-typescript
+  - prettier
+overrides: []
+parserOptions:
+  project: tsconfig.json
+  ecmaVersion: latest
+  sourceType: module
+ignorePatterns:
+  - dist
+  - dist-cjs
+  - lib/apis/**
+  - lib/models/**
+  - lib/index.ts
+  - lib/runtime.ts
+rules:
+  "@typescript-eslint/explicit-function-return-type": off
+  "@typescript-eslint/no-non-null-assertion": off
+  "@typescript-eslint/no-misused-promises": off
+  quotes:
+    - error
+    - single

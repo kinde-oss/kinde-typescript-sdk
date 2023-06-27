@@ -1,0 +1,6 @@
+# project dependencies
+node_modules
+
+# sdk builds
+/dist
+/dist-cjs
