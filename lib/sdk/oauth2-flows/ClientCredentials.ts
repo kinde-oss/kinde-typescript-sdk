@@ -1,8 +1,7 @@
 import type { ClientCredentialsOptions, OAuth2CCTokenResponse } from './types';
+import { type SessionManager } from '../session-managers';
 import * as utilities from '../utilities';
 import { getSDKHeader } from '../version';
-import { type SessionManager } from '../session-managers';
-import { URLSearchParams } from 'url';
 
 /**
  * Class provides implementation for the client credentials OAuth2.0 flow.
