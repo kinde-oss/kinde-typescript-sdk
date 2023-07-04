@@ -561,20 +561,18 @@ The app takes the following options as an argument.
 ```ts
 register(
   sessionManager: SessionManager, 
-  options?: AuthURLOptions
+  options?: LoginURLOptions
 ): Promise<URL>
 ```
 
 ```ts
-export interface AuthURLOptions {
-  start_page?: string;
-  is_create_org?: boolean;
+interface RegisterURLOptions {
   org_name?: string;
   org_code?: string;
   state?: string;
 }
 ```
-Notice that you are able to override the `state` parameter in `AuthURLOptions`,
+Notice that you are able to override the `state` parameter in `RegisterURLOptions`,
 if not provided then the SDK will assign a random string to this value, this
 applies to the `login` method discussed below as well.
 
@@ -586,8 +584,16 @@ The app takes the following options as argument.
 ```ts
 login(
   sessionManager: SessionManager, 
-  options?: AuthURLOptions
+  options?: LoginURLOptions
 ): Promise<URL>
+```
+
+```ts
+interface LoginURLOptions {
+  org_name?: string;
+  org_code?: string;
+  state?: string;
+}
 ```
 
 ### `createOrg`
@@ -597,10 +603,17 @@ will create the provide organization as part of the registration process.
 ```ts
 createOrg(
   sessionManager: SessionManager, 
-  options?: AuthURLOptions
+  options?: CreateOrgURLOptions
 ): Promise<URL>
 ```
 
+```ts
+interface CreateOrgURLOptions {
+  org_name?: string;
+  org_code?: string;
+  state?: string;
+}
+```
 ### `handleRedirectToApp`
 This method accepts the callback URL in your application, to which Kinde redirects
 to post registration or login, validates state query parameter and exchanges the
@@ -792,7 +805,7 @@ provide some examples below.
 
 ### `login`
 ```ts
-login(options?: AuthURLOptions): Promise<URL>
+login(options?: LoginURLOptions): Promise<URL>
 ```
 
 ### `getOrganization`

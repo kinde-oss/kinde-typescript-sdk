@@ -1,4 +1,3 @@
-import { type AuthURLOptions } from '../../oauth2-flows/types';
 import { type SessionManager } from '../../session-managers';
 import type { UserType } from '../../utilities';
 import * as utilities from '../../utilities';
@@ -8,6 +7,12 @@ import {
   AuthCodeWithPKCE,
   AuthorizationCode,
 } from '../../oauth2-flows';
+
+import type {
+  CreateOrgURLOptions,
+  RegisterURLOptions,
+  LoginURLOptions,
+} from '../types';
 
 const createAuthorizationCodeClient = (
   options: AuthorizationCodeOptions & { clientSecret?: string },
@@ -21,26 +26,29 @@ const createAuthorizationCodeClient = (
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeAbstract
    * client above to return login url.
    * @param {SessionManager} sessionManager
-   * @param {AuthURLOptions} options
+   * @param {LoginURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
   const login = async (
     sessionManager: SessionManager,
-    options?: AuthURLOptions
+    options?: LoginURLOptions
   ) => {
-    return await client.createAuthorizationURL(sessionManager, options);
+    return await client.createAuthorizationURL(sessionManager, {
+      ...options,
+      start_page: 'login',
+    });
   };
 
   /**
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeAbstract
    * client above to return registration url.
    * @param {SessionManager} sessionManager
-   * @param {AuthURLOptions} options
+   * @param {RegisterURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
   const register = async (
     sessionManager: SessionManager,
-    options?: AuthURLOptions
+    options?: RegisterURLOptions
   ) => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
@@ -53,12 +61,12 @@ const createAuthorizationCodeClient = (
    * client above to return registration url with the `is_create_org` query param
    * set to true.
    * @param {SessionManager} sessionManager
-   * @param {AuthURLOptions} options
+   * @param {CreateOrgURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
   const createOrg = async (
     sessionManager: SessionManager,
-    options?: AuthURLOptions
+    options?: CreateOrgURLOptions
   ) => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,

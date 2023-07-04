@@ -1,13 +1,17 @@
 import type { UserType, TokenType, FlagType } from '../../utilities';
-import { type AuthURLOptions } from '../../oauth2-flows/types';
-import * as utilities from '../../utilities';
-
 import { BrowserSessionManager } from '../../session-managers';
+import * as utilities from '../../utilities';
 
 import {
   type AuthorizationCodeOptions,
   AuthCodeWithPKCE,
 } from '../../oauth2-flows';
+
+import type {
+  CreateOrgURLOptions,
+  RegisterURLOptions,
+  LoginURLOptions,
+} from '../types';
 
 const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   const { featureFlags, tokenClaims } = utilities;
@@ -17,20 +21,23 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   /**
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
    * client above to return login url.
-   * @param {AuthURLOptions} options
+   * @param {LoginURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const login = async (options?: AuthURLOptions) => {
-    return await client.createAuthorizationURL(sessionManager, options);
+  const login = async (options?: LoginURLOptions) => {
+    return await client.createAuthorizationURL(sessionManager, {
+      ...options,
+      start_page: 'login',
+    });
   };
 
   /**
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
    * client above to return registration url.
-   * @param {AuthURLOptions} options
+   * @param {RegisterURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const register = async (options?: AuthURLOptions) => {
+  const register = async (options?: RegisterURLOptions) => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -41,10 +48,10 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
    * client above to return registration url with the `is_create_org` query param
    * set to true.
-   * @param {AuthURLOptions} options
+   * @param {CreateOrgURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const createOrg = async (options?: AuthURLOptions) => {
+  const createOrg = async (options?: CreateOrgURLOptions) => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',

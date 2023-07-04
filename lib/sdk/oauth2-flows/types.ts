@@ -35,7 +35,7 @@ export interface ClientCredentialsOptions extends OAuth2FlowOptions {
 }
 
 export interface AuthURLOptions {
-  start_page?: string;
+  start_page?: 'registration' | 'login';
   is_create_org?: boolean;
   org_name?: string;
   org_code?: string;
