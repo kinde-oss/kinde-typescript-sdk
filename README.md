@@ -144,7 +144,8 @@ the creation of a browser client is considerably more straightforward as mention
 below.
 
 ```ts
-import { createKindeServerClient, 
+import { 
+  createKindeBrowserClient, 
   type PKCEClientOptions,
 } from "@kinde-oss/kinde-typescript-sdk";
 
@@ -200,7 +201,8 @@ const client = createKindeServerClient<ACClient, ACClientOptions>(
 
 An example demonstrating this on the browser is provided below.
 ```ts
-import { createKindeServerClient, 
+import { 
+  createKindeBrowserClient, 
   type PKCEClientOptions,
 } from "@kinde-oss/kinde-typescript-sdk";
 
