@@ -576,13 +576,16 @@ interface RegisterURLOptions {
 ```
 Notice that you are able to override the `state` parameter in `RegisterURLOptions`,
 if not provided then the SDK will assign a random string to this value, this
-applies to the `login` method discussed below as well.
+applies to the `login` method discussed below as well. In addition it must be 
+noted that interally this method will ensure the resulting registration URL has
+the `start_page` query parameter to `'registration'`.
 
 ### `login`
 The method returns the login URL, your app should redirect to this URL when 
 you are signing in a user, post authentication Kinde will redirect the user 
 back to your application at the callback route that you have configured. 
 The app takes the following options as argument.
+
 ```ts
 login(
   sessionManager: SessionManager, 
@@ -597,11 +600,14 @@ interface LoginURLOptions {
   state?: string;
 }
 ```
+In addition it must be noted that interally this method will ensure that the
+resulting login URL has the `start_page` query parameter to `'login'`.
 
 ### `createOrg`
-This method will return a registration URL, with the `is_create_org` parameter,
-do make sure to provide the `org_name` as part of the `options` argument, this 
-will create the provide organization as part of the registration process.
+This method will return a registration URL, with the `is_create_org` parameter
+set to true, do make sure to provide the `org_name` as part of the `options` 
+argument, this will create the provide organization as part of the registration 
+process.
 ```ts
 createOrg(
   sessionManager: SessionManager, 
@@ -616,6 +622,10 @@ interface CreateOrgURLOptions {
   state?: string;
 }
 ```
+In addition it must be noted that as in the `registration` method above interally 
+this method will also set the `start_page` query parameter to `'registration'`.
+in the resulting URL.
+
 ### `handleRedirectToApp`
 This method accepts the callback URL in your application, to which Kinde redirects
 to post registration or login, validates state query parameter and exchanges the
