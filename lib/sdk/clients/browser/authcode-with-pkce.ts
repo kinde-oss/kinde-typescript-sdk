@@ -1,4 +1,4 @@
-import type { UserType, TokenType, FlagType } from '../../utilities';
+import type { UserType, ClaimTokenType, FlagType } from '../../utilities';
 import { BrowserSessionManager } from '../../session-managers';
 import * as utilities from '../../utilities';
 
@@ -145,10 +145,13 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * Method extracts the provided claim from the provided token type in the
    * current session.
    * @param {string} claim
-   * @param {TokenType} type
+   * @param {ClaimTokenType} type
    * @returns {unknown | null}
    */
-  const getClaimValue = (claim: string, type: TokenType = 'access_token') => {
+  const getClaimValue = (
+    claim: string,
+    type: ClaimTokenType = 'access_token'
+  ) => {
     return tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
@@ -156,10 +159,10 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * Method extracts the provided claim from the provided token type in the
    * current session, the returned object includes the provided claim.
    * @param {string} claim
-   * @param {TokenType} type
+   * @param {ClaimTokenType} type
    * @returns {{ name: string, value: unknown | null }}
    */
-  const getClaim = (claim: string, type: TokenType = 'access_token') => {
+  const getClaim = (claim: string, type: ClaimTokenType = 'access_token') => {
     return tokenClaims.getClaim(sessionManager, claim, type);
   };
 

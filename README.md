@@ -701,7 +701,7 @@ utilities above, to avoid duplication will present only there signatures here.
 getClaim(
   sessionManager: SessionManager, 
   claim: string, 
-  tokenType: TokenType
+  tokenType: ClaimTokenType
 ): { 
   name: string, 
   value: unknown | null,
@@ -710,8 +710,7 @@ getClaim(
 where
 
 ```ts
-type TokenType = 
-  | 'refresh_token' 
+type ClaimTokenType = 
   | 'access_token' 
   | 'id_token';
 ```
@@ -721,7 +720,7 @@ type TokenType =
 getClaimValue(
   sessionManager: SessionManager,
   claim: string, 
-  type: TokenType = 'access_token'
+  type: ClaimTokenType = 'access_token'
 ): unknown | null
 ```
 

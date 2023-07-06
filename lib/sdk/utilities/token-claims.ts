@@ -1,21 +1,21 @@
 import { type SessionManager } from '../session-managers';
 import { isTokenExpired } from './token-utils';
-import { type TokenType } from './types';
+import { type ClaimTokenType } from './types';
 
 /**
  * Method extracts the provided claim from the provided token type in the
  * current session.
  * @param {SessionManager} sessionManager
  * @param {string} claim
- * @param {TokenType} type
+ * @param {ClaimTokenType} type
  * @returns {unknown | null}
  */
 export const getClaimValue = (
   sessionManager: SessionManager,
   claim: string,
-  type: TokenType = 'access_token'
+  type: ClaimTokenType = 'access_token'
 ): unknown | null => {
-  const token = sessionManager.getSessionItem(type) as string | null;
+  const token = sessionManager.getSessionItem(type as string) as string | null;
   if (isTokenExpired(token)) {
     throw new Error(
       `No authentication credential found, when requesting claim ${claim}`
@@ -33,13 +33,13 @@ export const getClaimValue = (
  * current session, the returned object includes the provided claim.
  * @param {SessionManager} sessionManager
  * @param {string} claim
- * @param {TokenType} type
+ * @param {ClaimTokenType} type
  * @returns {{ name: string, value: unknown | null }}
  */
 export const getClaim = (
   sessionManager: SessionManager,
   claim: string,
-  type: TokenType = 'access_token'
+  type: ClaimTokenType = 'access_token'
 ) => {
   return { name: claim, value: getClaimValue(sessionManager, claim, type) };
 };
