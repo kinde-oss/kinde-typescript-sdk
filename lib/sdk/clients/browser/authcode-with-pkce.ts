@@ -1,13 +1,17 @@
-import type { UserType, TokenType, FlagType } from '../../utilities';
-import { type AuthURLOptions } from '../../oauth2-flows/types';
-import * as utilities from '../../utilities';
-
+import type { UserType, ClaimTokenType, FlagType } from '../../utilities';
 import { BrowserSessionManager } from '../../session-managers';
+import * as utilities from '../../utilities';
 
 import {
   type AuthorizationCodeOptions,
   AuthCodeWithPKCE,
 } from '../../oauth2-flows';
+
+import type {
+  CreateOrgURLOptions,
+  RegisterURLOptions,
+  LoginURLOptions,
+} from '../types';
 
 const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   const { featureFlags, tokenClaims } = utilities;
@@ -17,20 +21,23 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   /**
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
    * client above to return login url.
-   * @param {AuthURLOptions} options
+   * @param {LoginURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const login = async (options?: AuthURLOptions) => {
-    return await client.createAuthorizationURL(sessionManager, options);
+  const login = async (options?: LoginURLOptions) => {
+    return await client.createAuthorizationURL(sessionManager, {
+      ...options,
+      start_page: 'login',
+    });
   };
 
   /**
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
    * client above to return registration url.
-   * @param {AuthURLOptions} options
+   * @param {RegisterURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const register = async (options?: AuthURLOptions) => {
+  const register = async (options?: RegisterURLOptions) => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -41,10 +48,10 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
    * client above to return registration url with the `is_create_org` query param
    * set to true.
-   * @param {AuthURLOptions} options
+   * @param {CreateOrgURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const createOrg = async (options?: AuthURLOptions) => {
+  const createOrg = async (options?: CreateOrgURLOptions) => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -138,10 +145,13 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * Method extracts the provided claim from the provided token type in the
    * current session.
    * @param {string} claim
-   * @param {TokenType} type
+   * @param {ClaimTokenType} type
    * @returns {unknown | null}
    */
-  const getClaimValue = (claim: string, type: TokenType = 'access_token') => {
+  const getClaimValue = (
+    claim: string,
+    type: ClaimTokenType = 'access_token'
+  ) => {
     return tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
@@ -149,10 +159,10 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * Method extracts the provided claim from the provided token type in the
    * current session, the returned object includes the provided claim.
    * @param {string} claim
-   * @param {TokenType} type
+   * @param {ClaimTokenType} type
    * @returns {{ name: string, value: unknown | null }}
    */
-  const getClaim = (claim: string, type: TokenType = 'access_token') => {
+  const getClaim = (claim: string, type: ClaimTokenType = 'access_token') => {
     return tokenClaims.getClaim(sessionManager, claim, type);
   };
 

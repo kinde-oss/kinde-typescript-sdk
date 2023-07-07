@@ -144,7 +144,8 @@ the creation of a browser client is considerably more straightforward as mention
 below.
 
 ```ts
-import { createKindeServerClient, 
+import { 
+  createKindeBrowserClient, 
   type PKCEClientOptions,
 } from "@kinde-oss/kinde-typescript-sdk";
 
@@ -200,7 +201,8 @@ const client = createKindeServerClient<ACClient, ACClientOptions>(
 
 An example demonstrating this on the browser is provided below.
 ```ts
-import { createKindeServerClient, 
+import { 
+  createKindeBrowserClient, 
   type PKCEClientOptions,
 } from "@kinde-oss/kinde-typescript-sdk";
 
@@ -230,9 +232,11 @@ In addition to the above both clients expose certain utility methods for handlin
 token claims and feature flags we discuss them further below.
 
 ## Registration, Login and Logout
-We present an example below of using a Kinde server client for perfoming authentication. 
-A backend scenario of using `AUTHORIZATION_CODE` or `PKCE` with the express framework 
-may look something like the following.
+To demonstrate usage of the Kinde Server client. We present an **example** below of a 
+backend scenario where we attempt to integrate the SDK with the express framework,
+with the grant type of interest being either `AUTHORIZATION_CODE` or `PKCE`. This
+example will also show how we may make use of the `register`, `login` and `logout`
+methods exposed by the client.
 
 ```ts
 import { sessionManager } from "./middlewares";
@@ -281,10 +285,10 @@ itself, since this SDK is intended to be used both on the server and client side
 it performs only the necessary work required for authentication, we leave it to
 end-user to perform the necessary redirection.
 
-## Server session management
+## Framework agnostic server session management
 You may have noticed the `sessionManager` import in the above example it is 
-important to expand on this, the implementation of this middleware is as follows. 
-Why is this required ?
+important to expand on this, this is in fact a middleware the implementation of 
+which is provided below, To understand why is this required please keep reading.
 
 ```ts
 export const sessionManager = (
@@ -309,12 +313,13 @@ export const sessionManager = (
   next();
 }
 ```
-This SDK is intended to be framework agnostic, consequently we export a custom
-interface called `SessionManager` to enforce a contract between the end-user 
-framework and the SDK, this allows the SDK to interact with the session store
-which is external to the SDK in a controller manner, the definition of this
-interface is as follows.
+please note that the `express-session` package used above is used just to make the 
+implementation of this middleware easier and **is not a dependency of the SDK itself**.
 
+### The `SessionManager` interface
+This SDK is intended to be **framework agnostic**, consequently it exports a custom
+interface called `SessionManager` to enforce a contract between the end-user 
+framework and the SDK. The definition of which is presented below.
 ```ts
 interface SessionManager {
   getSessionItem: (itemKey: string) => unknown | null;
@@ -324,11 +329,24 @@ interface SessionManager {
 }
 ```
 
-To ensure that `req` object has the correct typings in order to implement this 
-inteface as in the above example, please create a `custom.d.ts` declaration file 
-in your `src` directory with the following definitions, please be sure to add 
-the `custom.d.ts` file to the `files` key of your project's `tsconfig.json` 
-file.
+This allows the SDK to interact with the *external* session store in a controller 
+manner. The `sessionManager` middleware that you see above is how this "contract" 
+manifests itself in the case of the `express` framework, depending on which 
+framework your project uses the *implementation of said contract will differ*
+*from the one presented above*.
+
+### Type considerations for the `SessionManager` interface
+Since the additional methods that are required by the `SessionManager` interface
+will be bound to the *request context* object (`req: Request` in the case of
+the `express` framework). We have to ensure our typescript setup is able to 
+accomodate this, *again it must be noted that this will differ depending on the 
+framework in question*.
+
+To achieve this in the case of the above `express` example, we make use of the
+concept of [**declaration merging**](https://www.typescriptlang.org/docs/handbook/declaration-merging.html).
+Start by creating a `custom.d.ts` declaration file in your `src` directory with 
+the following definitions, and add this file to the `files` key of your project's 
+`tsconfig.json`.
 
 ```ts
 import { SessionManager } from "@kinde-oss/kinde-typescript-sdk";
@@ -351,8 +369,8 @@ declare global {
 ```
 
 ## Securing Protected Routes
-We can also make use of the `isAuthenticated` method to arrive at a middleware for
-protected routes.
+Continuing on with the above exampmle in mind, we can also make use of the 
+`isAuthenticated` method to arrive at a middleware for protected routes.
 
 ```ts
 import { client } from "./kinde-client";
@@ -561,45 +579,68 @@ The app takes the following options as an argument.
 ```ts
 register(
   sessionManager: SessionManager, 
-  options?: AuthURLOptions
+  options?: LoginURLOptions
 ): Promise<URL>
 ```
 
 ```ts
-export interface AuthURLOptions {
-  start_page?: string;
-  is_create_org?: boolean;
+interface RegisterURLOptions {
   org_name?: string;
   org_code?: string;
   state?: string;
 }
 ```
-Notice that you are able to override the `state` parameter in `AuthURLOptions`,
+Notice that you are able to override the `state` parameter in `RegisterURLOptions`,
 if not provided then the SDK will assign a random string to this value, this
-applies to the `login` method discussed below as well.
+applies to the `login` method discussed below as well. In addition it must be 
+noted that interally this method will ensure the resulting registration URL has
+the `start_page` query parameter to `'registration'`.
 
 ### `login`
 The method returns the login URL, your app should redirect to this URL when 
 you are signing in a user, post authentication Kinde will redirect the user 
 back to your application at the callback route that you have configured. 
 The app takes the following options as argument.
+
 ```ts
 login(
   sessionManager: SessionManager, 
-  options?: AuthURLOptions
+  options?: LoginURLOptions
 ): Promise<URL>
 ```
 
+```ts
+interface LoginURLOptions {
+  org_name?: string;
+  org_code?: string;
+  state?: string;
+}
+```
+In addition it must be noted that interally this method will ensure that the
+resulting login URL has the `start_page` query parameter to `'login'`.
+
 ### `createOrg`
-This method will return a registration URL, with the `is_create_org` parameter,
-do make sure to provide the `org_name` as part of the `options` argument, this 
-will create the provide organization as part of the registration process.
+This method will return a registration URL, with the `is_create_org` parameter
+set to true, do make sure to provide the `org_name` as part of the `options` 
+argument, this will create the provide organization as part of the registration 
+process.
 ```ts
 createOrg(
   sessionManager: SessionManager, 
-  options?: AuthURLOptions
+  options?: CreateOrgURLOptions
 ): Promise<URL>
 ```
+
+```ts
+interface CreateOrgURLOptions {
+  org_name?: string;
+  org_code?: string;
+  state?: string;
+}
+```
+In addition it must be noted that as in the `registration` method above interally 
+this method will also set the `start_page` query parameter to `'registration'`.
+in the resulting URL.
 
 ### `handleRedirectToApp`
 This method accepts the callback URL in your application, to which Kinde redirects
@@ -676,7 +717,7 @@ utilities above, to avoid duplication will present only there signatures here.
 getClaim(
   sessionManager: SessionManager, 
   claim: string, 
-  tokenType: TokenType
+  tokenType: ClaimTokenType
 ): { 
   name: string, 
   value: unknown | null,
@@ -685,8 +726,7 @@ getClaim(
 where
 
 ```ts
-type TokenType = 
-  | 'refresh_token' 
+type ClaimTokenType = 
   | 'access_token' 
   | 'id_token';
 ```
@@ -696,7 +736,7 @@ type TokenType =
 getClaimValue(
   sessionManager: SessionManager,
   claim: string, 
-  type: TokenType = 'access_token'
+  type: ClaimTokenType = 'access_token'
 ): unknown | null
 ```
 
@@ -792,7 +832,7 @@ provide some examples below.
 
 ### `login`
 ```ts
-login(options?: AuthURLOptions): Promise<URL>
+login(options?: LoginURLOptions): Promise<URL>
 ```
 
 ### `getOrganization`

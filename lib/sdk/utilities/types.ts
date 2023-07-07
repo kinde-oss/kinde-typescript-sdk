@@ -13,6 +13,7 @@ export interface UserType {
 }
 
 export type TokenType = 'refresh_token' | 'access_token' | 'id_token';
+export type ClaimTokenType = 'access_token' | 'id_token';
 
 export enum FlagDataType {
   s = 'string',

@@ -2,6 +2,7 @@ import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
 import {
+  type AuthURLOptions,
   AuthorizationCode,
   type AuthorizationCodeOptions,
 } from '../../../sdk/oauth2-flows';
@@ -57,9 +58,9 @@ describe('AuthorizationCode', () => {
     });
 
     it('overrides optional url search params if they are provided', async () => {
-      const expectedParams = {
+      const expectedParams: AuthURLOptions = {
         is_create_org: true,
-        start_page: 'test-start-page',
+        start_page: 'registration',
         org_code: 'test-org-code',
         org_name: 'test-org-name',
       };
