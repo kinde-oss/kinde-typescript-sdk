@@ -109,11 +109,6 @@ const createAuthorizationCodeClient = (
   const getUserProfile = async (
     sessionManager: SessionManager
   ): Promise<UserType> => {
-    if (!(await isAuthenticated(sessionManager))) {
-      throw new Error(
-        'Cannot fetch user profile, no authentication credential found'
-      );
-    }
     return await client.getUserProfile(sessionManager);
   };
 

@@ -86,11 +86,6 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @returns {Promise<UserType>}
    */
   const getUserProfile = async (): Promise<UserType> => {
-    if (!(await isAuthenticated())) {
-      throw new Error(
-        'Cannot fetch user profile, no authentication credential found'
-      );
-    }
     return await client.getUserProfile(sessionManager);
   };
 
