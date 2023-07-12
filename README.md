@@ -264,11 +264,19 @@ app.get("/callback", async (req, res) => {
 });
 
 app.get("/register", async (req, res) => {
+  if (await client.isAuthenticated(req)) {
+    return res.send({ message: "You are already authenticated !" });
+  }
+
   const registrationURL = (await client.register(req)).toString();
   res.redirect(registrationURL);
 });
 
 app.get("/login", async (req, res) => {
+  if (await client.isAuthenticated(req)) {
+    return res.send({ message: "You are already authenticated !" });
+  }
+
   const loginURL = (await client.login(req)).toString();
   res.redirect(loginURL);
 });
@@ -401,7 +409,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/user", isAuthenticated, async (req, res) => {
-  res.send({ user: await client.getUser(req) });
+  // Protected route implementation
 });
 ```
 ## Getting User Information
