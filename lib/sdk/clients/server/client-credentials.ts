@@ -14,7 +14,7 @@ const createCCClient = (options: CCClientOptions) => {
    */
   const logout = (sessionManager: SessionManager) => {
     sessionManager.destroySession();
-    return client.logoutEndpoint;
+    return new URL(client.logoutEndpoint);
   };
 
   /**

@@ -274,7 +274,7 @@ app.get("/login", async (req, res) => {
 });
 
 app.get("/logout", async (req, res) => {
-  const logoutURL = client.logout(req);
+  const logoutURL = client.logout(req).toString();
   res.redirect(logoutURL);
 });
 ```
@@ -659,7 +659,7 @@ the responsibility of the end-user application to redirect the user to this URL
 to terminate the user's session.
 
 ```ts
-logout(sessionManager: SessionManager): string 
+logout(sessionManager: SessionManager): URL
 ```
 
 ### `isAuthenticated`
