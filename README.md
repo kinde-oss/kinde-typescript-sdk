@@ -224,7 +224,6 @@ will expose different methods, however certain methods are common to all oauth2 
 which we have listed below, for details on what these methods are please refere 
 to the detailed SDK reference provided below.
 
-- `isAuthenticated()`
 - `getToken()`
 - `logout()`
 
@@ -380,19 +379,19 @@ import type {
   NextFunction 
 } from "express";
 
-export const isAuthenticated = (
+export const isAuthenticated = async (
   req: Request, 
   res: Response, 
   next: NextFunction
 ) => {
-  if (client.isAuthenticated(req)) {
+  if (!(await client.isAuthenticated(req))) {
     return next();
   }
   next(new Error("not authenticated"));
 }
 ```
 
-Once we have the above middleware in place our route protected route could then look 
+Once we have the above middleware in place our protected route could then look 
 something like the following.
 ```ts
 import { isAuthenticated } from "./middlewares";
@@ -402,7 +401,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/user", isAuthenticated, async (req, res) => {
-  res.send({ user: client.getUser(req) });
+  res.send({ user: await client.getUser(req) });
 });
 ```
 ## Getting User Information
@@ -525,8 +524,8 @@ client.getClaimValue(req, 'aud')
 ```
 
 By default the `getClaim` and `getClaimValue` look for the requested claim in the 
-access token however you can provide a second parameter to change target token for
-example. 
+access token however you can provide a second parameter to change the target token 
+for example. 
 ```ts
 client.getClaim(req, 'email', 'id_token');
 // { name: "email", value: "first.last@test.com" }
@@ -665,9 +664,11 @@ logout(sessionManager: SessionManager): string
 
 ### `isAuthenticated`
 This method indicates whether an **unexpired access token** exists in memory,
-effectively communicating if some user is presently signed in or not.
+effectively communicating if some user is presently signed in or not, in the
+event that the token is expired it first attempts to refresh first, if the 
+refresh fails `false` is returned.
 ```ts
-isAuthenticated(sessionManager: SessionManager): boolean
+isAuthenticated(sessionManager: SessionManager): Promise<boolean>
 ```
 
 ### `getUser`

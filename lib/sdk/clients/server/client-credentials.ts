@@ -7,17 +7,6 @@ const createCCClient = (options: CCClientOptions) => {
   const client = new ClientCredentials(options);
 
   /**
-   * Method extracts the access token from the current session and checks if the
-   * token is expired or not.
-   * @param {SessionManager} sessionManager
-   * @returns {boolean}
-   */
-  const isAuthenticated = (sessionManager: SessionManager) => {
-    const accessToken = utilities.getAccessToken(sessionManager);
-    return !utilities.isTokenExpired(accessToken);
-  };
-
-  /**
    * Method clears the current session and returns the logout URL, redirecting
    * to which will clear the user's session on the authorization server.
    * @param {SessionManager} sessionManager
@@ -41,7 +30,6 @@ const createCCClient = (options: CCClientOptions) => {
   return {
     ...utilities.featureFlags,
     ...utilities.tokenClaims,
-    isAuthenticated,
     getToken,
     logout,
   };

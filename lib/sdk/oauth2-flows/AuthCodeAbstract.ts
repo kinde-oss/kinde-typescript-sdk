@@ -121,6 +121,22 @@ export abstract class AuthCodeAbstract {
   }
 
   /**
+   * Method returns a boolean indicating if the access token in session is expired
+   * or not, in the event the token is expired it makes use of the `getToken` method
+   * above to first refresh it, in the event refresh fails false is returned.
+   * @param sessionManager
+   * @returns {Promise<boolean>}
+   */
+  public async isAuthenticated(sessionManager: SessionManager) {
+    try {
+      await this.getToken(sessionManager);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Method makes use of the user profile V2 endpoint to fetch the authenticated
    * user's profile information.
    * @param {SessionManager} sessionManager

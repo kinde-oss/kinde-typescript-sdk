@@ -70,13 +70,13 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   };
 
   /**
-   * Method extracts the access token from the current session and checks if the
-   * token is expired or not.
+   * Method acts as a wrapper around the `isAuthenticated` method provided by the
+   * `AuthCodeWithPKCE` client created above.
+   * @param {SessionManager} sessionManager
    * @returns {boolean}
    */
-  const isAuthenticated = () => {
-    const accessToken = utilities.getAccessToken(sessionManager);
-    return !utilities.isTokenExpired(accessToken);
+  const isAuthenticated = async () => {
+    return await client.isAuthenticated(sessionManager);
   };
 
   /**
@@ -86,11 +86,6 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @returns {Promise<UserType>}
    */
   const getUserProfile = async (): Promise<UserType> => {
-    if (!isAuthenticated()) {
-      throw new Error(
-        'Cannot fetch user profile, no authentication credential found'
-      );
-    }
     return await client.getUserProfile(sessionManager);
   };
 
@@ -99,8 +94,8 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * exception if current user is not authenticated.
    * @returns {UserType}
    */
-  const getUser = () => {
-    if (!isAuthenticated()) {
+  const getUser = async () => {
+    if (!(await isAuthenticated())) {
       throw new Error(
         'Cannot get user details, no authentication credential found'
       );

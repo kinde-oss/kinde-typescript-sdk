@@ -90,14 +90,13 @@ const createAuthorizationCodeClient = (
   };
 
   /**
-   * Method extracts the access token from the current session and checks if the
-   * token is expired or not.
+   * Method acts as a wrapper around the `isAuthenticated` method provided by the
+   * `AuthCodeAbstract` client created above.
    * @param {SessionManager} sessionManager
    * @returns {boolean}
    */
-  const isAuthenticated = (sessionManager: SessionManager) => {
-    const accessToken = utilities.getAccessToken(sessionManager);
-    return !utilities.isTokenExpired(accessToken);
+  const isAuthenticated = async (sessionManager: SessionManager) => {
+    return await client.isAuthenticated(sessionManager);
   };
 
   /**
@@ -110,11 +109,6 @@ const createAuthorizationCodeClient = (
   const getUserProfile = async (
     sessionManager: SessionManager
   ): Promise<UserType> => {
-    if (!isAuthenticated(sessionManager)) {
-      throw new Error(
-        'Cannot fetch user profile, no authentication credential found'
-      );
-    }
     return await client.getUserProfile(sessionManager);
   };
 
@@ -124,8 +118,8 @@ const createAuthorizationCodeClient = (
    * @param {SessionManager} sessionManager
    * @returns {UserType}
    */
-  const getUser = (sessionManager: SessionManager) => {
-    if (!isAuthenticated(sessionManager)) {
+  const getUser = async (sessionManager: SessionManager) => {
+    if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
         'Cannot get user details, no authentication credential found'
       );
