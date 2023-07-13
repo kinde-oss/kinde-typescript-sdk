@@ -163,6 +163,7 @@ describe('AuthCodeWitPKCE', () => {
       );
       sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      sessionManager.setSessionItem('id_token', 'id_token');
 
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -184,7 +185,7 @@ describe('AuthCodeWitPKCE', () => {
       );
     });
 
-    it('commits new tokens to memory if new tokens are fetched', async () => {
+    it('commits only new access token to memory when new tokens are fetched', async () => {
       const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
       const newRefreshToken = 'new_refresh_token';
@@ -203,6 +204,7 @@ describe('AuthCodeWitPKCE', () => {
       );
       sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      sessionManager.setSessionItem('id_token', 'id_token');
 
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
@@ -212,8 +214,8 @@ describe('AuthCodeWitPKCE', () => {
       const foundIdToken = sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
-      expect(foundRefreshToken).toBe(newRefreshToken);
-      expect(foundIdToken).toBe(newIdToken.token);
+      expect(foundRefreshToken).toBe('refresh_token');
+      expect(foundIdToken).toBe('id_token');
     });
   });
 });

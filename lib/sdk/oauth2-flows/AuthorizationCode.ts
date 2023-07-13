@@ -49,9 +49,9 @@ export class AuthorizationCode extends AuthCodeAbstract {
    * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
    * further explanation.
    * @param {SessionManager} sessionManager
-   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   * @returns {Promise<string>}
    */
-  protected async refreshTokens(sessionManager: SessionManager) {
+  protected async refreshAccessToken(sessionManager: SessionManager) {
     const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -61,8 +61,9 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(body);
-    utilities.commitTokensToMemory(sessionManager, tokens);
-    return tokens;
+    const accessToken = tokens.access_token;
+    utilities.commitTokenToMemory(sessionManager, accessToken, 'access_token');
+    return accessToken;
   }
 
   /**

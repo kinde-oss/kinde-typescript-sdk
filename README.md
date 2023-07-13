@@ -264,17 +264,25 @@ app.get("/callback", async (req, res) => {
 });
 
 app.get("/register", async (req, res) => {
+  if (await client.isAuthenticated(req)) {
+    return res.send({ message: "You are already authenticated !" });
+  }
+
   const registrationURL = (await client.register(req)).toString();
   res.redirect(registrationURL);
 });
 
 app.get("/login", async (req, res) => {
+  if (await client.isAuthenticated(req)) {
+    return res.send({ message: "You are already authenticated !" });
+  }
+
   const loginURL = (await client.login(req)).toString();
   res.redirect(loginURL);
 });
 
 app.get("/logout", async (req, res) => {
-  const logoutURL = client.logout(req);
+  const logoutURL = client.logout(req).toString();
   res.redirect(logoutURL);
 });
 ```
@@ -401,7 +409,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/user", isAuthenticated, async (req, res) => {
-  res.send({ user: await client.getUser(req) });
+  // Protected route implementation
 });
 ```
 ## Getting User Information
@@ -659,7 +667,7 @@ the responsibility of the end-user application to redirect the user to this URL
 to terminate the user's session.
 
 ```ts
-logout(sessionManager: SessionManager): string 
+logout(sessionManager: SessionManager): URL
 ```
 
 ### `isAuthenticated`
