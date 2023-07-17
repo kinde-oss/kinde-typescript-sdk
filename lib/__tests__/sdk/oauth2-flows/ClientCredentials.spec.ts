@@ -42,6 +42,22 @@ describe('ClientCredentials', () => {
       mocks.fetchClient.mockClear();
     });
 
+    it('throws an exception when fetching access token returns an error response', async () => {
+      const errorDescription = 'error_description';
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'error',
+          [errorDescription]: errorDescription,
+        }),
+      });
+
+      const client = new ClientCredentials(clientConfig);
+      await expect(async () => {
+        await client.getToken(sessionManager);
+      }).rejects.toThrow(errorDescription);
+      expect(mocks.fetchClient).toHaveBeenCalled();
+    });
+
     it('return access token if an unexpired token is available in memory', async () => {
       const { authDomain } = clientConfig;
       const { token: mockAccessToken } = mocks.getMockAccessToken(authDomain);

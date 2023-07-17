@@ -1,7 +1,12 @@
-import type { ClientCredentialsOptions, OAuth2CCTokenResponse } from './types';
 import { type SessionManager } from '../session-managers';
 import * as utilities from '../utilities';
 import { getSDKHeader } from '../version';
+
+import type {
+  OAuth2CCTokenErrorResponse,
+  ClientCredentialsOptions,
+  OAuth2CCTokenResponse,
+} from './types';
 
 /**
  * Class provides implementation for the client credentials OAuth2.0 flow.
@@ -33,7 +38,7 @@ export class ClientCredentials {
       return accessToken;
     }
 
-    const payload = await this.fetchAccessTokenFor();
+    const payload = await this.fetchAccessTokenFor(sessionManager);
     utilities.commitTokenToMemory(
       sessionManager,
       payload.access_token,
@@ -44,9 +49,12 @@ export class ClientCredentials {
 
   /**
    * Method implements logic for requesting access token using token endpoint.
+   * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CCTokenResponse>}
    */
-  private async fetchAccessTokenFor(): Promise<OAuth2CCTokenResponse> {
+  private async fetchAccessTokenFor(
+    sessionManager: SessionManager
+  ): Promise<OAuth2CCTokenResponse> {
     const body = this.generateTokenURLParams();
     const headers = new Headers();
     headers.append(...getSDKHeader());
@@ -56,7 +64,19 @@ export class ClientCredentials {
     );
     const config: RequestInit = { method: 'POST', headers, body };
     const response = await fetch(this.tokenEndpoint, config);
-    return (await response.json()) as OAuth2CCTokenResponse;
+    const payload = (await response.json()) as
+      | OAuth2CCTokenErrorResponse
+      | OAuth2CCTokenResponse;
+
+    const errorPayload = payload as OAuth2CCTokenErrorResponse;
+    if (errorPayload.error !== undefined) {
+      sessionManager.destroySession();
+      const errorDescription = errorPayload.error_description;
+      const message = errorDescription ?? errorPayload.error;
+      throw new Error(message);
+    }
+
+    return payload as OAuth2CCTokenResponse;
   }
 
   /**

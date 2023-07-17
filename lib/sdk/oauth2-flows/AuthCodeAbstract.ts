@@ -5,6 +5,7 @@ import * as utilities from '../utilities';
 import { getSDKHeader } from '../version';
 
 import type {
+  OAuth2CodeExchangeErrorResponse,
   OAuth2CodeExchangeResponse,
   AuthorizationCodeOptions,
   AuthURLOptions,
@@ -180,11 +181,13 @@ export abstract class AuthCodeAbstract {
   /**
    * Method implements logic for fetching tokens from the authorization server using
    * the provided body, the `useCookies` is used exclusively on the browser.
+   * @param {SessionManager} sessionManager
    * @param {URLSearchParams} body
    * @param {boolean} useCookies
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   protected async fetchTokensFor(
+    sessionManager: SessionManager,
     body: URLSearchParams,
     useCookies: boolean = false
   ): Promise<OAuth2CodeExchangeResponse> {
@@ -202,7 +205,19 @@ export abstract class AuthCodeAbstract {
       credentials: useCookies ? 'include' : undefined,
     };
     const response = await fetch(this.tokenEndpoint, config);
-    return await response.json();
+    const payload = (await response.json()) as
+      | OAuth2CodeExchangeErrorResponse
+      | OAuth2CodeExchangeResponse;
+
+    const errorPayload = payload as OAuth2CodeExchangeErrorResponse;
+    if (errorPayload.error !== undefined) {
+      sessionManager.destroySession();
+      const errorDescription = errorPayload.error_description;
+      const message = errorDescription ?? errorPayload.error;
+      throw new Error(message);
+    }
+
+    return payload as OAuth2CodeExchangeResponse;
   }
 
   /**

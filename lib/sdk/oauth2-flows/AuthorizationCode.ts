@@ -60,7 +60,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
       refresh_token: refreshToken!,
     });
 
-    const tokens = await this.fetchTokensFor(body);
+    const tokens = await this.fetchTokensFor(sessionManager, body);
     utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
@@ -95,7 +95,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     try {
-      return await this.fetchTokensFor(body);
+      return await this.fetchTokensFor(sessionManager, body);
     } finally {
       sessionManager.removeSessionItem(stateKey);
     }

@@ -89,6 +89,29 @@ describe('AuthCodeWitPKCE', () => {
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
 
+    it('throws an exception when fetching tokens returns an error response', async () => {
+      const callbackURL = new URL(
+        `${clientConfig.redirectURL}?state=state&code=code`
+      );
+      const errorDescription = 'error_description';
+      const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-state`;
+      sessionManager.setSessionItem(
+        codeVerifierKey,
+        JSON.stringify({ codeVerifier: 'code-verifier' })
+      );
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'error',
+          [errorDescription]: errorDescription,
+        }),
+      });
+
+      await expect(async () => {
+        await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
+      }).rejects.toThrow(errorDescription);
+      expect(mocks.fetchClient).toHaveBeenCalled();
+    });
+
     it('saves tokens to memory store after exchanging auth code for tokens', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       const mockIdToken = mocks.getMockIdToken(clientConfig.authDomain);

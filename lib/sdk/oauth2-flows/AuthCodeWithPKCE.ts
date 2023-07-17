@@ -80,7 +80,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       client_id: this.config.clientId,
     });
 
-    const tokens = await this.fetchTokensFor(body, true);
+    const tokens = await this.fetchTokensFor(sessionManager, body, true);
     utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
@@ -132,7 +132,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       : sessionManager.removeSessionItem;
 
     try {
-      return await this.fetchTokensFor(body);
+      return await this.fetchTokensFor(sessionManager, body);
     } finally {
       removeItem.call(sessionManager, this.getCodeVerifierKey(state!));
     }
