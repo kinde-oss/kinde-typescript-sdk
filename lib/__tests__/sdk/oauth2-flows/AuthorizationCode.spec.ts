@@ -176,7 +176,7 @@ describe('AuthorizationCode', () => {
       }).rejects.toThrow('Cannot persist session no valid refresh token found');
     });
 
-    it('commits only new access token to memory when new tokens are fetched', async () => {
+    it('fetches new tokens if access token is expired and refresh token is available', async () => {
       const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
@@ -193,7 +193,6 @@ describe('AuthorizationCode', () => {
       );
       sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
-      sessionManager.setSessionItem('id_token', 'id_token');
 
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -235,7 +234,6 @@ describe('AuthorizationCode', () => {
       );
       sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
-      sessionManager.setSessionItem('id_token', 'id_token');
 
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
@@ -245,8 +243,8 @@ describe('AuthorizationCode', () => {
       const foundIdToken = sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
-      expect(foundRefreshToken).toBe('refresh_token');
-      expect(foundIdToken).toBe('id_token');
+      expect(foundRefreshToken).toBe(newRefreshToken);
+      expect(foundIdToken).toBe(newIdToken.token);
     });
   });
 

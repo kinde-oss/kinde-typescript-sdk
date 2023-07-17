@@ -71,11 +71,11 @@ export abstract class AuthCodeAbstract {
    * Abstract method will implement logic in child classes for refreshing access token
    * using refresh token available in current session.
    * @param {SessionManager} sessionManager
-   * @returns {Promise<string>}
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected abstract refreshAccessToken(
+  protected abstract refreshTokens(
     sessionManager: SessionManager
-  ): Promise<string>;
+  ): Promise<OAuth2CodeExchangeResponse>;
 
   /**
    * Method handles redirection logic to after authorization server redirects back
@@ -116,7 +116,8 @@ export abstract class AuthCodeAbstract {
       throw Error('Cannot persist session no valid refresh token found');
     }
 
-    return await this.refreshAccessToken(sessionManager);
+    const tokens = await this.refreshTokens(sessionManager);
+    return tokens.access_token;
   }
 
   /**
