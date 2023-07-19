@@ -4,6 +4,11 @@ export enum GrantType {
   PKCE = 'PKCE',
 }
 
+export interface OAuth2CodeExchangeErrorResponse {
+  error?: string;
+  error_description?: string;
+}
+
 export interface OAuth2CodeExchangeResponse {
   access_token: string;
   expires_in: string;
@@ -11,6 +16,11 @@ export interface OAuth2CodeExchangeResponse {
   refresh_token: string;
   id_token: string;
   scope: string;
+}
+
+export interface OAuth2CCTokenErrorResponse {
+  error?: string;
+  error_description?: string;
 }
 
 export interface OAuth2CCTokenResponse {

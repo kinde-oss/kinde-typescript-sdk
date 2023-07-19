@@ -49,9 +49,9 @@ export class AuthorizationCode extends AuthCodeAbstract {
    * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
    * further explanation.
    * @param {SessionManager} sessionManager
-   * @returns {Promise<string>}
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected async refreshAccessToken(sessionManager: SessionManager) {
+  protected async refreshTokens(sessionManager: SessionManager) {
     const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -60,10 +60,9 @@ export class AuthorizationCode extends AuthCodeAbstract {
       refresh_token: refreshToken!,
     });
 
-    const tokens = await this.fetchTokensFor(body);
-    const accessToken = tokens.access_token;
-    utilities.commitTokenToMemory(sessionManager, accessToken, 'access_token');
-    return accessToken;
+    const tokens = await this.fetchTokensFor(sessionManager, body);
+    utilities.commitTokensToMemory(sessionManager, tokens);
+    return tokens;
   }
 
   /**
@@ -96,7 +95,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     try {
-      return await this.fetchTokensFor(body);
+      return await this.fetchTokensFor(sessionManager, body);
     } finally {
       sessionManager.removeSessionItem(stateKey);
     }
