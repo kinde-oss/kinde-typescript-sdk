@@ -35,7 +35,7 @@ const commitUserToMemoryFromToken = (
     id: idTokenPayload.sub,
   };
 
-  sessionManager.setSessionItem('user', JSON.stringify(user));
+  sessionManager.setSessionItem('user', user);
 };
 
 /**

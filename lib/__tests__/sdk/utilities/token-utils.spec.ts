@@ -50,9 +50,7 @@ describe('token-utils', () => {
         mocks.getMockIdToken(domain);
       commitTokenToMemory(sessionManager, mockIdToken, 'id_token');
 
-      const storedUser = JSON.parse(
-        sessionManager.getSessionItem('user') as string
-      );
+      const storedUser = sessionManager.getSessionItem('user');
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
