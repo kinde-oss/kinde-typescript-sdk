@@ -82,7 +82,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     const storedState = sessionManager.getSessionItem(stateKey) as
       | string
       | null;
-    if (storedState === null || storedState !== state) {
+    if (!storedState || storedState !== state) {
       throw new Error('Authentication flow state not found');
     }
 

@@ -128,7 +128,7 @@ export const commitUserToMemory = (
  * @returns {boolean} is expired or not
  */
 export const isTokenExpired = (token: string | null): boolean => {
-  if (token === null) return true;
+  if (!token) return true;
   const currentUnixTime = Math.floor(Date.now() / 1000);
   const tokenPayload = getTokenPayload(token);
   return currentUnixTime >= tokenPayload.exp;

@@ -113,7 +113,7 @@ export abstract class AuthCodeAbstract {
     }
 
     const refreshToken = utilities.getRefreshToken(sessionManager);
-    if (refreshToken === null && isNodeEnvironment()) {
+    if (!refreshToken && isNodeEnvironment()) {
       throw Error('Cannot persist session no valid refresh token found');
     }
 
@@ -171,7 +171,7 @@ export abstract class AuthCodeAbstract {
     const error = searchParams.get('error');
     const code = searchParams.get('code');
 
-    if (error !== null) {
+    if (error) {
       throw new Error(`Authorization server reported an error: ${error}`);
     }
 
@@ -210,7 +210,7 @@ export abstract class AuthCodeAbstract {
       | OAuth2CodeExchangeResponse;
 
     const errorPayload = payload as OAuth2CodeExchangeErrorResponse;
-    if (errorPayload.error !== undefined) {
+    if (errorPayload.error) {
       sessionManager.destroySession();
       const errorDescription = errorPayload.error_description;
       const message = errorDescription ?? errorPayload.error;
@@ -235,19 +235,19 @@ export abstract class AuthCodeAbstract {
       this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES
     );
 
-    if (this.config.audience !== undefined) {
+    if (this.config.audience) {
       searchParams.append('audience', this.config.audience);
     }
 
-    if (options.start_page !== undefined) {
+    if (options.start_page) {
       searchParams.append('start_page', options.start_page);
     }
 
-    if (options.org_code !== undefined) {
+    if (options.org_code) {
       searchParams.append('org_code', options.org_code);
     }
 
-    if (options.is_create_org !== undefined) {
+    if (options.is_create_org) {
       searchParams.append('org_name', options.org_name ?? '');
       searchParams.append('is_create_org', 'true');
     }

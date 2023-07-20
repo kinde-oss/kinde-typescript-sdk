@@ -34,7 +34,7 @@ export class ClientCredentials {
   async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = utilities.getAccessToken(sessionManager);
     const isTokenExpired = utilities.isTokenExpired(accessToken);
-    if (accessToken !== null && !isTokenExpired) {
+    if (accessToken && !isTokenExpired) {
       return accessToken;
     }
 
@@ -69,7 +69,7 @@ export class ClientCredentials {
       | OAuth2CCTokenResponse;
 
     const errorPayload = payload as OAuth2CCTokenErrorResponse;
-    if (errorPayload.error !== undefined) {
+    if (errorPayload.error) {
       sessionManager.destroySession();
       const errorDescription = errorPayload.error_description;
       const message = errorDescription ?? errorPayload.error;
@@ -92,7 +92,7 @@ export class ClientCredentials {
       client_secret: this.config.clientSecret,
     });
 
-    if (this.config.audience !== undefined) {
+    if (this.config.audience) {
       searchParams.append('audience', this.config.audience);
     }
 

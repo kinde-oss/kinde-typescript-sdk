@@ -99,7 +99,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = super.getCallbackURLParams(callbackURL);
     const storedStateKey = this.getCodeVerifierKey(state!);
-    if (storedStateKey === null || !storedStateKey.endsWith(state!)) {
+    if (!storedStateKey?.endsWith(state!)) {
       throw new Error('Received state does not match stored state');
     }
 
@@ -111,7 +111,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     const storedState = getItem.call(sessionManager, storedStateKey) as
       | string
       | null;
-    if (storedState === null) {
+    if (!storedState) {
       throw new Error('Stored state not found');
     }
 
