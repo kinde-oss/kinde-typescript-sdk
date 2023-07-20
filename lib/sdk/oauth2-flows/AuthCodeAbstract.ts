@@ -107,6 +107,10 @@ export abstract class AuthCodeAbstract {
    */
   public async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = utilities.getAccessToken(sessionManager);
+    if (!accessToken) {
+      throw new Error('No authentication credential found');
+    }
+
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
       return accessToken!;
