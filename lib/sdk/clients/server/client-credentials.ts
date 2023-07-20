@@ -10,9 +10,9 @@ const createCCClient = (options: CCClientOptions) => {
    * Method clears the current session and returns the logout URL, redirecting
    * to which will clear the user's session on the authorization server.
    * @param {SessionManager} sessionManager
-   * @returns {string}
+   * @returns {URL}
    */
-  const logout = (sessionManager: SessionManager) => {
+  const logout = (sessionManager: SessionManager): URL => {
     sessionManager.destroySession();
     return new URL(client.logoutEndpoint);
   };

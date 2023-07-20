@@ -35,7 +35,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
   async createAuthorizationURL(
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
-  ) {
+  ): Promise<URL> {
     this.state = options.state ?? utilities.generateRandomString();
     sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, this.state);
     const authURL = new URL(this.authorizationEndpoint);
@@ -51,7 +51,9 @@ export class AuthorizationCode extends AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected async refreshTokens(sessionManager: SessionManager) {
+  protected async refreshTokens(
+    sessionManager: SessionManager
+  ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -91,7 +93,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
       client_id: this.config.clientId,
       client_secret: this.clientSecret,
       redirect_uri: this.config.redirectURL,
-      code: code!,
+      code,
     });
 
     try {
@@ -107,7 +109,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
    * for further explanation.
    * @returns {URLSearchParams} Required query parameters
    */
-  protected getBaseAuthURLParams() {
+  protected getBaseAuthURLParams(): URLSearchParams {
     return new URLSearchParams({
       state: this.state!,
       client_id: this.config.clientId,

@@ -89,7 +89,7 @@ export abstract class AuthCodeAbstract {
   async handleRedirectFromAuthDomain(
     sessionManager: SessionManager,
     callbackURL: URL
-  ) {
+  ): Promise<void> {
     const tokens = await this.exchangeAuthCodeForTokens(
       sessionManager,
       callbackURL
@@ -105,7 +105,7 @@ export abstract class AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<string>}
    */
-  public async getToken(sessionManager: SessionManager) {
+  public async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = utilities.getAccessToken(sessionManager);
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
@@ -128,7 +128,7 @@ export abstract class AuthCodeAbstract {
    * @param sessionManager
    * @returns {Promise<boolean>}
    */
-  public async isAuthenticated(sessionManager: SessionManager) {
+  public async isAuthenticated(sessionManager: SessionManager): Promise<boolean> {
     try {
       await this.getToken(sessionManager);
       return true;
@@ -143,7 +143,7 @@ export abstract class AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<UserType>}
    */
-  async getUserProfile(sessionManager: SessionManager) {
+  async getUserProfile(sessionManager: SessionManager): Promise<UserType> {
     const accessToken = await this.getToken(sessionManager);
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${accessToken}`);
@@ -165,11 +165,11 @@ export abstract class AuthCodeAbstract {
    * @param {URL} callbackURL
    * @returns {[string, string]} c
    */
-  protected getCallbackURLParams(callbackURL: URL) {
+  protected getCallbackURLParams(callbackURL: URL): [string, string] {
     const searchParams = new URLSearchParams(callbackURL.search);
     const state = searchParams.get('state')!;
     const error = searchParams.get('error');
-    const code = searchParams.get('code');
+    const code = searchParams.get('code')!;
 
     if (error) {
       throw new Error(`Authorization server reported an error: ${error}`);

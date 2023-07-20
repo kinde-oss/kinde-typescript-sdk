@@ -1,4 +1,3 @@
-import type { UserType, ClaimTokenType, FlagType } from '../../utilities';
 import { BrowserSessionManager } from '../../session-managers';
 import * as utilities from '../../utilities';
 
@@ -6,6 +5,13 @@ import {
   type AuthorizationCodeOptions,
   AuthCodeWithPKCE,
 } from '../../oauth2-flows';
+
+import type {
+  UserType,
+  ClaimTokenType,
+  GetFlagType,
+  FlagType,
+} from '../../utilities';
 
 import type {
   CreateOrgURLOptions,
@@ -24,7 +30,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {LoginURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const login = async (options?: LoginURLOptions) => {
+  const login = async (options?: LoginURLOptions): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'login',
@@ -37,7 +43,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {RegisterURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const register = async (options?: RegisterURLOptions) => {
+  const register = async (options?: RegisterURLOptions): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -51,7 +57,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {CreateOrgURLOptions} options
    * @returns {Promise<URL>} required authorization URL
    */
-  const createOrg = async (options?: CreateOrgURLOptions) => {
+  const createOrg = async (options?: CreateOrgURLOptions): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -65,17 +71,16 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {URL} callbackURL
    * @returns {Promise<void>}
    */
-  const handleRedirectToApp = async (callbackURL: URL) => {
+  const handleRedirectToApp = async (callbackURL: URL): Promise<void> => {
     await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
   };
 
   /**
    * Method acts as a wrapper around the `isAuthenticated` method provided by the
    * `AuthCodeWithPKCE` client created above.
-   * @param {SessionManager} sessionManager
-   * @returns {boolean}
+   * @returns {Promise<boolean>}
    */
-  const isAuthenticated = async () => {
+  const isAuthenticated = async (): Promise<boolean> => {
     return await client.isAuthenticated(sessionManager);
   };
 
@@ -92,9 +97,9 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   /**
    * Method extracts the current user's details from the current session, raises
    * exception if current user is not authenticated.
-   * @returns {UserType}
+   * @returns {Promise<UserType>}
    */
-  const getUser = async () => {
+  const getUser = async (): Promise<UserType> => {
     if (!(await isAuthenticated())) {
       throw new Error(
         'Cannot get user details, no authentication credential found'
@@ -110,7 +115,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {number} defaultValue
    * @returns {number} integer flag value
    */
-  const getIntegerFlag = (code: string, defaultValue?: number) => {
+  const getIntegerFlag = (code: string, defaultValue?: number): number => {
     return featureFlags.getIntegerFlag(sessionManager, code, defaultValue);
   };
 
@@ -121,7 +126,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {string} defaultValue
    * @returns {string} string flag value
    */
-  const getStringFlag = (code: string, defaultValue?: string) => {
+  const getStringFlag = (code: string, defaultValue?: string): string => {
     return featureFlags.getStringFlag(sessionManager, code, defaultValue);
   };
 
@@ -132,7 +137,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {boolean} defaultValue
    * @returns {boolean} boolean flag value
    */
-  const getBooleanFlag = (code: string, defaultValue?: boolean) => {
+  const getBooleanFlag = (code: string, defaultValue?: boolean): boolean => {
     return featureFlags.getBooleanFlag(sessionManager, code, defaultValue);
   };
 
@@ -146,7 +151,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
   const getClaimValue = (
     claim: string,
     type: ClaimTokenType = 'access_token'
-  ) => {
+  ): unknown | null => {
     return tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
@@ -157,7 +162,10 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * @param {ClaimTokenType} type
    * @returns {{ name: string, value: unknown | null }}
    */
-  const getClaim = (claim: string, type: ClaimTokenType = 'access_token') => {
+  const getClaim = (
+    claim: string,
+    type: ClaimTokenType = 'access_token'
+  ): { name: string; value: unknown | null } => {
     return tokenClaims.getClaim(sessionManager, claim, type);
   };
 
@@ -166,38 +174,40 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * a boolean in the returned object indicating if the provided permission is
    * present in the session.
    * @param {string} name
-   * @returns {{ orgCode: string, isGranted: boolean }}
+   * @returns {{ orgCode: string | null, isGranted: boolean }}
    */
-  const getPermission = (name: string) => {
+  const getPermission = (
+    name: string
+  ): { orgCode: string | null; isGranted: boolean } => {
     return tokenClaims.getPermission(sessionManager, name);
   };
 
   /**
    * Method extracts the organization code from the current session.
-   * @param {SessionManager} sessionManager
-   * @returns {{ orgCode: string }}
+   * @returns {{ orgCode: string | null }}
    */
-  const getOrganization = () => {
+  const getOrganization = (): { orgCode: string | null } => {
     return tokenClaims.getOrganization(sessionManager);
   };
 
   /**
    * Method extracts all organization codes from the id token in the current
    * session.
-   * @param {SessionManager} sessionManager
    * @returns {{ orgCodes: string[] }}
    */
-  const getUserOrganizations = () => {
+  const getUserOrganizations = (): { orgCodes: string[] } => {
     return tokenClaims.getUserOrganizations(sessionManager);
   };
 
   /**
    * Method extracts all the permission and the organization code in the access
    * token in the current session.
-   * @param {SessionManager} sessionManager
-   * @returns {{ permissions: string[], orgCode: string }}
+   * @returns {{ permissions: string[], orgCode: string | null }}
    */
-  const getPermissions = () => {
+  const getPermissions = (): {
+    permissions: string[];
+    orgCode: string | null;
+  } => {
     return tokenClaims.getPermissions(sessionManager);
   };
 
@@ -222,7 +232,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
     code: string,
     defaultValue?: FlagType[keyof FlagType],
     type?: keyof FlagType
-  ) => {
+  ): GetFlagType => {
     return featureFlags.getFlag(sessionManager, code, defaultValue, type);
   };
 
@@ -231,7 +241,7 @@ const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
    * to which will clear the user's session on the authorization server.
    * @returns {URL}
    */
-  const logout = () => {
+  const logout = (): URL => {
     sessionManager.destroySession();
     return new URL(client.logoutEndpoint);
   };

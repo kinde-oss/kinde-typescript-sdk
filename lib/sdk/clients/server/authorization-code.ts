@@ -32,7 +32,7 @@ const createAuthorizationCodeClient = (
   const login = async (
     sessionManager: SessionManager,
     options?: LoginURLOptions
-  ) => {
+  ): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'login',
@@ -49,7 +49,7 @@ const createAuthorizationCodeClient = (
   const register = async (
     sessionManager: SessionManager,
     options?: RegisterURLOptions
-  ) => {
+  ): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -67,7 +67,7 @@ const createAuthorizationCodeClient = (
   const createOrg = async (
     sessionManager: SessionManager,
     options?: CreateOrgURLOptions
-  ) => {
+  ): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
       ...options,
       start_page: 'registration',
@@ -85,7 +85,7 @@ const createAuthorizationCodeClient = (
   const handleRedirectToApp = async (
     sessionManager: SessionManager,
     callbackURL: URL
-  ) => {
+  ): Promise<void> => {
     await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
   };
 
@@ -93,9 +93,11 @@ const createAuthorizationCodeClient = (
    * Method acts as a wrapper around the `isAuthenticated` method provided by the
    * `AuthCodeAbstract` client created above.
    * @param {SessionManager} sessionManager
-   * @returns {boolean}
+   * @returns {Promise<Boolean>}
    */
-  const isAuthenticated = async (sessionManager: SessionManager) => {
+  const isAuthenticated = async (
+    sessionManager: SessionManager
+  ): Promise<boolean> => {
     return await client.isAuthenticated(sessionManager);
   };
 
@@ -116,9 +118,9 @@ const createAuthorizationCodeClient = (
    * Method extracts the current user's details from the current session, raises
    * exception if current user is not authenticated.
    * @param {SessionManager} sessionManager
-   * @returns {UserType}
+   * @returns {Promise<UserType>}
    */
-  const getUser = async (sessionManager: SessionManager) => {
+  const getUser = async (sessionManager: SessionManager): Promise<UserType> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
         'Cannot get user details, no authentication credential found'
@@ -143,7 +145,7 @@ const createAuthorizationCodeClient = (
    * @param {SessionManager} sessionManager
    * @returns {URL}
    */
-  const logout = (sessionManager: SessionManager) => {
+  const logout = (sessionManager: SessionManager): URL => {
     sessionManager.destroySession();
     return new URL(client.logoutEndpoint);
   };
