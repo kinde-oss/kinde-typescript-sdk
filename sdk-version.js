@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const { version: packageVersion } = require('./package.json');
 const { promises: fsPromises } = require('fs');
 const { join } = require('path');

@@ -41,7 +41,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
   async createAuthorizationURL(
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
-  ) {
+  ): Promise<URL> {
     const challengeSetup = await utilities.setupCodeChallenge();
     const { challenge, verifier } = challengeSetup;
     this.codeChallenge = challenge;
@@ -72,7 +72,9 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected async refreshTokens(sessionManager: SessionManager) {
+  protected async refreshTokens(
+    sessionManager: SessionManager
+  ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
@@ -98,8 +100,8 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     callbackURL: URL
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = super.getCallbackURLParams(callbackURL);
-    const storedStateKey = this.getCodeVerifierKey(state!);
-    if (storedStateKey === null || !storedStateKey.endsWith(state!)) {
+    const storedStateKey = this.getCodeVerifierKey(state);
+    if (!storedStateKey?.endsWith(state)) {
       throw new Error('Received state does not match stored state');
     }
 
@@ -111,7 +113,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     const storedState = getItem.call(sessionManager, storedStateKey) as
       | string
       | null;
-    if (storedState === null) {
+    if (!storedState) {
       throw new Error('Stored state not found');
     }
 
@@ -123,7 +125,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       client_id: this.config.clientId,
       code_verifier: this.codeVerifier!,
       grant_type: 'authorization_code',
-      code: code!,
+      code,
     });
 
     const removeItem = isBrowserEnvironment()
@@ -134,7 +136,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     try {
       return await this.fetchTokensFor(sessionManager, body);
     } finally {
-      removeItem.call(sessionManager, this.getCodeVerifierKey(state!));
+      removeItem.call(sessionManager, this.getCodeVerifierKey(state));
     }
   }
 
@@ -154,7 +156,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
    * for further explanation.
    * @returns {URLSearchParams} Required query parameters
    */
-  protected getBaseAuthURLParams() {
+  protected getBaseAuthURLParams(): URLSearchParams {
     return new URLSearchParams({
       state: this.state!,
       client_id: this.config.clientId,

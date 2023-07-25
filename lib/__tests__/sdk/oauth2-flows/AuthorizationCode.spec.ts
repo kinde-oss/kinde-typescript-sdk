@@ -184,6 +184,12 @@ describe('AuthorizationCode', () => {
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
 
+    it('throws an error if no access token is found in memory', async () => {
+      await expect(async () => {
+        await client.getToken(sessionManager);
+      }).rejects.toThrow('No authentication credential found');
+    });
+
     it('throws an error if no refresh token is found in memory', async () => {
       const mockAccessToken = mocks.getMockAccessToken(
         clientConfig.authDomain,

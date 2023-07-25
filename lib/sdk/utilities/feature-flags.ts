@@ -27,13 +27,13 @@ export const getFlag = (
     (getClaimValue(sessionManager, 'feature_flags') as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
-  if (flag === undefined && defaultValue === undefined) {
+  if (!flag && !defaultValue) {
     throw new Error(
       `Flag ${code} was not found, and no default value has been provided`
     );
   }
 
-  if (flag?.t !== undefined && type !== undefined && type !== flag?.t) {
+  if (flag?.t && type && type !== flag?.t) {
     throw new Error(
       `Flag ${code} is of type ${FlagDataType[flag.t]}, expected type is ${
         FlagDataType[type]

@@ -40,7 +40,7 @@ export const getClaim = (
   sessionManager: SessionManager,
   claim: string,
   type: ClaimTokenType = 'access_token'
-) => {
+): { name: string; value: unknown | null } => {
   return { name: claim, value: getClaimValue(sessionManager, claim, type) };
 };
 
@@ -50,34 +50,41 @@ export const getClaim = (
  * present in the session.
  * @param {SessionManager} sessionManager
  * @param {string} name
- * @returns {{ orgCode: string, isGranted: boolean }}
+ * @returns {{ orgCode: string | null, isGranted: boolean }}
  */
-export const getPermission = (sessionManager: SessionManager, name: string) => {
+export const getPermission = (
+  sessionManager: SessionManager,
+  name: string
+): { orgCode: string | null; isGranted: boolean } => {
   const permissions = (getClaimValue(sessionManager, 'permissions') ??
     []) as string[];
   const isGranted = permissions.some((p) => p === name);
-  const orgCode = getClaimValue(sessionManager, 'org_code') as string;
+  const orgCode = getClaimValue(sessionManager, 'org_code') as string | null;
   return { orgCode, isGranted };
 };
 
 /**
  * Method extracts the organization code from the current session.
  * @param {SessionManager} sessionManager
- * @returns {{ orgCode: string }}
+ * @returns {{ orgCode: string | null }}
  */
-export const getOrganization = (sessionManager: SessionManager) => ({
-  orgCode: getClaimValue(sessionManager, 'org_code') as string,
+export const getOrganization = (
+  sessionManager: SessionManager
+): { orgCode: string | null } => ({
+  orgCode: getClaimValue(sessionManager, 'org_code') as string | null,
 });
 
 /**
  * Method extracts all the permission and the organization code in the access
  * token in the current session.
  * @param {SessionManager} sessionManager
- * @returns {{ permissions: string[], orgCode: string }}
+ * @returns {{ permissions: string[], orgCode: string | null }}
  */
-export const getPermissions = (sessionManager: SessionManager) => ({
-  permissions: getClaimValue(sessionManager, 'permissions') as string[],
-  orgCode: getClaimValue(sessionManager, 'org_code') as string,
+export const getPermissions = (
+  sessionManager: SessionManager
+): { permissions: string[]; orgCode: string | null } => ({
+  permissions: (getClaimValue(sessionManager, 'permissions') ?? []) as string[],
+  orgCode: getClaimValue(sessionManager, 'org_code') as string | null,
 });
 
 /**
@@ -86,6 +93,9 @@ export const getPermissions = (sessionManager: SessionManager) => ({
  * @param {SessionManager} sessionManager
  * @returns {{ orgCodes: string[] }}
  */
-export const getUserOrganizations = (sessionManager: SessionManager) => ({
-  orgCodes: getClaimValue(sessionManager, 'org_codes', 'id_token'),
+export const getUserOrganizations = (
+  sessionManager: SessionManager
+): { orgCodes: string[] } => ({
+  orgCodes: (getClaimValue(sessionManager, 'org_codes', 'id_token') ??
+    []) as string[],
 });

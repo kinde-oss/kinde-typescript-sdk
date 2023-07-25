@@ -752,14 +752,14 @@ getClaimValue(
 ### `getPermission`
 ```ts
 getPermission(sessionManager: SessionManager, name: string): { 
-  orgCode: string, isGranted: boolean 
+  orgCode: string | null, isGranted: boolean 
 }
 ```
 
 ### `getPermissions`
 ```ts
 getPermissions(sessionManager: SessionManager, name: string): { 
-  orgCode: string, isGranted: boolean 
+  orgCode: string | null, permissions: string[]
 }
 ```
 
@@ -770,7 +770,7 @@ getUserOrganizations(sessionManager: SessionManager): string[]
 
 ### `getOrganization`
 ```ts
-getOrganization(sessionManager: SessionManager): string
+getOrganization(sessionManager: SessionManager): string | null
 ```
 
 ### `getFlag`

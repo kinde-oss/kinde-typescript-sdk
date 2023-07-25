@@ -89,7 +89,7 @@ export abstract class AuthCodeAbstract {
   async handleRedirectFromAuthDomain(
     sessionManager: SessionManager,
     callbackURL: URL
-  ) {
+  ): Promise<void> {
     const tokens = await this.exchangeAuthCodeForTokens(
       sessionManager,
       callbackURL
@@ -105,15 +105,19 @@ export abstract class AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<string>}
    */
-  public async getToken(sessionManager: SessionManager) {
+  public async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = utilities.getAccessToken(sessionManager);
+    if (!accessToken) {
+      throw new Error('No authentication credential found');
+    }
+
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
       return accessToken!;
     }
 
     const refreshToken = utilities.getRefreshToken(sessionManager);
-    if (refreshToken === null && isNodeEnvironment()) {
+    if (!refreshToken && isNodeEnvironment()) {
       throw Error('Cannot persist session no valid refresh token found');
     }
 
@@ -128,7 +132,7 @@ export abstract class AuthCodeAbstract {
    * @param sessionManager
    * @returns {Promise<boolean>}
    */
-  public async isAuthenticated(sessionManager: SessionManager) {
+  public async isAuthenticated(sessionManager: SessionManager): Promise<boolean> {
     try {
       await this.getToken(sessionManager);
       return true;
@@ -143,7 +147,7 @@ export abstract class AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<UserType>}
    */
-  async getUserProfile(sessionManager: SessionManager) {
+  async getUserProfile(sessionManager: SessionManager): Promise<UserType> {
     const accessToken = await this.getToken(sessionManager);
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${accessToken}`);
@@ -165,13 +169,13 @@ export abstract class AuthCodeAbstract {
    * @param {URL} callbackURL
    * @returns {[string, string]} c
    */
-  protected getCallbackURLParams(callbackURL: URL) {
+  protected getCallbackURLParams(callbackURL: URL): [string, string] {
     const searchParams = new URLSearchParams(callbackURL.search);
     const state = searchParams.get('state')!;
     const error = searchParams.get('error');
-    const code = searchParams.get('code');
+    const code = searchParams.get('code')!;
 
-    if (error !== null) {
+    if (error) {
       throw new Error(`Authorization server reported an error: ${error}`);
     }
 
@@ -210,7 +214,7 @@ export abstract class AuthCodeAbstract {
       | OAuth2CodeExchangeResponse;
 
     const errorPayload = payload as OAuth2CodeExchangeErrorResponse;
-    if (errorPayload.error !== undefined) {
+    if (errorPayload.error) {
       sessionManager.destroySession();
       const errorDescription = errorPayload.error_description;
       const message = errorDescription ?? errorPayload.error;
@@ -235,19 +239,19 @@ export abstract class AuthCodeAbstract {
       this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES
     );
 
-    if (this.config.audience !== undefined) {
+    if (this.config.audience) {
       searchParams.append('audience', this.config.audience);
     }
 
-    if (options.start_page !== undefined) {
+    if (options.start_page) {
       searchParams.append('start_page', options.start_page);
     }
 
-    if (options.org_code !== undefined) {
+    if (options.org_code) {
       searchParams.append('org_code', options.org_code);
     }
 
-    if (options.is_create_org !== undefined) {
+    if (options.is_create_org) {
       searchParams.append('org_name', options.org_name ?? '');
       searchParams.append('is_create_org', 'true');
     }
