@@ -1,4 +1,7 @@
-import type { AuthorizationCodeOptions } from '../../../sdk/oauth2-flows';
+import type {
+  AuthorizationCodeOptions,
+  SDKHeaderOverrideOptions,
+} from '../../../sdk/oauth2-flows';
 import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
 import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
 import { getSDKHeader } from '../../../sdk/version';
@@ -212,6 +215,47 @@ describe('AuthCodeWitPKCE', () => {
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
         { method: 'POST', headers, body, credentials: 'include' }
+      );
+    });
+
+    it('overrides SDK version header if options are provided to client constructor', async () => {
+      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          access_token: newAccessToken.token,
+          refresh_token: 'new_refresh_token',
+          id_token: newIdToken.token,
+        }),
+      });
+
+      const expiredAccessToken = mocks.getMockAccessToken(
+        clientConfig.authDomain,
+        true
+      );
+      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
+      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+
+      const headerOverrides: SDKHeaderOverrideOptions = {
+        framework: 'TypeScript-Framework',
+        version: '1.1.1',
+      };
+
+      const headers = new Headers();
+      headers.append(...getSDKHeader(headerOverrides));
+      headers.append(
+        'Content-Type',
+        'application/x-www-form-urlencoded; charset=UTF-8'
+      );
+
+      const client = new AuthCodeWithPKCE({
+        ...clientConfig,
+        ...headerOverrides,
+      });
+      await client.getToken(sessionManager);
+      expect(mocks.fetchClient).toHaveBeenCalledWith(
+        `${clientConfig.authDomain}/oauth2/token`,
+        expect.objectContaining({ headers })
       );
     });
 

@@ -5,6 +5,7 @@ import {
   type AuthURLOptions,
   AuthorizationCode,
   type AuthorizationCodeOptions,
+  type SDKHeaderOverrideOptions,
 } from '../../../sdk/oauth2-flows';
 
 describe('AuthorizationCode', () => {
@@ -270,6 +271,50 @@ describe('AuthorizationCode', () => {
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
         { method: 'POST', headers, body, credentials: undefined }
+      );
+    });
+
+    it('overrides SDK version header if options are provided to client constructor', async () => {
+      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          access_token: newAccessToken.token,
+          refresh_token: 'new_refresh_token',
+          id_token: newIdToken.token,
+        }),
+      });
+
+      const expiredAccessToken = mocks.getMockAccessToken(
+        clientConfig.authDomain,
+        true
+      );
+      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
+      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+
+      const headerOverrides: SDKHeaderOverrideOptions = {
+        framework: 'TypeScript-Framework',
+        version: '1.1.1',
+      };
+
+      const headers = new Headers();
+      headers.append(...getSDKHeader(headerOverrides));
+      headers.append(
+        'Content-Type',
+        'application/x-www-form-urlencoded; charset=UTF-8'
+      );
+
+      const client = new AuthorizationCode(
+        {
+          ...clientConfig,
+          ...headerOverrides,
+        },
+        clientSecret
+      );
+      await client.getToken(sessionManager);
+      expect(mocks.fetchClient).toHaveBeenCalledWith(
+        `${clientConfig.authDomain}/oauth2/token`,
+        expect.objectContaining({ headers })
       );
     });
 
