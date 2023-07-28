@@ -5,15 +5,13 @@ import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
 describe('AuthCodeWitPKCE', () => {
+  const { sessionManager } = mocks;
   const clientConfig: AuthorizationCodeOptions = {
     authDomain: 'https://local-testing@kinde.com',
     redirectURL: 'https://app-domain.com',
     logoutRedirectURL: 'http://app-domain.com',
     clientId: 'client-id',
   };
-
-  const client = new AuthCodeWithPKCE(clientConfig);
-  const { sessionManager } = mocks;
 
   describe('new AuthCodeWithPKCE', () => {
     it('can construct AuthCodeWithPKCE instance', () => {
@@ -27,6 +25,7 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('saves generated code verifier to session storage again state', async () => {
+      const client = new AuthCodeWithPKCE(clientConfig);
       const authURL = await client.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
 
@@ -50,6 +49,7 @@ describe('AuthCodeWitPKCE', () => {
 
     it('uses provided state to generate authorization URL if given', async () => {
       const expectedState = 'test-app-state';
+      const client = new AuthCodeWithPKCE(clientConfig);
       const authURL = await client.createAuthorizationURL(sessionManager, {
         state: expectedState,
       });
@@ -73,6 +73,7 @@ describe('AuthCodeWitPKCE', () => {
         `${clientConfig.redirectURL}?state=state&code=code&error=error`
       );
       await expect(async () => {
+        const client = new AuthCodeWithPKCE(clientConfig);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow('Authorization server reported an error: error');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
@@ -84,6 +85,7 @@ describe('AuthCodeWitPKCE', () => {
       );
 
       await expect(async () => {
+        const client = new AuthCodeWithPKCE(clientConfig);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow('Stored state not found');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
@@ -107,6 +109,7 @@ describe('AuthCodeWitPKCE', () => {
       });
 
       await expect(async () => {
+        const client = new AuthCodeWithPKCE(clientConfig);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow(errorDescription);
       expect(mocks.fetchClient).toHaveBeenCalled();
@@ -131,6 +134,8 @@ describe('AuthCodeWitPKCE', () => {
         codeVerifierKey,
         JSON.stringify({ codeVerifier: 'code-verifier' })
       );
+
+      const client = new AuthCodeWithPKCE(clientConfig);
       await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
@@ -153,6 +158,7 @@ describe('AuthCodeWitPKCE', () => {
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      const client = new AuthCodeWithPKCE(clientConfig);
       const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
       expect(mocks.fetchClient).not.toHaveBeenCalled();
@@ -165,6 +171,7 @@ describe('AuthCodeWitPKCE', () => {
       );
       sessionManager.setSessionItem('access_token', mockAccessToken.token);
       await expect(async () => {
+        const client = new AuthCodeWithPKCE(clientConfig);
         await client.getToken(sessionManager);
       }).rejects.toThrow('Cannot persist session no valid refresh token found');
     });
@@ -200,6 +207,7 @@ describe('AuthCodeWitPKCE', () => {
         'application/x-www-form-urlencoded; charset=UTF-8'
       );
 
+      const client = new AuthCodeWithPKCE(clientConfig);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
@@ -227,6 +235,7 @@ describe('AuthCodeWitPKCE', () => {
       sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
+      const client = new AuthCodeWithPKCE(clientConfig);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 

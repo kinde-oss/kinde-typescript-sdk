@@ -8,6 +8,7 @@ import {
 } from '../../../sdk/oauth2-flows';
 
 describe('AuthorizationCode', () => {
+  const { sessionManager } = mocks;
   const clientSecret = 'client-secret' as const;
   const clientConfig: AuthorizationCodeOptions = {
     authDomain: 'https://local-testing@kinde.com',
@@ -15,9 +16,6 @@ describe('AuthorizationCode', () => {
     logoutRedirectURL: 'http://app-domain.com',
     clientId: 'client-id',
   };
-
-  const client = new AuthorizationCode(clientConfig, clientSecret);
-  const { sessionManager } = mocks;
 
   describe('new AuthorizationCode', () => {
     it('can construct AuthorizationCode instance', () => {
@@ -33,6 +31,7 @@ describe('AuthorizationCode', () => {
     });
 
     it('uses default scopes if none is provided in the url options', async () => {
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       const authURL = await client.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
       expect(searchParams.get('scope')).toBe(
@@ -65,6 +64,7 @@ describe('AuthorizationCode', () => {
         org_name: 'test-org-name',
       };
 
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       const authURL = await client.createAuthorizationURL(
         sessionManager,
         expectedParams
@@ -76,6 +76,7 @@ describe('AuthorizationCode', () => {
     });
 
     it('saves state to session storage again state', async () => {
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       const authURL = await client.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
       const state = searchParams.get('state');
@@ -86,6 +87,7 @@ describe('AuthorizationCode', () => {
 
     it('uses provided state to generate authorization URL if given', async () => {
       const expectedState = 'test-app-state';
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       const authURL = await client.createAuthorizationURL(sessionManager, {
         state: expectedState,
       });
@@ -106,6 +108,7 @@ describe('AuthorizationCode', () => {
         `${clientConfig.redirectURL}?state=state&code=code&error=error`
       );
       await expect(async () => {
+        const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow('Authorization server reported an error: error');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
@@ -117,6 +120,7 @@ describe('AuthorizationCode', () => {
       );
 
       await expect(async () => {
+        const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow('Authentication flow state not found');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
@@ -136,6 +140,7 @@ describe('AuthorizationCode', () => {
       });
 
       await expect(async () => {
+        const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       }).rejects.toThrow(errorDescription);
       expect(mocks.fetchClient).toHaveBeenCalled();
@@ -157,6 +162,7 @@ describe('AuthorizationCode', () => {
       );
       const stateKey = AuthorizationCode.STATE_KEY;
       sessionManager.setSessionItem(stateKey, 'state');
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
@@ -179,6 +185,7 @@ describe('AuthorizationCode', () => {
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
       expect(mocks.fetchClient).not.toHaveBeenCalled();
@@ -186,6 +193,7 @@ describe('AuthorizationCode', () => {
 
     it('throws an error if no access token is found in memory', async () => {
       await expect(async () => {
+        const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.getToken(sessionManager);
       }).rejects.toThrow('No authentication credential found');
     });
@@ -197,6 +205,7 @@ describe('AuthorizationCode', () => {
       );
       sessionManager.setSessionItem('access_token', mockAccessToken.token);
       await expect(async () => {
+        const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.getToken(sessionManager);
       }).rejects.toThrow('Cannot persist session no valid refresh token found');
     });
@@ -218,6 +227,7 @@ describe('AuthorizationCode', () => {
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       await expect(async () => {
+        const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.getToken(sessionManager);
       }).rejects.toThrow(errorDescription);
       expect(mocks.fetchClient).toHaveBeenCalled();
@@ -255,6 +265,7 @@ describe('AuthorizationCode', () => {
         'application/x-www-form-urlencoded; charset=UTF-8'
       );
 
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/token`,
@@ -282,6 +293,7 @@ describe('AuthorizationCode', () => {
       sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
@@ -319,6 +331,7 @@ describe('AuthorizationCode', () => {
         }),
       });
 
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getUserProfile(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledWith(
         `${clientConfig.authDomain}/oauth2/v2/user_profile`,
@@ -341,6 +354,7 @@ describe('AuthorizationCode', () => {
         json: () => userDetails,
       });
 
+      const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getUserProfile(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
       expect(sessionManager.getSessionItem('user')).toStrictEqual(userDetails);
