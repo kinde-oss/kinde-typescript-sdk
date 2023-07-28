@@ -1,21 +1,17 @@
+import { AuthorizationCode, AuthCodeWithPKCE } from '../../oauth2-flows';
 import { type SessionManager } from '../../session-managers';
 import type { UserType } from '../../utilities';
 import * as utilities from '../../utilities';
-
-import {
-  type AuthorizationCodeOptions,
-  AuthCodeWithPKCE,
-  AuthorizationCode,
-} from '../../oauth2-flows';
 
 import type {
   CreateOrgURLOptions,
   RegisterURLOptions,
   LoginURLOptions,
+  ACClientOptions,
 } from '../types';
 
 const createAuthorizationCodeClient = (
-  options: AuthorizationCodeOptions & { clientSecret?: string },
+  options: ACClientOptions,
   isPKCE: boolean
 ) => {
   const client = !isPKCE

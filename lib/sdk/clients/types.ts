@@ -10,7 +10,7 @@ import type {
 export interface PKCEClientOptions extends AuthorizationCodeOptions {}
 export interface CCClientOptions extends ClientCredentialsOptions {}
 export interface ACClientOptions extends AuthorizationCodeOptions {
-  clientSecret: string;
+  clientSecret?: string;
 }
 
 export type ACClient = ReturnType<typeof createAuthCodeClient>;

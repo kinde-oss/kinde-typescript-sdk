@@ -113,7 +113,7 @@ export abstract class AuthCodeAbstract {
 
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
-      return accessToken!;
+      return accessToken;
     }
 
     const refreshToken = utilities.getRefreshToken(sessionManager);
@@ -132,7 +132,9 @@ export abstract class AuthCodeAbstract {
    * @param sessionManager
    * @returns {Promise<boolean>}
    */
-  public async isAuthenticated(sessionManager: SessionManager): Promise<boolean> {
+  public async isAuthenticated(
+    sessionManager: SessionManager
+  ): Promise<boolean> {
     try {
       await this.getToken(sessionManager);
       return true;

@@ -1,10 +1,6 @@
 import { BrowserSessionManager } from '../../session-managers';
+import { AuthCodeWithPKCE } from '../../oauth2-flows';
 import * as utilities from '../../utilities';
-
-import {
-  type AuthorizationCodeOptions,
-  AuthCodeWithPKCE,
-} from '../../oauth2-flows';
 
 import type {
   UserType,
@@ -17,9 +13,10 @@ import type {
   CreateOrgURLOptions,
   RegisterURLOptions,
   LoginURLOptions,
+  PKCEClientOptions,
 } from '../types';
 
-const createAuthCodeWithPKCEClient = (options: AuthorizationCodeOptions) => {
+const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   const { featureFlags, tokenClaims } = utilities;
   const sessionManager = new BrowserSessionManager();
   const client = new AuthCodeWithPKCE(options);
