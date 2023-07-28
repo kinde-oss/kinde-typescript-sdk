@@ -38,7 +38,7 @@ export interface OAuth2FlowOptions {
 
 export interface SDKHeaderOverrideOptions {
   framework?: string;
-  version?: string;
+  frameworkVersion?: string;
 }
 
 export interface AuthorizationCodeOptions

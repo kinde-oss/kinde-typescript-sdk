@@ -12,7 +12,7 @@ export const SDK_VERSION = 'SDK_VERSION_PLACEHOLDER' as const;
 export const getSDKHeader = (
   options: SDKHeaderOverrideOptions = {}
 ): [string, string] => {
-  const version = options.version ?? SDK_VERSION;
+  const version = options.frameworkVersion ?? SDK_VERSION;
   const framework = options.framework ?? 'TypeScript';
   const headerValue = `${framework}/${version}`;
   return ['Kinde-SDK', headerValue];

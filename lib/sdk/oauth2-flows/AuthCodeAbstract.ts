@@ -204,7 +204,7 @@ export abstract class AuthCodeAbstract {
     );
     headers.append(
       ...getSDKHeader({
-        version: this.config.version,
+        frameworkVersion: this.config.frameworkVersion,
         framework: this.config.framework,
       })
     );

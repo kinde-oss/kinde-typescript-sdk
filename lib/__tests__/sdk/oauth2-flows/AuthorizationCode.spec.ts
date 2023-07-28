@@ -294,7 +294,7 @@ describe('AuthorizationCode', () => {
 
       const headerOverrides: SDKHeaderOverrideOptions = {
         framework: 'TypeScript-Framework',
-        version: '1.1.1',
+        frameworkVersion: '1.1.1',
       };
 
       const headers = new Headers();
