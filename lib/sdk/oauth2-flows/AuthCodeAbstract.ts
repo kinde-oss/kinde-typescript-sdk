@@ -198,10 +198,15 @@ export abstract class AuthCodeAbstract {
     useCookies: boolean = false
   ): Promise<OAuth2CodeExchangeResponse> {
     const headers = new Headers();
-    headers.append(...getSDKHeader());
     headers.append(
       'Content-Type',
       'application/x-www-form-urlencoded; charset=UTF-8'
+    );
+    headers.append(
+      ...getSDKHeader({
+        version: this.config.version,
+        framework: this.config.framework,
+      })
     );
 
     const config: RequestInit = {
