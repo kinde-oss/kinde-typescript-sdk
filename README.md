@@ -218,6 +218,36 @@ const clientOptions: PKCEClientOptions = {
 const client = createKindeBrowserClient(clientOptions);
 ```
 
+## Overriding Tracking Header
+Whenever the SDK requests new tokens either on initial login or on subsequent token
+refreshes. The SDK adds the header `Kinde-SDK: TypeScript/current-version`, to this 
+request, however this header can be overriden for *all clients*, by providing the 
+`framework` and `frameworkVersion` options as part of the client options. We present 
+an example below to demonstrate this.
+
+```ts
+import { 
+  createKindeServerClient, 
+  GrantType,
+  type ACClientOptions,
+  type ACClient, 
+} from "@kinde-oss/kinde-typescript-sdk";
+
+const clientOptions: ACClientOptions = {
+  authDomain: process.env.KINDE_AUTH_DOMAIN,
+  clientId: process.env.KINDE_CLIENT_ID,
+  clientSecret: process.env.KINDE_CLIENT_SECRET,
+  logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL,
+  redirectURL: process.env.KINDE_REDIRECT_URL,
+  frameworkVersion: '1.1.1',
+  framework: 'ExpressJS'
+};
+
+const client = createKindeServerClient<ACClient, ACClientOptions>(
+  GrantType.AUTHORIZATION_CODE, clientOptions
+);
+```
+
 ## Server Client Methods
 Please note that depending on the provided grant type the created server client
 will expose different methods, however certain methods are common to all oauth2 flows,

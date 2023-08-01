@@ -36,11 +36,20 @@ export interface OAuth2FlowOptions {
   scope?: string;
 }
 
-export interface AuthorizationCodeOptions extends OAuth2FlowOptions {
+export interface SDKHeaderOverrideOptions {
+  framework?: string;
+  frameworkVersion?: string;
+}
+
+export interface AuthorizationCodeOptions
+  extends OAuth2FlowOptions,
+    SDKHeaderOverrideOptions {
   redirectURL: string;
 }
 
-export interface ClientCredentialsOptions extends OAuth2FlowOptions {
+export interface ClientCredentialsOptions
+  extends OAuth2FlowOptions,
+    SDKHeaderOverrideOptions {
   clientSecret: string;
 }
 

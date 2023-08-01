@@ -113,7 +113,7 @@ export abstract class AuthCodeAbstract {
 
     const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
-      return accessToken!;
+      return accessToken;
     }
 
     const refreshToken = utilities.getRefreshToken(sessionManager);
@@ -132,7 +132,9 @@ export abstract class AuthCodeAbstract {
    * @param sessionManager
    * @returns {Promise<boolean>}
    */
-  public async isAuthenticated(sessionManager: SessionManager): Promise<boolean> {
+  public async isAuthenticated(
+    sessionManager: SessionManager
+  ): Promise<boolean> {
     try {
       await this.getToken(sessionManager);
       return true;
@@ -196,10 +198,15 @@ export abstract class AuthCodeAbstract {
     useCookies: boolean = false
   ): Promise<OAuth2CodeExchangeResponse> {
     const headers = new Headers();
-    headers.append(...getSDKHeader());
     headers.append(
       'Content-Type',
       'application/x-www-form-urlencoded; charset=UTF-8'
+    );
+    headers.append(
+      ...getSDKHeader({
+        frameworkVersion: this.config.frameworkVersion,
+        framework: this.config.framework,
+      })
     );
 
     const config: RequestInit = {

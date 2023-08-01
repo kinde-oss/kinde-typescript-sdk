@@ -57,11 +57,17 @@ export class ClientCredentials {
   ): Promise<OAuth2CCTokenResponse> {
     const body = this.generateTokenURLParams();
     const headers = new Headers();
-    headers.append(...getSDKHeader());
     headers.append(
       'Content-Type',
       'application/x-www-form-urlencoded; charset=UTF-8'
     );
+    headers.append(
+      ...getSDKHeader({
+        frameworkVersion: this.config.frameworkVersion,
+        framework: this.config.framework,
+      })
+    );
+
     const config: RequestInit = { method: 'POST', headers, body };
     const response = await fetch(this.tokenEndpoint, config);
     const payload = (await response.json()) as
