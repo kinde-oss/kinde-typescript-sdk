@@ -5,11 +5,11 @@ import { crypto, isBrowserEnvironment } from '../environment';
  * @param {number} length
  * @returns {string} required secret
  */
-const randomStringInBrowser = (length: number = 50): string => {
+const randomStringInBrowser = (length: number = 28): string => {
   const array = new Uint32Array(length);
   crypto.getRandomValues(array);
   return Array.from(array, (dec) =>
-    ('0' + dec.toString(16)).substring(-2)
+    ('0' + dec.toString(16)).slice(-2)
   ).join('');
 };
 
@@ -18,7 +18,7 @@ const randomStringInBrowser = (length: number = 50): string => {
  * @param {number} length
  * @returns {string} required secret
  */
-const randomStringInNodejs = (length: number = 50): string => {
+const randomStringInNodejs = (length: number = 28): string => {
   return crypto.randomBytes(length).toString('hex');
 };
 
