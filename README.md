@@ -879,9 +879,9 @@ login(options?: LoginURLOptions): Promise<URL>
 getOrganization(): string
 ```
 
-## A Word on Pollyfills
+## A Word on Polyfills
 In the event that you are using the SDK in the browser environment where the browser
-in question has an older version. You may have to include pollyfills to account for
+in question has an older version. You may have to include polyfills to account for
 the [**crypto**](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
 web API which is available in more recent versions.
 
