@@ -1,6 +1,6 @@
 # @kinde-oss/kinde-typescript-sdk 
 The `@kinde-oss/kinde-typescript-sdk` allows developers to integrate [**Kinde**](https://kinde.com)
-Authentication into there TypeScript projects. This SDK implements the following
+Authentication into their TypeScript projects. This SDK implements the following
 OAuth2.0 flows.
 
 - **Authorization Code**    
