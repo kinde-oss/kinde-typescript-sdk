@@ -27,7 +27,7 @@ export const getFlag = (
     (getClaimValue(sessionManager, 'feature_flags') as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
-  if (!flag && !defaultValue) {
+  if (!flag && defaultValue === undefined) {
     throw new Error(
       `Flag ${code} was not found, and no default value has been provided`
     );

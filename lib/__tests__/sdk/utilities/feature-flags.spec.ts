@@ -47,6 +47,17 @@ describe('feature-flags', () => {
       );
     });
 
+    it('should not throw error for falsy default value which is not `undefined`', () => {
+      const code = 'non-existant-code';
+      const getFlagFnArray = [
+        () => getFlag(sessionManager, code, false, 'b'),
+        () => getFlag(sessionManager, code, '', 's'),
+        () => getFlag(sessionManager, code, 0, 'i'),
+      ];
+
+      getFlagFnArray.forEach(getFlagFn => expect(getFlagFn).not.toThrow());
+    });
+
     it('provide result contains no type if default-value is used', () => {
       const defaultValue = 'default-value';
       const code = 'non-existant-code';
