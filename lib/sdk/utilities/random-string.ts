@@ -19,7 +19,11 @@ const randomStringInBrowser = (length: number = 28): string => {
  * @returns {string} required secret
  */
 const randomStringInNodejs = (length: number = 28): string => {
-  return (crypto as any).randomBytes(length).toString('hex');
+  const nodeCrypto = crypto as any;
+  if (nodeCrypto.randomBytes === undefined) {
+    return randomStringInBrowser(length);
+  }
+  return nodeCrypto.randomBytes(length).toString('hex');
 };
 
 export const generateRandomString = isBrowserEnvironment()
