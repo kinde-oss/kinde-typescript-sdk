@@ -20,9 +20,9 @@ and can be installed using any appropriate package manager be it `npm`, `yarn` o
 `pnpm`.
 
 ```bash
-npm install --save @kinde-oss/kinde-typescript
-pnpm add --save @kinde-oss/kinde-typescript
-yarn add @kinde-oss/kinde-typescript
+npm install --save @kinde-oss/kinde-typescript-sdk
+pnpm add --save @kinde-oss/kinde-typescript-sdk
+yarn add @kinde-oss/kinde-typescript-sdk
 ```
 
 ## Kinde Registration and Setup
