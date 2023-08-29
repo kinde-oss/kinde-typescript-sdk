@@ -15,23 +15,21 @@
 
 import * as runtime from '../runtime';
 import type {
+  CreateFeatureFlagRequest,
   ErrorResponse,
   SuccessResponse,
-} from '../models';
+} from '../models/index';
 import {
+    CreateFeatureFlagRequestFromJSON,
+    CreateFeatureFlagRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models';
+} from '../models/index';
 
-export interface CreateFeatureFlagRequest {
-    name: string;
-    description: string;
-    key: string;
-    type: CreateFeatureFlagTypeEnum;
-    allowOverrideLevel: CreateFeatureFlagAllowOverrideLevelEnum;
-    defaultValue: string;
+export interface CreateFeatureFlagOperationRequest {
+    createFeatureFlagRequest: CreateFeatureFlagRequest;
 }
 
 export interface DeleteFeatureFlagRequest {
@@ -42,7 +40,6 @@ export interface UpdateFeatureFlagRequest {
     featureFlagKey: string;
     name: string;
     description: string;
-    key: string;
     type: UpdateFeatureFlagTypeEnum;
     allowOverrideLevel: UpdateFeatureFlagAllowOverrideLevelEnum;
     defaultValue: string;
@@ -55,60 +52,18 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
     /**
      * Create feature flag.
-     * Create a new feature flag
+     * Create Feature Flag
      */
-    async createFeatureFlagRaw(requestParameters: CreateFeatureFlagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters.name === null || requestParameters.name === undefined) {
-            throw new runtime.RequiredError('name','Required parameter requestParameters.name was null or undefined when calling createFeatureFlag.');
-        }
-
-        if (requestParameters.description === null || requestParameters.description === undefined) {
-            throw new runtime.RequiredError('description','Required parameter requestParameters.description was null or undefined when calling createFeatureFlag.');
-        }
-
-        if (requestParameters.key === null || requestParameters.key === undefined) {
-            throw new runtime.RequiredError('key','Required parameter requestParameters.key was null or undefined when calling createFeatureFlag.');
-        }
-
-        if (requestParameters.type === null || requestParameters.type === undefined) {
-            throw new runtime.RequiredError('type','Required parameter requestParameters.type was null or undefined when calling createFeatureFlag.');
-        }
-
-        if (requestParameters.allowOverrideLevel === null || requestParameters.allowOverrideLevel === undefined) {
-            throw new runtime.RequiredError('allowOverrideLevel','Required parameter requestParameters.allowOverrideLevel was null or undefined when calling createFeatureFlag.');
-        }
-
-        if (requestParameters.defaultValue === null || requestParameters.defaultValue === undefined) {
-            throw new runtime.RequiredError('defaultValue','Required parameter requestParameters.defaultValue was null or undefined when calling createFeatureFlag.');
+    async createFeatureFlagRaw(requestParameters: CreateFeatureFlagOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.createFeatureFlagRequest === null || requestParameters.createFeatureFlagRequest === undefined) {
+            throw new runtime.RequiredError('createFeatureFlagRequest','Required parameter requestParameters.createFeatureFlagRequest was null or undefined when calling createFeatureFlag.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.name !== undefined) {
-            queryParameters['name'] = requestParameters.name;
-        }
-
-        if (requestParameters.description !== undefined) {
-            queryParameters['description'] = requestParameters.description;
-        }
-
-        if (requestParameters.key !== undefined) {
-            queryParameters['key'] = requestParameters.key;
-        }
-
-        if (requestParameters.type !== undefined) {
-            queryParameters['type'] = requestParameters.type;
-        }
-
-        if (requestParameters.allowOverrideLevel !== undefined) {
-            queryParameters['allow_override_level'] = requestParameters.allowOverrideLevel;
-        }
-
-        if (requestParameters.defaultValue !== undefined) {
-            queryParameters['default_value'] = requestParameters.defaultValue;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
@@ -123,6 +78,7 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: CreateFeatureFlagRequestToJSON(requestParameters.createFeatureFlagRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
@@ -130,16 +86,16 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
     /**
      * Create feature flag.
-     * Create a new feature flag
+     * Create Feature Flag
      */
-    async createFeatureFlag(requestParameters: CreateFeatureFlagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+    async createFeatureFlag(requestParameters: CreateFeatureFlagOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.createFeatureFlagRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Delete feature flag
-     * Delete a feature flag
+     * Delete Feature Flag
      */
     async deleteFeatureFlagRaw(requestParameters: DeleteFeatureFlagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.featureFlagKey === null || requestParameters.featureFlagKey === undefined) {
@@ -170,7 +126,7 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
     /**
      * Delete feature flag
-     * Delete a feature flag
+     * Delete Feature Flag
      */
     async deleteFeatureFlag(requestParameters: DeleteFeatureFlagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.deleteFeatureFlagRaw(requestParameters, initOverrides);
@@ -179,7 +135,7 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
     /**
      * Update feature flag.
-     * Update a feature flag
+     * Replace Feature Flag
      */
     async updateFeatureFlagRaw(requestParameters: UpdateFeatureFlagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.featureFlagKey === null || requestParameters.featureFlagKey === undefined) {
@@ -192,10 +148,6 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
         if (requestParameters.description === null || requestParameters.description === undefined) {
             throw new runtime.RequiredError('description','Required parameter requestParameters.description was null or undefined when calling updateFeatureFlag.');
-        }
-
-        if (requestParameters.key === null || requestParameters.key === undefined) {
-            throw new runtime.RequiredError('key','Required parameter requestParameters.key was null or undefined when calling updateFeatureFlag.');
         }
 
         if (requestParameters.type === null || requestParameters.type === undefined) {
@@ -218,10 +170,6 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
         if (requestParameters.description !== undefined) {
             queryParameters['description'] = requestParameters.description;
-        }
-
-        if (requestParameters.key !== undefined) {
-            queryParameters['key'] = requestParameters.key;
         }
 
         if (requestParameters.type !== undefined) {
@@ -258,7 +206,7 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
     /**
      * Update feature flag.
-     * Update a feature flag
+     * Replace Feature Flag
      */
     async updateFeatureFlag(requestParameters: UpdateFeatureFlagRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.updateFeatureFlagRaw(requestParameters, initOverrides);
@@ -267,23 +215,6 @@ export class FeatureFlagsApi extends runtime.BaseAPI {
 
 }
 
-/**
- * @export
- */
-export const CreateFeatureFlagTypeEnum = {
-    Str: 'str',
-    Int: 'int',
-    Bool: 'bool'
-} as const;
-export type CreateFeatureFlagTypeEnum = typeof CreateFeatureFlagTypeEnum[keyof typeof CreateFeatureFlagTypeEnum];
-/**
- * @export
- */
-export const CreateFeatureFlagAllowOverrideLevelEnum = {
-    Env: 'env',
-    Org: 'org'
-} as const;
-export type CreateFeatureFlagAllowOverrideLevelEnum = typeof CreateFeatureFlagAllowOverrideLevelEnum[keyof typeof CreateFeatureFlagAllowOverrideLevelEnum];
 /**
  * @export
  */

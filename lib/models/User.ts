@@ -26,6 +26,12 @@ export interface User {
      */
     id?: string;
     /**
+     * External id for user.
+     * @type {string}
+     * @memberof User
+     */
+    providedId?: string;
+    /**
      * Default email address of the user in Kinde.
      * @type {string}
      * @memberof User
@@ -44,6 +50,12 @@ export interface User {
      */
     firstName?: string;
     /**
+     * User's full name.
+     * @type {string}
+     * @memberof User
+     */
+    fullName?: string;
+    /**
      * Whether the user is currently suspended or not.
      * @type {boolean}
      * @memberof User
@@ -54,7 +66,37 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    picture?: string | null;
+    picture?: string;
+    /**
+     * Whether the user has been asked to reset their password.
+     * @type {boolean}
+     * @memberof User
+     */
+    isPasswordResetRequested?: boolean | null;
+    /**
+     * Total number of user sign ins.
+     * @type {number}
+     * @memberof User
+     */
+    totalSignIns?: number | null;
+    /**
+     * Number of consecutive failed user sign ins.
+     * @type {number}
+     * @memberof User
+     */
+    failedSignIns?: number | null;
+    /**
+     * Last sign in date in ISO 8601 format.
+     * @type {string}
+     * @memberof User
+     */
+    lastSignedIn?: string | null;
+    /**
+     * Date of user creation in ISO 8601 format.
+     * @type {string}
+     * @memberof User
+     */
+    createdOn?: string | null;
 }
 
 /**
@@ -77,11 +119,18 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
+        'providedId': !exists(json, 'provided_id') ? undefined : json['provided_id'],
         'email': !exists(json, 'email') ? undefined : json['email'],
         'lastName': !exists(json, 'last_name') ? undefined : json['last_name'],
         'firstName': !exists(json, 'first_name') ? undefined : json['first_name'],
+        'fullName': !exists(json, 'full_name') ? undefined : json['full_name'],
         'isSuspended': !exists(json, 'is_suspended') ? undefined : json['is_suspended'],
         'picture': !exists(json, 'picture') ? undefined : json['picture'],
+        'isPasswordResetRequested': !exists(json, 'is_password_reset_requested') ? undefined : json['is_password_reset_requested'],
+        'totalSignIns': !exists(json, 'total_sign_ins') ? undefined : json['total_sign_ins'],
+        'failedSignIns': !exists(json, 'failed_sign_ins') ? undefined : json['failed_sign_ins'],
+        'lastSignedIn': !exists(json, 'last_signed_in') ? undefined : json['last_signed_in'],
+        'createdOn': !exists(json, 'created_on') ? undefined : json['created_on'],
     };
 }
 
@@ -95,11 +144,18 @@ export function UserToJSON(value?: User | null): any {
     return {
         
         'id': value.id,
+        'provided_id': value.providedId,
         'email': value.email,
         'last_name': value.lastName,
         'first_name': value.firstName,
+        'full_name': value.fullName,
         'is_suspended': value.isSuspended,
         'picture': value.picture,
+        'is_password_reset_requested': value.isPasswordResetRequested,
+        'total_sign_ins': value.totalSignIns,
+        'failed_sign_ins': value.failedSignIns,
+        'last_signed_in': value.lastSignedIn,
+        'created_on': value.createdOn,
     };
 }
 

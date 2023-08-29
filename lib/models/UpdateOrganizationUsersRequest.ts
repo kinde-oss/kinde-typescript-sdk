@@ -27,7 +27,7 @@ import {
  */
 export interface UpdateOrganizationUsersRequest {
     /**
-     * Users to be added to the organization.
+     * Users to add, update or remove from the organization.
      * @type {Array<UpdateOrganizationUsersRequestUsersInner>}
      * @memberof UpdateOrganizationUsersRequest
      */

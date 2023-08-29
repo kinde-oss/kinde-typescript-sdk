@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Role } from './Role';
+import type { SubscribersSubscriber } from './SubscribersSubscriber';
 import {
-    RoleFromJSON,
-    RoleFromJSONTyped,
-    RoleToJSON,
-} from './Role';
+    SubscribersSubscriberFromJSON,
+    SubscribersSubscriberFromJSONTyped,
+    SubscribersSubscriberToJSON,
+} from './SubscribersSubscriber';
 
 /**
  * 
  * @export
- * @interface GetOrganizationsResponse
+ * @interface GetSubscribersResponse
  */
-export interface GetOrganizationsResponse {
+export interface GetSubscribersResponse {
     /**
      * Response code.
      * @type {string}
-     * @memberof GetOrganizationsResponse
+     * @memberof GetSubscribersResponse
      */
     code?: string;
     /**
      * Response message.
      * @type {string}
-     * @memberof GetOrganizationsResponse
+     * @memberof GetSubscribersResponse
      */
     message?: string;
     /**
      * 
-     * @type {Array<Role>}
-     * @memberof GetOrganizationsResponse
+     * @type {Array<SubscribersSubscriber>}
+     * @memberof GetSubscribersResponse
      */
-    roles?: Array<Role>;
+    subscribers?: Array<SubscribersSubscriber>;
     /**
      * Pagination token.
      * @type {string}
-     * @memberof GetOrganizationsResponse
+     * @memberof GetSubscribersResponse
      */
     nextToken?: string;
 }
 
 /**
- * Check if a given object implements the GetOrganizationsResponse interface.
+ * Check if a given object implements the GetSubscribersResponse interface.
  */
-export function instanceOfGetOrganizationsResponse(value: object): boolean {
+export function instanceOfGetSubscribersResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function GetOrganizationsResponseFromJSON(json: any): GetOrganizationsResponse {
-    return GetOrganizationsResponseFromJSONTyped(json, false);
+export function GetSubscribersResponseFromJSON(json: any): GetSubscribersResponse {
+    return GetSubscribersResponseFromJSONTyped(json, false);
 }
 
-export function GetOrganizationsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetOrganizationsResponse {
+export function GetSubscribersResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetSubscribersResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -73,12 +73,12 @@ export function GetOrganizationsResponseFromJSONTyped(json: any, ignoreDiscrimin
         
         'code': !exists(json, 'code') ? undefined : json['code'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'roles': !exists(json, 'roles') ? undefined : ((json['roles'] as Array<any>).map(RoleFromJSON)),
+        'subscribers': !exists(json, 'subscribers') ? undefined : ((json['subscribers'] as Array<any>).map(SubscribersSubscriberFromJSON)),
         'nextToken': !exists(json, 'next_token') ? undefined : json['next_token'],
     };
 }
 
-export function GetOrganizationsResponseToJSON(value?: GetOrganizationsResponse | null): any {
+export function GetSubscribersResponseToJSON(value?: GetSubscribersResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -89,7 +89,7 @@ export function GetOrganizationsResponseToJSON(value?: GetOrganizationsResponse 
         
         'code': value.code,
         'message': value.message,
-        'roles': value.roles === undefined ? undefined : ((value.roles as Array<any>).map(RoleToJSON)),
+        'subscribers': value.subscribers === undefined ? undefined : ((value.subscribers as Array<any>).map(SubscribersSubscriberToJSON)),
         'next_token': value.nextToken,
     };
 }

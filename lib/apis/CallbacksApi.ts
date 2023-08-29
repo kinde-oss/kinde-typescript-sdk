@@ -15,25 +15,39 @@
 
 import * as runtime from '../runtime';
 import type {
-  GetRedirectCallbackUrlsResponse,
-} from '../models';
+  ErrorResponse,
+  RedirectCallbackUrls,
+  ReplaceRedirectCallbackURLsRequest,
+  SuccessResponse,
+} from '../models/index';
 import {
-    GetRedirectCallbackUrlsResponseFromJSON,
-    GetRedirectCallbackUrlsResponseToJSON,
-} from '../models';
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
+    RedirectCallbackUrlsFromJSON,
+    RedirectCallbackUrlsToJSON,
+    ReplaceRedirectCallbackURLsRequestFromJSON,
+    ReplaceRedirectCallbackURLsRequestToJSON,
+    SuccessResponseFromJSON,
+    SuccessResponseToJSON,
+} from '../models/index';
 
 export interface AddRedirectCallbackURLsRequest {
     appId: string;
-    urls: Array<string>;
+    replaceRedirectCallbackURLsRequest: ReplaceRedirectCallbackURLsRequest;
+}
+
+export interface DeleteCallbackURLsRequest {
+    appId: string;
+    urls: string;
 }
 
 export interface GetCallbackURLsRequest {
     appId: string;
 }
 
-export interface ReplaceRedirectCallbackURLsRequest {
+export interface ReplaceRedirectCallbackURLsOperationRequest {
     appId: string;
-    urls: Array<string>;
+    replaceRedirectCallbackURLsRequest: ReplaceRedirectCallbackURLsRequest;
 }
 
 /**
@@ -45,18 +59,65 @@ export class CallbacksApi extends runtime.BaseAPI {
      * Add additional redirect callback URLs. 
      * Add Redirect Callback URLs
      */
-    async addRedirectCallbackURLsRaw(requestParameters: AddRedirectCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async addRedirectCallbackURLsRaw(requestParameters: AddRedirectCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.appId === null || requestParameters.appId === undefined) {
             throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling addRedirectCallbackURLs.');
         }
 
-        if (requestParameters.urls === null || requestParameters.urls === undefined) {
-            throw new runtime.RequiredError('urls','Required parameter requestParameters.urls was null or undefined when calling addRedirectCallbackURLs.');
+        if (requestParameters.replaceRedirectCallbackURLsRequest === null || requestParameters.replaceRedirectCallbackURLsRequest === undefined) {
+            throw new runtime.RequiredError('replaceRedirectCallbackURLsRequest','Required parameter requestParameters.replaceRedirectCallbackURLsRequest was null or undefined when calling addRedirectCallbackURLs.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.urls) {
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/applications/{app_id}/auth_redirect_urls`.replace(`{${"app_id"}}`, encodeURIComponent(String(requestParameters.appId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReplaceRedirectCallbackURLsRequestToJSON(requestParameters.replaceRedirectCallbackURLsRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Add additional redirect callback URLs. 
+     * Add Redirect Callback URLs
+     */
+    async addRedirectCallbackURLs(requestParameters: AddRedirectCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.addRedirectCallbackURLsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete callback URLs. 
+     * Delete Callback URLs
+     */
+    async deleteCallbackURLsRaw(requestParameters: DeleteCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.appId === null || requestParameters.appId === undefined) {
+            throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling deleteCallbackURLs.');
+        }
+
+        if (requestParameters.urls === null || requestParameters.urls === undefined) {
+            throw new runtime.RequiredError('urls','Required parameter requestParameters.urls was null or undefined when calling deleteCallbackURLs.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.urls !== undefined) {
             queryParameters['urls'] = requestParameters.urls;
         }
 
@@ -72,27 +133,28 @@ export class CallbacksApi extends runtime.BaseAPI {
         }
         const response = await this.request({
             path: `/api/v1/applications/{app_id}/auth_redirect_urls`.replace(`{${"app_id"}}`, encodeURIComponent(String(requestParameters.appId))),
-            method: 'POST',
+            method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * Add additional redirect callback URLs. 
-     * Add Redirect Callback URLs
+     * Delete callback URLs. 
+     * Delete Callback URLs
      */
-    async addRedirectCallbackURLs(requestParameters: AddRedirectCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.addRedirectCallbackURLsRaw(requestParameters, initOverrides);
+    async deleteCallbackURLs(requestParameters: DeleteCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deleteCallbackURLsRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Returns an application\'s redirect callback URLs. 
      * List Callback URLs
      */
-    async getCallbackURLsRaw(requestParameters: GetCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetRedirectCallbackUrlsResponse>> {
+    async getCallbackURLsRaw(requestParameters: GetCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RedirectCallbackUrls>> {
         if (requestParameters.appId === null || requestParameters.appId === undefined) {
             throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling getCallbackURLs.');
         }
@@ -116,38 +178,36 @@ export class CallbacksApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetRedirectCallbackUrlsResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RedirectCallbackUrlsFromJSON(jsonValue));
     }
 
     /**
      * Returns an application\'s redirect callback URLs. 
      * List Callback URLs
      */
-    async getCallbackURLs(requestParameters: GetCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetRedirectCallbackUrlsResponse> {
+    async getCallbackURLs(requestParameters: GetCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RedirectCallbackUrls> {
         const response = await this.getCallbackURLsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Replace all redirect callback URLs. 
-     * Replace redirect callback URLs
+     * Replace Redirect Callback URLs
      */
-    async replaceRedirectCallbackURLsRaw(requestParameters: ReplaceRedirectCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async replaceRedirectCallbackURLsRaw(requestParameters: ReplaceRedirectCallbackURLsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.appId === null || requestParameters.appId === undefined) {
             throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling replaceRedirectCallbackURLs.');
         }
 
-        if (requestParameters.urls === null || requestParameters.urls === undefined) {
-            throw new runtime.RequiredError('urls','Required parameter requestParameters.urls was null or undefined when calling replaceRedirectCallbackURLs.');
+        if (requestParameters.replaceRedirectCallbackURLsRequest === null || requestParameters.replaceRedirectCallbackURLsRequest === undefined) {
+            throw new runtime.RequiredError('replaceRedirectCallbackURLsRequest','Required parameter requestParameters.replaceRedirectCallbackURLsRequest was null or undefined when calling replaceRedirectCallbackURLs.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.urls) {
-            queryParameters['urls'] = requestParameters.urls;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
@@ -162,17 +222,19 @@ export class CallbacksApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
+            body: ReplaceRedirectCallbackURLsRequestToJSON(requestParameters.replaceRedirectCallbackURLsRequest),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
      * Replace all redirect callback URLs. 
-     * Replace redirect callback URLs
+     * Replace Redirect Callback URLs
      */
-    async replaceRedirectCallbackURLs(requestParameters: ReplaceRedirectCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.replaceRedirectCallbackURLsRaw(requestParameters, initOverrides);
+    async replaceRedirectCallbackURLs(requestParameters: ReplaceRedirectCallbackURLsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.replaceRedirectCallbackURLsRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

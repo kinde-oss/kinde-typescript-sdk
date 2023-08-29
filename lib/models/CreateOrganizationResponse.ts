@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { CreateOrganizationResponseOrganization } from './CreateOrganizationResponseOrganization';
+import {
+    CreateOrganizationResponseOrganizationFromJSON,
+    CreateOrganizationResponseOrganizationFromJSONTyped,
+    CreateOrganizationResponseOrganizationToJSON,
+} from './CreateOrganizationResponseOrganization';
+
 /**
  * 
  * @export
@@ -20,11 +27,23 @@ import { exists, mapValues } from '../runtime';
  */
 export interface CreateOrganizationResponse {
     /**
-     * The organization's code.
+     * 
+     * @type {string}
+     * @memberof CreateOrganizationResponse
+     */
+    message?: string;
+    /**
+     * 
      * @type {string}
      * @memberof CreateOrganizationResponse
      */
     code?: string;
+    /**
+     * 
+     * @type {CreateOrganizationResponseOrganization}
+     * @memberof CreateOrganizationResponse
+     */
+    organization?: CreateOrganizationResponseOrganization;
 }
 
 /**
@@ -46,7 +65,9 @@ export function CreateOrganizationResponseFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
+        'message': !exists(json, 'message') ? undefined : json['message'],
         'code': !exists(json, 'code') ? undefined : json['code'],
+        'organization': !exists(json, 'organization') ? undefined : CreateOrganizationResponseOrganizationFromJSON(json['organization']),
     };
 }
 
@@ -59,7 +80,9 @@ export function CreateOrganizationResponseToJSON(value?: CreateOrganizationRespo
     }
     return {
         
+        'message': value.message,
         'code': value.code,
+        'organization': CreateOrganizationResponseOrganizationToJSON(value.organization),
     };
 }
 

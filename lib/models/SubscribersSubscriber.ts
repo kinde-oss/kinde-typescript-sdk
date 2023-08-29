@@ -16,61 +16,55 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface OrganizationUser
+ * @interface SubscribersSubscriber
  */
-export interface OrganizationUser {
+export interface SubscribersSubscriber {
     /**
      * 
      * @type {string}
-     * @memberof OrganizationUser
+     * @memberof SubscribersSubscriber
      */
     id?: string;
     /**
      * 
      * @type {string}
-     * @memberof OrganizationUser
+     * @memberof SubscribersSubscriber
      */
     email?: string;
     /**
      * 
      * @type {string}
-     * @memberof OrganizationUser
+     * @memberof SubscribersSubscriber
      */
     fullName?: string;
     /**
      * 
      * @type {string}
-     * @memberof OrganizationUser
-     */
-    lastName?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof OrganizationUser
+     * @memberof SubscribersSubscriber
      */
     firstName?: string;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof OrganizationUser
+     * @type {string}
+     * @memberof SubscribersSubscriber
      */
-    roles?: Array<string>;
+    lastName?: string;
 }
 
 /**
- * Check if a given object implements the OrganizationUser interface.
+ * Check if a given object implements the SubscribersSubscriber interface.
  */
-export function instanceOfOrganizationUser(value: object): boolean {
+export function instanceOfSubscribersSubscriber(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function OrganizationUserFromJSON(json: any): OrganizationUser {
-    return OrganizationUserFromJSONTyped(json, false);
+export function SubscribersSubscriberFromJSON(json: any): SubscribersSubscriber {
+    return SubscribersSubscriberFromJSONTyped(json, false);
 }
 
-export function OrganizationUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): OrganizationUser {
+export function SubscribersSubscriberFromJSONTyped(json: any, ignoreDiscriminator: boolean): SubscribersSubscriber {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -79,13 +73,12 @@ export function OrganizationUserFromJSONTyped(json: any, ignoreDiscriminator: bo
         'id': !exists(json, 'id') ? undefined : json['id'],
         'email': !exists(json, 'email') ? undefined : json['email'],
         'fullName': !exists(json, 'full_name') ? undefined : json['full_name'],
-        'lastName': !exists(json, 'last_name') ? undefined : json['last_name'],
         'firstName': !exists(json, 'first_name') ? undefined : json['first_name'],
-        'roles': !exists(json, 'roles') ? undefined : json['roles'],
+        'lastName': !exists(json, 'last_name') ? undefined : json['last_name'],
     };
 }
 
-export function OrganizationUserToJSON(value?: OrganizationUser | null): any {
+export function SubscribersSubscriberToJSON(value?: SubscribersSubscriber | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -97,9 +90,8 @@ export function OrganizationUserToJSON(value?: OrganizationUser | null): any {
         'id': value.id,
         'email': value.email,
         'full_name': value.fullName,
-        'last_name': value.lastName,
         'first_name': value.firstName,
-        'roles': value.roles,
+        'last_name': value.lastName,
     };
 }
 

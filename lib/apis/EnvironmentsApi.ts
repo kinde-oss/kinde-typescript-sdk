@@ -16,22 +16,28 @@
 import * as runtime from '../runtime';
 import type {
   ErrorResponse,
+  GetEnvironmentFeatureFlagsResponse,
   SuccessResponse,
-} from '../models';
+  UpdateEnvironementFeatureFlagOverrideRequest,
+} from '../models/index';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    GetEnvironmentFeatureFlagsResponseFromJSON,
+    GetEnvironmentFeatureFlagsResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models';
+    UpdateEnvironementFeatureFlagOverrideRequestFromJSON,
+    UpdateEnvironementFeatureFlagOverrideRequestToJSON,
+} from '../models/index';
 
 export interface DeleteEnvironementFeatureFlagOverrideRequest {
     featureFlagKey: string;
 }
 
-export interface UpdateEnvironementFeatureFlagOverrideRequest {
+export interface UpdateEnvironementFeatureFlagOverrideOperationRequest {
     featureFlagKey: string;
-    value: string;
+    updateEnvironementFeatureFlagOverrideRequest: UpdateEnvironementFeatureFlagOverrideRequest;
 }
 
 /**
@@ -41,7 +47,7 @@ export class EnvironmentsApi extends runtime.BaseAPI {
 
     /**
      * Delete environment feature flag override.
-     * Delete environment feature flag override
+     * Delete Environment Feature Flag Override
      */
     async deleteEnvironementFeatureFlagOverrideRaw(requestParameters: DeleteEnvironementFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.featureFlagKey === null || requestParameters.featureFlagKey === undefined) {
@@ -72,7 +78,7 @@ export class EnvironmentsApi extends runtime.BaseAPI {
 
     /**
      * Delete environment feature flag override.
-     * Delete environment feature flag override
+     * Delete Environment Feature Flag Override
      */
     async deleteEnvironementFeatureFlagOverride(requestParameters: DeleteEnvironementFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.deleteEnvironementFeatureFlagOverrideRaw(requestParameters, initOverrides);
@@ -81,7 +87,7 @@ export class EnvironmentsApi extends runtime.BaseAPI {
 
     /**
      * Delete all environment feature flag overrides.
-     * Delete all environment feature flag overrides
+     * Delete Environment Feature Flag Overrides
      */
     async deleteEnvironementFeatureFlagOverridesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
@@ -97,7 +103,7 @@ export class EnvironmentsApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/environment/feature_flags/`,
+            path: `/api/v1/environment/feature_flags`,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -108,7 +114,7 @@ export class EnvironmentsApi extends runtime.BaseAPI {
 
     /**
      * Delete all environment feature flag overrides.
-     * Delete all environment feature flag overrides
+     * Delete Environment Feature Flag Overrides
      */
     async deleteEnvironementFeatureFlagOverrides(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.deleteEnvironementFeatureFlagOverridesRaw(initOverrides);
@@ -116,25 +122,59 @@ export class EnvironmentsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update environment feature flag override.
-     * Update environment feature flag override
+     * Get environment feature flags.
+     * List Environment Feature Flags
      */
-    async updateEnvironementFeatureFlagOverrideRaw(requestParameters: UpdateEnvironementFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async getEnvironementFeatureFlagsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEnvironmentFeatureFlagsResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/environment/feature_flags`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetEnvironmentFeatureFlagsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get environment feature flags.
+     * List Environment Feature Flags
+     */
+    async getEnvironementFeatureFlags(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEnvironmentFeatureFlagsResponse> {
+        const response = await this.getEnvironementFeatureFlagsRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update environment feature flag override.
+     * Update Environment Feature Flag Override
+     */
+    async updateEnvironementFeatureFlagOverrideRaw(requestParameters: UpdateEnvironementFeatureFlagOverrideOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.featureFlagKey === null || requestParameters.featureFlagKey === undefined) {
             throw new runtime.RequiredError('featureFlagKey','Required parameter requestParameters.featureFlagKey was null or undefined when calling updateEnvironementFeatureFlagOverride.');
         }
 
-        if (requestParameters.value === null || requestParameters.value === undefined) {
-            throw new runtime.RequiredError('value','Required parameter requestParameters.value was null or undefined when calling updateEnvironementFeatureFlagOverride.');
+        if (requestParameters.updateEnvironementFeatureFlagOverrideRequest === null || requestParameters.updateEnvironementFeatureFlagOverrideRequest === undefined) {
+            throw new runtime.RequiredError('updateEnvironementFeatureFlagOverrideRequest','Required parameter requestParameters.updateEnvironementFeatureFlagOverrideRequest was null or undefined when calling updateEnvironementFeatureFlagOverride.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.value !== undefined) {
-            queryParameters['value'] = requestParameters.value;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
@@ -149,6 +189,7 @@ export class EnvironmentsApi extends runtime.BaseAPI {
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
+            body: UpdateEnvironementFeatureFlagOverrideRequestToJSON(requestParameters.updateEnvironementFeatureFlagOverrideRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
@@ -156,9 +197,9 @@ export class EnvironmentsApi extends runtime.BaseAPI {
 
     /**
      * Update environment feature flag override.
-     * Update environment feature flag override
+     * Update Environment Feature Flag Override
      */
-    async updateEnvironementFeatureFlagOverride(requestParameters: UpdateEnvironementFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+    async updateEnvironementFeatureFlagOverride(requestParameters: UpdateEnvironementFeatureFlagOverrideOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.updateEnvironementFeatureFlagOverrideRaw(requestParameters, initOverrides);
         return await response.value();
     }

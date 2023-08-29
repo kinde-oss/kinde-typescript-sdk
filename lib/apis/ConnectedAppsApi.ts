@@ -19,7 +19,7 @@ import type {
   ConnectedAppsAuthUrl,
   ErrorResponse,
   SuccessResponse,
-} from '../models';
+} from '../models/index';
 import {
     ConnectedAppsAccessTokenFromJSON,
     ConnectedAppsAccessTokenToJSON,
@@ -29,7 +29,7 @@ import {
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models';
+} from '../models/index';
 
 export interface GetConnectedAppAuthUrlRequest {
     keyCodeRef: string;

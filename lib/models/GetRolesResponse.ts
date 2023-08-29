@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Role } from './Role';
+import type { Roles } from './Roles';
 import {
-    RoleFromJSON,
-    RoleFromJSONTyped,
-    RoleToJSON,
-} from './Role';
+    RolesFromJSON,
+    RolesFromJSONTyped,
+    RolesToJSON,
+} from './Roles';
 
 /**
  * 
  * @export
- * @interface GetOrganizationsResponse
+ * @interface GetRolesResponse
  */
-export interface GetOrganizationsResponse {
+export interface GetRolesResponse {
     /**
      * Response code.
      * @type {string}
-     * @memberof GetOrganizationsResponse
+     * @memberof GetRolesResponse
      */
     code?: string;
     /**
      * Response message.
      * @type {string}
-     * @memberof GetOrganizationsResponse
+     * @memberof GetRolesResponse
      */
     message?: string;
     /**
      * 
-     * @type {Array<Role>}
-     * @memberof GetOrganizationsResponse
+     * @type {Array<Roles>}
+     * @memberof GetRolesResponse
      */
-    roles?: Array<Role>;
+    roles?: Array<Roles>;
     /**
      * Pagination token.
      * @type {string}
-     * @memberof GetOrganizationsResponse
+     * @memberof GetRolesResponse
      */
     nextToken?: string;
 }
 
 /**
- * Check if a given object implements the GetOrganizationsResponse interface.
+ * Check if a given object implements the GetRolesResponse interface.
  */
-export function instanceOfGetOrganizationsResponse(value: object): boolean {
+export function instanceOfGetRolesResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function GetOrganizationsResponseFromJSON(json: any): GetOrganizationsResponse {
-    return GetOrganizationsResponseFromJSONTyped(json, false);
+export function GetRolesResponseFromJSON(json: any): GetRolesResponse {
+    return GetRolesResponseFromJSONTyped(json, false);
 }
 
-export function GetOrganizationsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetOrganizationsResponse {
+export function GetRolesResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetRolesResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -73,12 +73,12 @@ export function GetOrganizationsResponseFromJSONTyped(json: any, ignoreDiscrimin
         
         'code': !exists(json, 'code') ? undefined : json['code'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'roles': !exists(json, 'roles') ? undefined : ((json['roles'] as Array<any>).map(RoleFromJSON)),
+        'roles': !exists(json, 'roles') ? undefined : ((json['roles'] as Array<any>).map(RolesFromJSON)),
         'nextToken': !exists(json, 'next_token') ? undefined : json['next_token'],
     };
 }
 
-export function GetOrganizationsResponseToJSON(value?: GetOrganizationsResponse | null): any {
+export function GetRolesResponseToJSON(value?: GetRolesResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -89,7 +89,7 @@ export function GetOrganizationsResponseToJSON(value?: GetOrganizationsResponse 
         
         'code': value.code,
         'message': value.message,
-        'roles': value.roles === undefined ? undefined : ((value.roles as Array<any>).map(RoleToJSON)),
+        'roles': value.roles === undefined ? undefined : ((value.roles as Array<any>).map(RolesToJSON)),
         'next_token': value.nextToken,
     };
 }

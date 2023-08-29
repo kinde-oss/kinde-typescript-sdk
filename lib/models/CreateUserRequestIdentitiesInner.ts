@@ -31,7 +31,7 @@ export interface CreateUserRequestIdentitiesInner {
      * @type {string}
      * @memberof CreateUserRequestIdentitiesInner
      */
-    type?: string;
+    type?: CreateUserRequestIdentitiesInnerTypeEnum;
     /**
      * 
      * @type {CreateUserRequestIdentitiesInnerDetails}
@@ -39,6 +39,16 @@ export interface CreateUserRequestIdentitiesInner {
      */
     details?: CreateUserRequestIdentitiesInnerDetails;
 }
+
+
+/**
+ * @export
+ */
+export const CreateUserRequestIdentitiesInnerTypeEnum = {
+    Email: 'email'
+} as const;
+export type CreateUserRequestIdentitiesInnerTypeEnum = typeof CreateUserRequestIdentitiesInnerTypeEnum[keyof typeof CreateUserRequestIdentitiesInnerTypeEnum];
+
 
 /**
  * Check if a given object implements the CreateUserRequestIdentitiesInner interface.
