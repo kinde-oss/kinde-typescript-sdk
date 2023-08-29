@@ -16,48 +16,50 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Application
+ * @interface AddAPIsRequest
  */
-export interface Application {
+export interface AddAPIsRequest {
     /**
      * 
      * @type {string}
-     * @memberof Application
+     * @memberof AddAPIsRequest
      */
-    appId?: string;
+    name: string;
     /**
      * 
      * @type {string}
-     * @memberof Application
+     * @memberof AddAPIsRequest
      */
-    name?: string;
+    audience: string;
 }
 
 /**
- * Check if a given object implements the Application interface.
+ * Check if a given object implements the AddAPIsRequest interface.
  */
-export function instanceOfApplication(value: object): boolean {
+export function instanceOfAddAPIsRequest(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "audience" in value;
 
     return isInstance;
 }
 
-export function ApplicationFromJSON(json: any): Application {
-    return ApplicationFromJSONTyped(json, false);
+export function AddAPIsRequestFromJSON(json: any): AddAPIsRequest {
+    return AddAPIsRequestFromJSONTyped(json, false);
 }
 
-export function ApplicationFromJSONTyped(json: any, ignoreDiscriminator: boolean): Application {
+export function AddAPIsRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddAPIsRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'appId': !exists(json, 'app_id') ? undefined : json['app_id'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
+        'name': json['name'],
+        'audience': json['audience'],
     };
 }
 
-export function ApplicationToJSON(value?: Application | null): any {
+export function AddAPIsRequestToJSON(value?: AddAPIsRequest | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -66,8 +68,8 @@ export function ApplicationToJSON(value?: Application | null): any {
     }
     return {
         
-        'app_id': value.appId,
         'name': value.name,
+        'audience': value.audience,
     };
 }
 

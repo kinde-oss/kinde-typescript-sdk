@@ -19,15 +19,18 @@ import type {
   AddOrganizationUsersResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
+  CreateOrganizationUserRoleRequest,
   ErrorResponse,
+  GetOrganizationFeatureFlagsResponse,
+  GetOrganizationUsersResponse,
   GetOrganizationsResponse,
-  GetOrganizationsUsersResponse,
+  GetOrganizationsUserRolesResponse,
   Organization,
-  RemoveOrganizationUsersResponse,
   SuccessResponse,
   UpdateOrganizationRequest,
   UpdateOrganizationUsersRequest,
-} from '../models';
+  UpdateOrganizationUsersResponse,
+} from '../models/index';
 import {
     AddOrganizationUsersRequestFromJSON,
     AddOrganizationUsersRequestToJSON,
@@ -37,23 +40,29 @@ import {
     CreateOrganizationRequestToJSON,
     CreateOrganizationResponseFromJSON,
     CreateOrganizationResponseToJSON,
+    CreateOrganizationUserRoleRequestFromJSON,
+    CreateOrganizationUserRoleRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    GetOrganizationFeatureFlagsResponseFromJSON,
+    GetOrganizationFeatureFlagsResponseToJSON,
+    GetOrganizationUsersResponseFromJSON,
+    GetOrganizationUsersResponseToJSON,
     GetOrganizationsResponseFromJSON,
     GetOrganizationsResponseToJSON,
-    GetOrganizationsUsersResponseFromJSON,
-    GetOrganizationsUsersResponseToJSON,
+    GetOrganizationsUserRolesResponseFromJSON,
+    GetOrganizationsUserRolesResponseToJSON,
     OrganizationFromJSON,
     OrganizationToJSON,
-    RemoveOrganizationUsersResponseFromJSON,
-    RemoveOrganizationUsersResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
     UpdateOrganizationRequestFromJSON,
     UpdateOrganizationRequestToJSON,
     UpdateOrganizationUsersRequestFromJSON,
     UpdateOrganizationUsersRequestToJSON,
-} from '../models';
+    UpdateOrganizationUsersResponseFromJSON,
+    UpdateOrganizationUsersResponseToJSON,
+} from '../models/index';
 
 export interface AddOrganizationUsersOperationRequest {
     orgCode: string;
@@ -62,6 +71,16 @@ export interface AddOrganizationUsersOperationRequest {
 
 export interface CreateOrganizationOperationRequest {
     createOrganizationRequest?: CreateOrganizationRequest;
+}
+
+export interface CreateOrganizationUserRoleOperationRequest {
+    orgCode: string;
+    userId: string;
+    createOrganizationUserRoleRequest: CreateOrganizationUserRoleRequest;
+}
+
+export interface DeleteOrganizationRequest {
+    orgCode: string;
 }
 
 export interface DeleteOrganizationFeatureFlagOverrideRequest {
@@ -73,8 +92,23 @@ export interface DeleteOrganizationFeatureFlagOverridesRequest {
     orgCode: string;
 }
 
+export interface DeleteOrganizationUserRoleRequest {
+    orgCode: string;
+    userId: string;
+    roleId: string;
+}
+
 export interface GetOrganizationRequest {
     code?: string;
+}
+
+export interface GetOrganizationFeatureFlagsRequest {
+    orgCode: string;
+}
+
+export interface GetOrganizationUserRolesRequest {
+    orgCode: string;
+    userId: string;
 }
 
 export interface GetOrganizationUsersRequest {
@@ -119,7 +153,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Add existing users to an organization.
-     * Add organization users
+     * Add Organization Users
      */
     async addOrganizationUsersRaw(requestParameters: AddOrganizationUsersOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddOrganizationUsersResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
@@ -153,7 +187,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Add existing users to an organization.
-     * Add organization users
+     * Add Organization Users
      */
     async addOrganizationUsers(requestParameters: AddOrganizationUsersOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddOrganizationUsersResponse> {
         const response = await this.addOrganizationUsersRaw(requestParameters, initOverrides);
@@ -200,8 +234,98 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
+     * Add role to an organization user.
+     * Add Organization User Role
+     */
+    async createOrganizationUserRoleRaw(requestParameters: CreateOrganizationUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling createOrganizationUserRole.');
+        }
+
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling createOrganizationUserRole.');
+        }
+
+        if (requestParameters.createOrganizationUserRoleRequest === null || requestParameters.createOrganizationUserRoleRequest === undefined) {
+            throw new runtime.RequiredError('createOrganizationUserRoleRequest','Required parameter requestParameters.createOrganizationUserRoleRequest was null or undefined when calling createOrganizationUserRole.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/users/{user_id}/roles`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))).replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreateOrganizationUserRoleRequestToJSON(requestParameters.createOrganizationUserRoleRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Add role to an organization user.
+     * Add Organization User Role
+     */
+    async createOrganizationUserRole(requestParameters: CreateOrganizationUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.createOrganizationUserRoleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete an organization.
+     * Delete Organization
+     */
+    async deleteOrganizationRaw(requestParameters: DeleteOrganizationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling deleteOrganization.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organization/{org_code}`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete an organization.
+     * Delete Organization
+     */
+    async deleteOrganization(requestParameters: DeleteOrganizationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteOrganizationRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Delete organization feature flag override.
-     * Delete organization feature flag override
+     * Delete Organization Feature Flag Override
      */
     async deleteOrganizationFeatureFlagOverrideRaw(requestParameters: DeleteOrganizationFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
@@ -236,7 +360,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Delete organization feature flag override.
-     * Delete organization feature flag override
+     * Delete Organization Feature Flag Override
      */
     async deleteOrganizationFeatureFlagOverride(requestParameters: DeleteOrganizationFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.deleteOrganizationFeatureFlagOverrideRaw(requestParameters, initOverrides);
@@ -245,7 +369,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Delete all organization feature flag overrides.
-     * Delete all organization feature flag overrides
+     * Delete Organization Feature Flag Overrides
      */
     async deleteOrganizationFeatureFlagOverridesRaw(requestParameters: DeleteOrganizationFeatureFlagOverridesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
@@ -276,10 +400,58 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Delete all organization feature flag overrides.
-     * Delete all organization feature flag overrides
+     * Delete Organization Feature Flag Overrides
      */
     async deleteOrganizationFeatureFlagOverrides(requestParameters: DeleteOrganizationFeatureFlagOverridesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.deleteOrganizationFeatureFlagOverridesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete role for an organization user.
+     * Delete Organization User Role
+     */
+    async deleteOrganizationUserRoleRaw(requestParameters: DeleteOrganizationUserRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling deleteOrganizationUserRole.');
+        }
+
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling deleteOrganizationUserRole.');
+        }
+
+        if (requestParameters.roleId === null || requestParameters.roleId === undefined) {
+            throw new runtime.RequiredError('roleId','Required parameter requestParameters.roleId was null or undefined when calling deleteOrganizationUserRole.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/users/{user_id}/roles/{role_id}`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))).replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))).replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete role for an organization user.
+     * Delete Organization User Role
+     */
+    async deleteOrganizationUserRole(requestParameters: DeleteOrganizationUserRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deleteOrganizationUserRoleRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -324,10 +496,94 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
+     * Get all organization feature flags.
+     * List Organization Feature Flags
+     */
+    async getOrganizationFeatureFlagsRaw(requestParameters: GetOrganizationFeatureFlagsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrganizationFeatureFlagsResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling getOrganizationFeatureFlags.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/feature_flags`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetOrganizationFeatureFlagsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get all organization feature flags.
+     * List Organization Feature Flags
+     */
+    async getOrganizationFeatureFlags(requestParameters: GetOrganizationFeatureFlagsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrganizationFeatureFlagsResponse> {
+        const response = await this.getOrganizationFeatureFlagsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get roles for an organization user.
+     * List Organization User Roles
+     */
+    async getOrganizationUserRolesRaw(requestParameters: GetOrganizationUserRolesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrganizationsUserRolesResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling getOrganizationUserRoles.');
+        }
+
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling getOrganizationUserRoles.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/users/{user_id}/roles`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))).replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetOrganizationsUserRolesResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get roles for an organization user.
+     * List Organization User Roles
+     */
+    async getOrganizationUserRoles(requestParameters: GetOrganizationUserRolesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrganizationsUserRolesResponse> {
+        const response = await this.getOrganizationUserRolesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get users in an organization.
      * List Organization Users
      */
-    async getOrganizationUsersRaw(requestParameters: GetOrganizationUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrganizationsUsersResponse>> {
+    async getOrganizationUsersRaw(requestParameters: GetOrganizationUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrganizationUsersResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
             throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling getOrganizationUsers.');
         }
@@ -367,14 +623,14 @@ export class OrganizationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetOrganizationsUsersResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetOrganizationUsersResponseFromJSON(jsonValue));
     }
 
     /**
      * Get users in an organization.
      * List Organization Users
      */
-    async getOrganizationUsers(requestParameters: GetOrganizationUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrganizationsUsersResponse> {
+    async getOrganizationUsers(requestParameters: GetOrganizationUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrganizationUsersResponse> {
         const response = await this.getOrganizationUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -429,7 +685,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Remove user from an organization.
-     * Remove organization user
+     * Remove Organization User
      */
     async removeOrganizationUserRaw(requestParameters: RemoveOrganizationUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
@@ -464,7 +720,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Remove user from an organization.
-     * Remove organization user
+     * Remove Organization User
      */
     async removeOrganizationUser(requestParameters: RemoveOrganizationUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.removeOrganizationUserRaw(requestParameters, initOverrides);
@@ -475,7 +731,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
      * Update an organization.
      * Update Organization
      */
-    async updateOrganizationRaw(requestParameters: UpdateOrganizationOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateOrganizationRaw(requestParameters: UpdateOrganizationOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
             throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling updateOrganization.');
         }
@@ -495,27 +751,28 @@ export class OrganizationsApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/organizations/{org_code}`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))),
+            path: `/api/v1/organization/{org_code}`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))),
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
             body: UpdateOrganizationRequestToJSON(requestParameters.updateOrganizationRequest),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
      * Update an organization.
      * Update Organization
      */
-    async updateOrganization(requestParameters: UpdateOrganizationOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.updateOrganizationRaw(requestParameters, initOverrides);
+    async updateOrganization(requestParameters: UpdateOrganizationOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.updateOrganizationRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Update organization feature flag override.
-     * Update organization feature flag override
+     * Update Organization Feature Flag Override
      */
     async updateOrganizationFeatureFlagOverrideRaw(requestParameters: UpdateOrganizationFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
@@ -558,7 +815,7 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Update organization feature flag override.
-     * Update organization feature flag override
+     * Update Organization Feature Flag Override
      */
     async updateOrganizationFeatureFlagOverride(requestParameters: UpdateOrganizationFeatureFlagOverrideRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.updateOrganizationFeatureFlagOverrideRaw(requestParameters, initOverrides);
@@ -567,9 +824,9 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
      * Update users that belong to an organization.
-     * Update organization users
+     * Update Organization Users
      */
-    async updateOrganizationUsersRaw(requestParameters: UpdateOrganizationUsersOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RemoveOrganizationUsersResponse>> {
+    async updateOrganizationUsersRaw(requestParameters: UpdateOrganizationUsersOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateOrganizationUsersResponse>> {
         if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
             throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling updateOrganizationUsers.');
         }
@@ -596,14 +853,14 @@ export class OrganizationsApi extends runtime.BaseAPI {
             body: UpdateOrganizationUsersRequestToJSON(requestParameters.updateOrganizationUsersRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RemoveOrganizationUsersResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateOrganizationUsersResponseFromJSON(jsonValue));
     }
 
     /**
      * Update users that belong to an organization.
-     * Update organization users
+     * Update Organization Users
      */
-    async updateOrganizationUsers(requestParameters: UpdateOrganizationUsersOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RemoveOrganizationUsersResponse> {
+    async updateOrganizationUsers(requestParameters: UpdateOrganizationUsersOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateOrganizationUsersResponse> {
         const response = await this.updateOrganizationUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }

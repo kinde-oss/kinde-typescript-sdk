@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Application } from './Application';
+import type { Applications } from './Applications';
 import {
-    ApplicationFromJSON,
-    ApplicationFromJSONTyped,
-    ApplicationToJSON,
-} from './Application';
+    ApplicationsFromJSON,
+    ApplicationsFromJSONTyped,
+    ApplicationsToJSON,
+} from './Applications';
 
 /**
  * 
@@ -40,10 +40,10 @@ export interface GetApplicationsResponse {
     message?: string;
     /**
      * 
-     * @type {Array<Application>}
+     * @type {Array<Applications>}
      * @memberof GetApplicationsResponse
      */
-    organizations?: Array<Application>;
+    applications?: Array<Applications>;
     /**
      * Pagination token.
      * @type {string}
@@ -73,7 +73,7 @@ export function GetApplicationsResponseFromJSONTyped(json: any, ignoreDiscrimina
         
         'code': !exists(json, 'code') ? undefined : json['code'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'organizations': !exists(json, 'organizations') ? undefined : ((json['organizations'] as Array<any>).map(ApplicationFromJSON)),
+        'applications': !exists(json, 'applications') ? undefined : ((json['applications'] as Array<any>).map(ApplicationsFromJSON)),
         'nextToken': !exists(json, 'next_token') ? undefined : json['next_token'],
     };
 }
@@ -89,7 +89,7 @@ export function GetApplicationsResponseToJSON(value?: GetApplicationsResponse | 
         
         'code': value.code,
         'message': value.message,
-        'organizations': value.organizations === undefined ? undefined : ((value.organizations as Array<any>).map(ApplicationToJSON)),
+        'applications': value.applications === undefined ? undefined : ((value.applications as Array<any>).map(ApplicationsToJSON)),
         'next_token': value.nextToken,
     };
 }

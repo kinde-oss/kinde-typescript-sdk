@@ -23,49 +23,49 @@ import {
 /**
  * 
  * @export
- * @interface GetOrganizationsUsersResponse
+ * @interface GetOrganizationUsersResponse
  */
-export interface GetOrganizationsUsersResponse {
+export interface GetOrganizationUsersResponse {
     /**
      * Response code.
      * @type {string}
-     * @memberof GetOrganizationsUsersResponse
+     * @memberof GetOrganizationUsersResponse
      */
     code?: string;
     /**
      * Response message.
      * @type {string}
-     * @memberof GetOrganizationsUsersResponse
+     * @memberof GetOrganizationUsersResponse
      */
     message?: string;
     /**
      * 
      * @type {Array<OrganizationUser>}
-     * @memberof GetOrganizationsUsersResponse
+     * @memberof GetOrganizationUsersResponse
      */
     organizationUsers?: Array<OrganizationUser>;
     /**
      * Pagination token.
      * @type {string}
-     * @memberof GetOrganizationsUsersResponse
+     * @memberof GetOrganizationUsersResponse
      */
     nextToken?: string;
 }
 
 /**
- * Check if a given object implements the GetOrganizationsUsersResponse interface.
+ * Check if a given object implements the GetOrganizationUsersResponse interface.
  */
-export function instanceOfGetOrganizationsUsersResponse(value: object): boolean {
+export function instanceOfGetOrganizationUsersResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function GetOrganizationsUsersResponseFromJSON(json: any): GetOrganizationsUsersResponse {
-    return GetOrganizationsUsersResponseFromJSONTyped(json, false);
+export function GetOrganizationUsersResponseFromJSON(json: any): GetOrganizationUsersResponse {
+    return GetOrganizationUsersResponseFromJSONTyped(json, false);
 }
 
-export function GetOrganizationsUsersResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetOrganizationsUsersResponse {
+export function GetOrganizationUsersResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetOrganizationUsersResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -78,7 +78,7 @@ export function GetOrganizationsUsersResponseFromJSONTyped(json: any, ignoreDisc
     };
 }
 
-export function GetOrganizationsUsersResponseToJSON(value?: GetOrganizationsUsersResponse | null): any {
+export function GetOrganizationUsersResponseToJSON(value?: GetOrganizationUsersResponse | null): any {
     if (value === undefined) {
         return undefined;
     }

@@ -22,7 +22,7 @@ import type {
   UpdateUserRequest,
   User,
   UsersResponse,
-} from '../models';
+} from '../models/index';
 import {
     CreateUserRequestFromJSON,
     CreateUserRequestToJSON,
@@ -38,18 +38,19 @@ import {
     UserToJSON,
     UsersResponseFromJSON,
     UsersResponseToJSON,
-} from '../models';
+} from '../models/index';
 
 export interface CreateUserOperationRequest {
     createUserRequest?: CreateUserRequest;
 }
 
 export interface DeleteUserRequest {
-    id?: string;
+    id: string;
+    isDeleteProfile?: string;
 }
 
 export interface GetUserDataRequest {
-    id?: string;
+    id: string;
 }
 
 export interface GetUsersRequest {
@@ -57,6 +58,7 @@ export interface GetUsersRequest {
     pageSize?: number | null;
     userId?: string | null;
     nextToken?: string | null;
+    email?: string | null;
 }
 
 export interface UpdateUserOperationRequest {
@@ -113,10 +115,18 @@ export class UsersApi extends runtime.BaseAPI {
      * Delete User
      */
     async deleteUserRaw(requestParameters: DeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling deleteUser.');
+        }
+
         const queryParameters: any = {};
 
         if (requestParameters.id !== undefined) {
             queryParameters['id'] = requestParameters.id;
+        }
+
+        if (requestParameters.isDeleteProfile !== undefined) {
+            queryParameters['is_delete_profile'] = requestParameters.isDeleteProfile;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -143,7 +153,7 @@ export class UsersApi extends runtime.BaseAPI {
      * Delete a user record. 
      * Delete User
      */
-    async deleteUser(requestParameters: DeleteUserRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+    async deleteUser(requestParameters: DeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.deleteUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -153,6 +163,10 @@ export class UsersApi extends runtime.BaseAPI {
      * Get User
      */
     async getUserDataRaw(requestParameters: GetUserDataRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getUserData.');
+        }
+
         const queryParameters: any = {};
 
         if (requestParameters.id !== undefined) {
@@ -183,7 +197,7 @@ export class UsersApi extends runtime.BaseAPI {
      * Retrieve a user record. 
      * Get User
      */
-    async getUserData(requestParameters: GetUserDataRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async getUserData(requestParameters: GetUserDataRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.getUserDataRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -209,6 +223,10 @@ export class UsersApi extends runtime.BaseAPI {
 
         if (requestParameters.nextToken !== undefined) {
             queryParameters['next_token'] = requestParameters.nextToken;
+        }
+
+        if (requestParameters.email !== undefined) {
+            queryParameters['email'] = requestParameters.email;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

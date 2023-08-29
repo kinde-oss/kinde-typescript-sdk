@@ -25,12 +25,6 @@ export interface UserIdentityResult {
      * @memberof UserIdentityResult
      */
     created?: boolean;
-    /**
-     * Unique id of the user's identity in Kinde.
-     * @type {number}
-     * @memberof UserIdentityResult
-     */
-    identityId?: number;
 }
 
 /**
@@ -53,7 +47,6 @@ export function UserIdentityResultFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'created': !exists(json, 'created') ? undefined : json['created'],
-        'identityId': !exists(json, 'identity_id') ? undefined : json['identity_id'],
     };
 }
 
@@ -67,7 +60,6 @@ export function UserIdentityResultToJSON(value?: UserIdentityResult | null): any
     return {
         
         'created': value.created,
-        'identity_id': value.identityId,
     };
 }
 

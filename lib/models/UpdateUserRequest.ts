@@ -37,6 +37,12 @@ export interface UpdateUserRequest {
      * @memberof UpdateUserRequest
      */
     isSuspended?: boolean;
+    /**
+     * Prompt the user to change their password on next sign in.
+     * @type {boolean}
+     * @memberof UpdateUserRequest
+     */
+    isPasswordResetRequested?: boolean;
 }
 
 /**
@@ -61,6 +67,7 @@ export function UpdateUserRequestFromJSONTyped(json: any, ignoreDiscriminator: b
         'givenName': !exists(json, 'given_name') ? undefined : json['given_name'],
         'familyName': !exists(json, 'family_name') ? undefined : json['family_name'],
         'isSuspended': !exists(json, 'is_suspended') ? undefined : json['is_suspended'],
+        'isPasswordResetRequested': !exists(json, 'is_password_reset_requested') ? undefined : json['is_password_reset_requested'],
     };
 }
 
@@ -76,6 +83,7 @@ export function UpdateUserRequestToJSON(value?: UpdateUserRequest | null): any {
         'given_name': value.givenName,
         'family_name': value.familyName,
         'is_suspended': value.isSuspended,
+        'is_password_reset_requested': value.isPasswordResetRequested,
     };
 }
 

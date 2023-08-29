@@ -17,13 +17,13 @@ import * as runtime from '../runtime';
 import type {
   UserProfile,
   UserProfileV2,
-} from '../models';
+} from '../models/index';
 import {
     UserProfileFromJSON,
     UserProfileToJSON,
     UserProfileV2FromJSON,
     UserProfileV2ToJSON,
-} from '../models';
+} from '../models/index';
 
 /**
  * 
@@ -32,7 +32,7 @@ export class OAuthApi extends runtime.BaseAPI {
 
     /**
      * Contains the id, names and email of the currently logged in user. 
-     * Returns the details of the currently logged in user
+     * Get User Profile
      */
     async getUserRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserProfile>> {
         const queryParameters: any = {};
@@ -59,7 +59,7 @@ export class OAuthApi extends runtime.BaseAPI {
 
     /**
      * Contains the id, names and email of the currently logged in user. 
-     * Returns the details of the currently logged in user
+     * Get User Profile
      */
     async getUser(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserProfile> {
         const response = await this.getUserRaw(initOverrides);
