@@ -24,5 +24,5 @@ export const isBrowserEnvironment = (): boolean => {
 
 export const crypto =
   currentEnvironment === JSEnvironment.NODEJS
-    ? require('crypto')
+    ? globalThis.crypto ?? require("crypto")
     : globalThis.crypto;
