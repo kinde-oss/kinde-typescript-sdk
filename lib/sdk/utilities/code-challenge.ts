@@ -1,5 +1,5 @@
 import { generateRandomString } from './random-string';
-import { crypto } from '../environment';
+import { subtle } from 'uncrypto';
 
 /**
  * Encodes the provided ArrayBuffer string to base-64 format.
@@ -22,7 +22,7 @@ export const base64UrlEncode = (str: ArrayBuffer): string => {
 export const sha256 = async (plain: string): Promise<ArrayBuffer> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(plain);
-  return crypto.subtle.digest('SHA-256', data);
+  return await subtle.digest('SHA-256', data);
 };
 
 /**

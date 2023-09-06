@@ -1,31 +1,14 @@
-import { crypto, isBrowserEnvironment } from '../environment';
+import {getRandomValues} from 'uncrypto';
 
 /**
- * Creates a random string of provided length for the browser.
+ * Creates a random string of provided length.
  * @param {number} length
  * @returns {string} required secret
  */
-const randomStringInBrowser = (length: number = 28): string => {
+export const generateRandomString = (length: number = 28): string => {
   const array = new Uint32Array(length);
-  crypto.getRandomValues(array);
+  getRandomValues(array);
   return Array.from(array, (dec) =>
     ('0' + dec.toString(16)).slice(-2)
   ).join('');
 };
-
-/**
- * Creates a random string of provided length for the server.
- * @param {number} length
- * @returns {string} required secret
- */
-const randomStringInNodejs = (length: number = 28): string => {
-  const nodeCrypto = crypto as any;
-  if (nodeCrypto.randomBytes === undefined) {
-    return randomStringInBrowser(length);
-  }
-  return nodeCrypto.randomBytes(length).toString('hex');
-};
-
-export const generateRandomString = isBrowserEnvironment()
-  ? randomStringInBrowser
-  : randomStringInNodejs;

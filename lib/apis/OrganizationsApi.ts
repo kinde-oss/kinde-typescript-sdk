@@ -19,11 +19,13 @@ import type {
   AddOrganizationUsersResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
+  CreateOrganizationUserPermissionRequest,
   CreateOrganizationUserRoleRequest,
   ErrorResponse,
   GetOrganizationFeatureFlagsResponse,
   GetOrganizationUsersResponse,
   GetOrganizationsResponse,
+  GetOrganizationsUserPermissionsResponse,
   GetOrganizationsUserRolesResponse,
   Organization,
   SuccessResponse,
@@ -40,6 +42,8 @@ import {
     CreateOrganizationRequestToJSON,
     CreateOrganizationResponseFromJSON,
     CreateOrganizationResponseToJSON,
+    CreateOrganizationUserPermissionRequestFromJSON,
+    CreateOrganizationUserPermissionRequestToJSON,
     CreateOrganizationUserRoleRequestFromJSON,
     CreateOrganizationUserRoleRequestToJSON,
     ErrorResponseFromJSON,
@@ -50,6 +54,8 @@ import {
     GetOrganizationUsersResponseToJSON,
     GetOrganizationsResponseFromJSON,
     GetOrganizationsResponseToJSON,
+    GetOrganizationsUserPermissionsResponseFromJSON,
+    GetOrganizationsUserPermissionsResponseToJSON,
     GetOrganizationsUserRolesResponseFromJSON,
     GetOrganizationsUserRolesResponseToJSON,
     OrganizationFromJSON,
@@ -73,6 +79,12 @@ export interface CreateOrganizationOperationRequest {
     createOrganizationRequest?: CreateOrganizationRequest;
 }
 
+export interface CreateOrganizationUserPermissionOperationRequest {
+    orgCode: string;
+    userId: string;
+    createOrganizationUserPermissionRequest: CreateOrganizationUserPermissionRequest;
+}
+
 export interface CreateOrganizationUserRoleOperationRequest {
     orgCode: string;
     userId: string;
@@ -92,6 +104,12 @@ export interface DeleteOrganizationFeatureFlagOverridesRequest {
     orgCode: string;
 }
 
+export interface DeleteOrganizationUserPermissionRequest {
+    orgCode: string;
+    userId: string;
+    permissionId: string;
+}
+
 export interface DeleteOrganizationUserRoleRequest {
     orgCode: string;
     userId: string;
@@ -104,6 +122,11 @@ export interface GetOrganizationRequest {
 
 export interface GetOrganizationFeatureFlagsRequest {
     orgCode: string;
+}
+
+export interface GetOrganizationUserPermissionsRequest {
+    orgCode: string;
+    userId: string;
 }
 
 export interface GetOrganizationUserRolesRequest {
@@ -230,6 +253,57 @@ export class OrganizationsApi extends runtime.BaseAPI {
      */
     async createOrganization(requestParameters: CreateOrganizationOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateOrganizationResponse> {
         const response = await this.createOrganizationRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Add permission to an organization user.
+     * Add Organization User Permission
+     */
+    async createOrganizationUserPermissionRaw(requestParameters: CreateOrganizationUserPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling createOrganizationUserPermission.');
+        }
+
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling createOrganizationUserPermission.');
+        }
+
+        if (requestParameters.createOrganizationUserPermissionRequest === null || requestParameters.createOrganizationUserPermissionRequest === undefined) {
+            throw new runtime.RequiredError('createOrganizationUserPermissionRequest','Required parameter requestParameters.createOrganizationUserPermissionRequest was null or undefined when calling createOrganizationUserPermission.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/users/{user_id}/permissions`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))).replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreateOrganizationUserPermissionRequestToJSON(requestParameters.createOrganizationUserPermissionRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Add permission to an organization user.
+     * Add Organization User Permission
+     */
+    async createOrganizationUserPermission(requestParameters: CreateOrganizationUserPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.createOrganizationUserPermissionRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -408,6 +482,54 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
+     * Delete permission for an organization user.
+     * Delete Organization User Permission
+     */
+    async deleteOrganizationUserPermissionRaw(requestParameters: DeleteOrganizationUserPermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling deleteOrganizationUserPermission.');
+        }
+
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling deleteOrganizationUserPermission.');
+        }
+
+        if (requestParameters.permissionId === null || requestParameters.permissionId === undefined) {
+            throw new runtime.RequiredError('permissionId','Required parameter requestParameters.permissionId was null or undefined when calling deleteOrganizationUserPermission.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/users/{user_id}/permissions/{permission_id}`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))).replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))).replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete permission for an organization user.
+     * Delete Organization User Permission
+     */
+    async deleteOrganizationUserPermission(requestParameters: DeleteOrganizationUserPermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deleteOrganizationUserPermissionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Delete role for an organization user.
      * Delete Organization User Role
      */
@@ -532,6 +654,50 @@ export class OrganizationsApi extends runtime.BaseAPI {
      */
     async getOrganizationFeatureFlags(requestParameters: GetOrganizationFeatureFlagsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrganizationFeatureFlagsResponse> {
         const response = await this.getOrganizationFeatureFlagsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get permissions for an organization user.
+     * List Organization User Permissions
+     */
+    async getOrganizationUserPermissionsRaw(requestParameters: GetOrganizationUserPermissionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrganizationsUserPermissionsResponse>> {
+        if (requestParameters.orgCode === null || requestParameters.orgCode === undefined) {
+            throw new runtime.RequiredError('orgCode','Required parameter requestParameters.orgCode was null or undefined when calling getOrganizationUserPermissions.');
+        }
+
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling getOrganizationUserPermissions.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/organizations/{org_code}/users/{user_id}/permissions`.replace(`{${"org_code"}}`, encodeURIComponent(String(requestParameters.orgCode))).replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetOrganizationsUserPermissionsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get permissions for an organization user.
+     * List Organization User Permissions
+     */
+    async getOrganizationUserPermissions(requestParameters: GetOrganizationUserPermissionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrganizationsUserPermissionsResponse> {
+        const response = await this.getOrganizationUserPermissionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

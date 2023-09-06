@@ -46,11 +46,12 @@ export interface CreateUserOperationRequest {
 
 export interface DeleteUserRequest {
     id: string;
-    isDeleteProfile?: string;
+    isDeleteProfile?: boolean;
 }
 
 export interface GetUserDataRequest {
     id: string;
+    expand?: string | null;
 }
 
 export interface GetUsersRequest {
@@ -59,6 +60,11 @@ export interface GetUsersRequest {
     userId?: string | null;
     nextToken?: string | null;
     email?: string | null;
+    expand?: string | null;
+}
+
+export interface RefreshUserClaimsRequest {
+    userId: string;
 }
 
 export interface UpdateUserOperationRequest {
@@ -173,6 +179,10 @@ export class UsersApi extends runtime.BaseAPI {
             queryParameters['id'] = requestParameters.id;
         }
 
+        if (requestParameters.expand !== undefined) {
+            queryParameters['expand'] = requestParameters.expand;
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
@@ -229,6 +239,10 @@ export class UsersApi extends runtime.BaseAPI {
             queryParameters['email'] = requestParameters.email;
         }
 
+        if (requestParameters.expand !== undefined) {
+            queryParameters['expand'] = requestParameters.expand;
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
@@ -255,6 +269,46 @@ export class UsersApi extends runtime.BaseAPI {
      */
     async getUsers(requestParameters: GetUsersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UsersResponse> {
         const response = await this.getUsersRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Refreshes the user\'s claims and invalidates the current cache. 
+     * Refresh User Claims and Invalidate Cache
+     */
+    async refreshUserClaimsRaw(requestParameters: RefreshUserClaimsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling refreshUserClaims.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/users/{user_id}/refresh_claims`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Refreshes the user\'s claims and invalidates the current cache. 
+     * Refresh User Claims and Invalidate Cache
+     */
+    async refreshUserClaims(requestParameters: RefreshUserClaimsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.refreshUserClaimsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
