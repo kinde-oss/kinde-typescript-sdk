@@ -7,8 +7,8 @@ import { BrowserSessionManager } from '../../../sdk/session-managers';
 describe('BrowserSessionManager', () => {
   const sessionManager = new BrowserSessionManager();
 
-  afterEach(() => {
-    sessionManager.destroySession();
+  afterEach(async () => {
+    await sessionManager.destroySession();
   });
 
   describe('new BrowserSessionManager()', () => {
@@ -18,59 +18,67 @@ describe('BrowserSessionManager', () => {
   });
 
   describe('destroySession()', () => {
-    it('clears all items in session after being called', () => {
+    it('clears all items in session after being called', async () => {
       const sessionItemKey = 'session-item-key';
-      sessionManager.setSessionItem(sessionItemKey, 'session-key-value');
-      sessionManager.destroySession();
-      expect(sessionManager.getSessionItem(sessionItemKey)).toBe(null);
+      await sessionManager.setSessionItem(sessionItemKey, 'session-key-value');
+      await sessionManager.destroySession();
+      expect(await sessionManager.getSessionItem(sessionItemKey)).toBe(null);
     });
   });
 
   describe('setSessionItem()', () => {
-    it('stores a value against the provided key in memory', () => {
+    it('stores a value against the provided key in memory', async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
-      sessionManager.setSessionItem(sessionItemKey, sessionItemValue);
-      expect(sessionManager.getSessionItem(sessionItemKey)).toBe(
+      await sessionManager.setSessionItem(sessionItemKey, sessionItemValue);
+      expect(await sessionManager.getSessionItem(sessionItemKey)).toBe(
         sessionItemValue
       );
     });
   });
 
   describe('removeSessionItem()', () => {
-    it('removes a session item from memory', () => {
+    it('removes a session item from memory', async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
-      sessionManager.setSessionItem(sessionItemKey, sessionItemValue);
-      expect(sessionManager.getSessionItem(sessionItemKey)).toBe(
+      await sessionManager.setSessionItem(sessionItemKey, sessionItemValue);
+      expect(await sessionManager.getSessionItem(sessionItemKey)).toBe(
         sessionItemValue
       );
-      sessionManager.removeSessionItem(sessionItemKey);
-      expect(sessionManager.getSessionItem(sessionItemKey)).toBe(null);
+      await sessionManager.removeSessionItem(sessionItemKey);
+      expect(await sessionManager.getSessionItem(sessionItemKey)).toBe(null);
     });
   });
 
   describe('setBrowserSessionItem()', () => {
-    it('stores a value against the provided key in the browser\'s session storage', () => {
+    it('stores a value against the provided key in the browser\'s session storage', async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
-      sessionManager.setSessionItemBrowser(sessionItemKey, sessionItemValue);
-      expect(sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
+      await sessionManager.setSessionItemBrowser(
+        sessionItemKey,
+        sessionItemValue
+      );
+      expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
         sessionItemValue
       );
     });
   });
 
   describe('removeBrowserSessionItem()', () => {
-    it('removes a session item from the browser\'s session storage', () => {
+    it('removes a session item from the browser\'s session storage', async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
-      sessionManager.setSessionItemBrowser(sessionItemKey, sessionItemValue);
-      expect(sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
+      await sessionManager.setSessionItemBrowser(
+        sessionItemKey,
         sessionItemValue
       );
-      sessionManager.removeSessionItemBrowser(sessionItemKey);
-      expect(sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(null);
+      expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
+        sessionItemValue
+      );
+      await sessionManager.removeSessionItemBrowser(sessionItemKey);
+      expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
+        null
+      );
     });
   });
 });

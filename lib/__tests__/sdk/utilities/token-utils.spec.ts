@@ -12,7 +12,7 @@ describe('token-utils', () => {
   const { sessionManager } = mocks;
 
   describe('commitTokensToMemory', () => {
-    it('stores all provided tokens to memory', () => {
+    it('stores all provided tokens to memory', async () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
       const { token: mockIdToken } = mocks.getMockAccessToken(domain);
       const tokenCollection: TokenCollection = {
@@ -20,37 +20,41 @@ describe('token-utils', () => {
         access_token: mockAccessToken,
         id_token: mockIdToken,
       };
-      commitTokensToMemory(sessionManager, tokenCollection);
+      await commitTokensToMemory(sessionManager, tokenCollection);
 
-      expect(sessionManager.getSessionItem('refresh_token')).toBe(
+      expect(await sessionManager.getSessionItem('refresh_token')).toBe(
         tokenCollection.refresh_token
       );
-      expect(sessionManager.getSessionItem('access_token')).toBe(
+      expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
       );
-      expect(sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
+      expect(await sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
     });
   });
 
   describe('commitTokenToMemory()', () => {
-    afterEach(() => {
-      sessionManager.destroySession();
+    afterEach(async () => {
+      await sessionManager.destroySession();
     });
 
-    it('stores provided token to memory', () => {
+    it('stores provided token to memory', async () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
-      expect(sessionManager.getSessionItem('access_token')).toBe(
+      await commitTokenToMemory(
+        sessionManager,
+        mockAccessToken,
+        'access_token'
+      );
+      expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
       );
     });
 
-    it('stores user information if provide token is an id token', () => {
+    it('stores user information if provide token is an id token', async () => {
       const { token: mockIdToken, payload: idTokenPayload } =
         mocks.getMockIdToken(domain);
-      commitTokenToMemory(sessionManager, mockIdToken, 'id_token');
+      await commitTokenToMemory(sessionManager, mockIdToken, 'id_token');
 
-      const storedUser = sessionManager.getSessionItem('user');
+      const storedUser = await sessionManager.getSessionItem('user');
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
@@ -59,7 +63,7 @@ describe('token-utils', () => {
         picture: null,
       };
 
-      expect(sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
+      expect(await sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
       expect(storedUser).toStrictEqual(expectedUser);
     });
   });

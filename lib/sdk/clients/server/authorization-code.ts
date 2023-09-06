@@ -122,7 +122,7 @@ const createAuthorizationCodeClient = (
         'Cannot get user details, no authentication credential found'
       );
     }
-    return utilities.getUserFromMemory(sessionManager)!;
+    return (await utilities.getUserFromMemory(sessionManager))!;
   };
 
   /**
@@ -141,8 +141,8 @@ const createAuthorizationCodeClient = (
    * @param {SessionManager} sessionManager
    * @returns {URL}
    */
-  const logout = (sessionManager: SessionManager): URL => {
-    sessionManager.destroySession();
+  const logout = async (sessionManager: SessionManager): Promise<URL> => {
+    await sessionManager.destroySession();
     return new URL(client.logoutEndpoint);
   };
 

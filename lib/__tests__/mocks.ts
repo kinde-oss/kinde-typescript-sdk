@@ -73,19 +73,19 @@ export const getMockIdToken = (
 class ServerSessionManager implements SessionManager {
   private memCache: Record<string, unknown> = {};
 
-  destroySession(): void {
+  async destroySession(): Promise<void> {
     this.memCache = {};
   }
 
-  getSessionItem(itemKey: string) {
+  async getSessionItem(itemKey: string) {
     return this.memCache[itemKey] ?? null;
   }
 
-  setSessionItem(itemKey: string, itemValue: unknown): void {
+  async setSessionItem(itemKey: string, itemValue: unknown): Promise<void> {
     this.memCache[itemKey] = itemValue;
   }
 
-  removeSessionItem(itemKey: string): void {
+  async removeSessionItem(itemKey: string): Promise<void> {
     delete this.memCache[itemKey];
   }
 }

@@ -53,7 +53,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
           .setSessionItemBrowser
       : sessionManager.setSessionItem;
 
-    setItem.call(
+    await setItem.call(
       sessionManager,
       this.getCodeVerifierKey(this.state),
       JSON.stringify({ codeVerifier: this.codeVerifier })
@@ -75,7 +75,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
   protected async refreshTokens(
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse> {
-    const refreshToken = utilities.getRefreshToken(sessionManager);
+    const refreshToken = await utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: refreshToken!,
@@ -83,7 +83,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(sessionManager, body, true);
-    utilities.commitTokensToMemory(sessionManager, tokens);
+    await utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
 
@@ -110,7 +110,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
           .getSessionItemBrowser
       : sessionManager.getSessionItem;
 
-    const storedState = getItem.call(sessionManager, storedStateKey) as
+    const storedState = (await getItem.call(sessionManager, storedStateKey)) as
       | string
       | null;
     if (!storedState) {
@@ -136,7 +136,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     try {
       return await this.fetchTokensFor(sessionManager, body);
     } finally {
-      removeItem.call(sessionManager, this.getCodeVerifierKey(state));
+      await removeItem.call(sessionManager, this.getCodeVerifierKey(state));
     }
   }
 

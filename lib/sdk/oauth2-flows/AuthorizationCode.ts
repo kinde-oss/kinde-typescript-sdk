@@ -37,7 +37,10 @@ export class AuthorizationCode extends AuthCodeAbstract {
     options: AuthURLOptions = {}
   ): Promise<URL> {
     this.state = options.state ?? utilities.generateRandomString();
-    sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, this.state);
+    await sessionManager.setSessionItem(
+      AuthorizationCode.STATE_KEY,
+      this.state
+    );
     const authURL = new URL(this.authorizationEndpoint);
     const authParams = this.generateAuthURLParams(options);
     authURL.search = authParams.toString();
@@ -54,7 +57,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
   protected async refreshTokens(
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse> {
-    const refreshToken = utilities.getRefreshToken(sessionManager);
+    const refreshToken = await utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       client_id: this.config.clientId,
@@ -63,7 +66,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(sessionManager, body);
-    utilities.commitTokensToMemory(sessionManager, tokens);
+    await utilities.commitTokensToMemory(sessionManager, tokens);
     return tokens;
   }
 
@@ -81,7 +84,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = this.getCallbackURLParams(callbackURL);
     const stateKey = AuthorizationCode.STATE_KEY;
-    const storedState = sessionManager.getSessionItem(stateKey) as
+    const storedState = (await sessionManager.getSessionItem(stateKey)) as
       | string
       | null;
     if (!storedState || storedState !== state) {
@@ -99,7 +102,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     try {
       return await this.fetchTokensFor(sessionManager, body);
     } finally {
-      sessionManager.removeSessionItem(stateKey);
+      await sessionManager.removeSessionItem(stateKey);
     }
   }
 

@@ -10,21 +10,23 @@ import { type ClaimTokenType } from './types';
  * @param {ClaimTokenType} type
  * @returns {unknown | null}
  */
-export const getClaimValue = (
+export const getClaimValue = async (
   sessionManager: SessionManager,
   claim: string,
   type: ClaimTokenType = 'access_token'
-): unknown | null => {
-  const token = sessionManager.getSessionItem(type as string) as string | null;
+): Promise<unknown | null> => {
+  const token = (await sessionManager.getSessionItem(type as string)) as
+    | string
+    | null;
   if (isTokenExpired(token)) {
     throw new Error(
       `No authentication credential found, when requesting claim ${claim}`
     );
   }
 
-  const tokenPayload = sessionManager.getSessionItem(
+  const tokenPayload = (await sessionManager.getSessionItem(
     `${type}_payload`
-  ) as Record<string, unknown>;
+  )) as Record<string, unknown>;
   return tokenPayload[claim] ?? null;
 };
 
@@ -36,12 +38,15 @@ export const getClaimValue = (
  * @param {ClaimTokenType} type
  * @returns {{ name: string, value: unknown | null }}
  */
-export const getClaim = (
+export const getClaim = async (
   sessionManager: SessionManager,
   claim: string,
   type: ClaimTokenType = 'access_token'
-): { name: string; value: unknown | null } => {
-  return { name: claim, value: getClaimValue(sessionManager, claim, type) };
+): Promise<{ name: string; value: unknown | null }> => {
+  return {
+    name: claim,
+    value: await getClaimValue(sessionManager, claim, type),
+  };
 };
 
 /**
@@ -52,14 +57,16 @@ export const getClaim = (
  * @param {string} name
  * @returns {{ orgCode: string | null, isGranted: boolean }}
  */
-export const getPermission = (
+export const getPermission = async (
   sessionManager: SessionManager,
   name: string
-): { orgCode: string | null; isGranted: boolean } => {
-  const permissions = (getClaimValue(sessionManager, 'permissions') ??
+): Promise<{ orgCode: string | null; isGranted: boolean }> => {
+  const permissions = ((await getClaimValue(sessionManager, 'permissions')) ??
     []) as string[];
   const isGranted = permissions.some((p) => p === name);
-  const orgCode = getClaimValue(sessionManager, 'org_code') as string | null;
+  const orgCode = (await getClaimValue(sessionManager, 'org_code')) as
+    | string
+    | null;
   return { orgCode, isGranted };
 };
 
@@ -68,10 +75,10 @@ export const getPermission = (
  * @param {SessionManager} sessionManager
  * @returns {{ orgCode: string | null }}
  */
-export const getOrganization = (
+export const getOrganization = async (
   sessionManager: SessionManager
-): { orgCode: string | null } => ({
-  orgCode: getClaimValue(sessionManager, 'org_code') as string | null,
+): Promise<{ orgCode: string | null }> => ({
+  orgCode: (await getClaimValue(sessionManager, 'org_code')) as string | null,
 });
 
 /**
@@ -80,12 +87,18 @@ export const getOrganization = (
  * @param {SessionManager} sessionManager
  * @returns {{ permissions: string[], orgCode: string | null }}
  */
-export const getPermissions = (
+export const getPermissions = async (
   sessionManager: SessionManager
-): { permissions: string[]; orgCode: string | null } => ({
-  permissions: (getClaimValue(sessionManager, 'permissions') ?? []) as string[],
-  orgCode: getClaimValue(sessionManager, 'org_code') as string | null,
-});
+): Promise<{ permissions: string[]; orgCode: string | null }> => {
+  const [permissions, orgCode] = await Promise.all([
+    (getClaimValue(sessionManager, 'permissions') ?? []) as Promise<string[]>,
+    getClaimValue(sessionManager, 'org_code') as Promise<string | null>,
+  ]);
+  return {
+    permissions,
+    orgCode,
+  };
+};
 
 /**
  * Method extracts all organization codes from the id token in the current
@@ -93,9 +106,9 @@ export const getPermissions = (
  * @param {SessionManager} sessionManager
  * @returns {{ orgCodes: string[] }}
  */
-export const getUserOrganizations = (
+export const getUserOrganizations = async (
   sessionManager: SessionManager
-): { orgCodes: string[] } => ({
-  orgCodes: (getClaimValue(sessionManager, 'org_codes', 'id_token') ??
+): Promise<{ orgCodes: string[] }> => ({
+  orgCodes: ((await getClaimValue(sessionManager, 'org_codes', 'id_token')) ??
     []) as string[],
 });

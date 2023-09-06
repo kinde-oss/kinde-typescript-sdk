@@ -22,10 +22,10 @@ const getTokenPayload = (token: string): any => {
  * @param {string} idToken
  * @returns {void}
  */
-const commitUserToMemoryFromToken = (
+const commitUserToMemoryFromToken = async (
   sessionManager: SessionManager,
   idToken: string
-): void => {
+): Promise<void> => {
   const idTokenPayload = getTokenPayload(idToken);
   const user: UserType = {
     family_name: idTokenPayload.family_name,
@@ -35,7 +35,7 @@ const commitUserToMemoryFromToken = (
     id: idTokenPayload.sub,
   };
 
-  sessionManager.setSessionItem('user', user);
+  await sessionManager.setSessionItem('user', user);
 };
 
 /**
@@ -44,18 +44,18 @@ const commitUserToMemoryFromToken = (
  * @param {string} token
  * @param {TokenType} type
  */
-export const commitTokenToMemory = (
+export const commitTokenToMemory = async (
   sessionManager: SessionManager,
   token: string,
   type: TokenType
-): void => {
+): Promise<void> => {
   const tokenPayload = getTokenPayload(token);
-  sessionManager.setSessionItem(type, token);
+  await sessionManager.setSessionItem(type, token);
   if (type === 'access_token') {
-    sessionManager.setSessionItem('access_token_payload', tokenPayload);
+    await sessionManager.setSessionItem('access_token_payload', tokenPayload);
   } else if (type === 'id_token') {
-    sessionManager.setSessionItem('id_token_payload', tokenPayload);
-    commitUserToMemoryFromToken(sessionManager, token);
+    await sessionManager.setSessionItem('id_token_payload', tokenPayload);
+    await commitUserToMemoryFromToken(sessionManager, token);
   }
 };
 
@@ -65,13 +65,15 @@ export const commitTokenToMemory = (
  * @param {SessionManager} sessionManager
  * @param tokens
  */
-export const commitTokensToMemory = (
+export const commitTokensToMemory = async (
   sessionManager: SessionManager,
   tokens: TokenCollection
-): void => {
-  commitTokenToMemory(sessionManager, tokens.refresh_token, 'refresh_token');
-  commitTokenToMemory(sessionManager, tokens.access_token, 'access_token');
-  commitTokenToMemory(sessionManager, tokens.id_token, 'id_token');
+): Promise<void> => {
+  await Promise.all([
+    commitTokenToMemory(sessionManager, tokens.refresh_token, 'refresh_token'),
+    commitTokenToMemory(sessionManager, tokens.access_token, 'access_token'),
+    commitTokenToMemory(sessionManager, tokens.id_token, 'id_token'),
+  ]);
 };
 
 /**
@@ -80,10 +82,12 @@ export const commitTokensToMemory = (
  * @param {SessionManager} sessionManager
  * @returns {string | null}
  */
-export const getRefreshToken = (
+export const getRefreshToken = async (
   sessionManager: SessionManager
-): string | null => {
-  return sessionManager.getSessionItem('refresh_token') as string | null;
+): Promise<string | null> => {
+  return await (sessionManager.getSessionItem('refresh_token') as Promise<
+    string | null
+  >);
 };
 
 /**
@@ -92,10 +96,12 @@ export const getRefreshToken = (
  * @param {SessionManager} sessionManager
  * @returns {string | null}
  */
-export const getAccessToken = (
+export const getAccessToken = async (
   sessionManager: SessionManager
-): string | null => {
-  return sessionManager.getSessionItem('access_token') as string | null;
+): Promise<string | null> => {
+  return await (sessionManager.getSessionItem('access_token') as Promise<
+    string | null
+  >);
 };
 
 /**
@@ -104,10 +110,12 @@ export const getAccessToken = (
  * @param {SessionManager} sessionManager
  * @returns {string | null}
  */
-export const getUserFromMemory = (
+export const getUserFromMemory = async (
   sessionManager: SessionManager
-): UserType | null => {
-  return sessionManager.getSessionItem('user') as UserType | null;
+): Promise<UserType | null> => {
+  return await (sessionManager.getSessionItem(
+    'user'
+  ) as Promise<UserType | null>);
 };
 
 /**
@@ -115,11 +123,11 @@ export const getUserFromMemory = (
  * @param {SessionManager} sessionManager
  * @param {UserType} user
  */
-export const commitUserToMemory = (
+export const commitUserToMemory = async (
   sessionManager: SessionManager,
   user: UserType
 ) => {
-  sessionManager.setSessionItem('user', user);
+  await sessionManager.setSessionItem('user', user);
 };
 
 /**
