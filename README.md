@@ -312,7 +312,7 @@ app.get("/login", async (req, res) => {
 });
 
 app.get("/logout", async (req, res) => {
-  const logoutURL = client.logout(req).toString();
+  const logoutURL = (await client.logout(req)).toString();
   res.redirect(logoutURL);
 });
 ```
@@ -331,19 +331,19 @@ which is provided below, To understand why is this required please keep reading.
 export const sessionManager = (
   req: Request, res: Response, next: NextFunction
 ) => {
-  req.setSessionItem = (itemKey: string, itemValue: unknown) => {
+  req.setSessionItem = async (itemKey: string, itemValue: unknown) => {
     req.session[itemKey] = itemValue;
   }
 
-  req.getSessionItem = (itemKey: string) => {
+  req.getSessionItem = async (itemKey: string) => {
     return req.session[itemKey] ?? null;
   }
 
-  req.removeSessionItem = (itemKey: string) => {
+  req.removeSessionItem = async (itemKey: string) => {
     delete req.session[itemKey];
   }
 
-  req.destroySession = () => {
+  req.destroySession = async () => {
     req.session.destroy(error => console.error(error));
   }
 
@@ -358,11 +358,13 @@ This SDK is intended to be **framework agnostic**, consequently it exports a cus
 interface called `SessionManager` to enforce a contract between the end-user 
 framework and the SDK. The definition of which is presented below.
 ```ts
+type Awaitable<T> = Promise<T>;
+
 interface SessionManager {
-  getSessionItem: (itemKey: string) => unknown | null;
-  setSessionItem: (itemKey: string, itemValue: unknown) => void;
-  removeSessionItem: (itemKey: string) => void;
-  destroySession: () => void;
+  getSessionItem: (itemKey: string) => Awaitable<unknown | null>;
+  setSessionItem: (itemKey: string, itemValue: unknown) => Awaitable<void>;
+  removeSessionItem: (itemKey: string) => Awaitable<void>;
+  destroySession: () => Awaitable<void>;
 }
 ```
 
