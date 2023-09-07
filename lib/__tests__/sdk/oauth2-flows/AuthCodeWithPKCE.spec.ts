@@ -39,7 +39,7 @@ describe('AuthCodeWitPKCE', () => {
 
       const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-${state!}`;
       const codeVerifierState = JSON.parse(
-        (await sessionManager.getSessionItem(codeVerifierKey)!) as string
+        (await sessionManager.getSessionItem(codeVerifierKey)) as string
       );
       expect(codeVerifierState).toBeDefined();
 
