@@ -27,8 +27,8 @@ describe('AuthorizationCode', () => {
   });
 
   describe('createAuthorizationURL()', () => {
-    afterEach(() => {
-      sessionManager.destroySession();
+    afterEach(async () => {
+      await sessionManager.destroySession();
     });
 
     it('uses default scopes if none is provided in the url options', async () => {
@@ -82,7 +82,9 @@ describe('AuthorizationCode', () => {
       const searchParams = new URLSearchParams(authURL.search);
       const state = searchParams.get('state');
       const stateKey = AuthorizationCode.STATE_KEY;
-      const storedState = sessionManager.getSessionItem(stateKey)! as string;
+      const storedState = (await sessionManager.getSessionItem(
+        stateKey
+      )) as string;
       expect(storedState).toBe(state);
     });
 
@@ -99,9 +101,9 @@ describe('AuthorizationCode', () => {
   });
 
   describe('handleRedirectFromAuthDomain()', () => {
-    afterEach(() => {
+    afterEach(async () => {
       mocks.fetchClient.mockClear();
-      sessionManager.destroySession();
+      await sessionManager.destroySession();
     });
 
     it('throws an error if callbackURL has an error query param', async () => {
@@ -132,7 +134,7 @@ describe('AuthorizationCode', () => {
         `${clientConfig.redirectURL}?state=state&code=code`
       );
       const errorDescription = 'error_description';
-      sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, 'state');
+      await sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, 'state');
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           error: 'error',
@@ -162,14 +164,18 @@ describe('AuthorizationCode', () => {
         `${clientConfig.redirectURL}?state=state&code=code`
       );
       const stateKey = AuthorizationCode.STATE_KEY;
-      sessionManager.setSessionItem(stateKey, 'state');
+      await sessionManager.setSessionItem(stateKey, 'state');
       const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = sessionManager.getSessionItem('refresh_token');
-      const foundAccessToken = sessionManager.getSessionItem('access_token');
-      const foundIdToken = sessionManager.getSessionItem('id_token');
+      const foundRefreshToken = await sessionManager.getSessionItem(
+        'refresh_token'
+      );
+      const foundAccessToken = await sessionManager.getSessionItem(
+        'access_token'
+      );
+      const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(mockAccessToken.token);
       expect(foundRefreshToken).toBe('refresh_token');
@@ -178,14 +184,17 @@ describe('AuthorizationCode', () => {
   });
 
   describe('getToken()', () => {
-    afterEach(() => {
+    afterEach(async () => {
       mocks.fetchClient.mockClear();
-      sessionManager.destroySession();
+      await sessionManager.destroySession();
     });
 
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      await sessionManager.setSessionItem(
+        'access_token',
+        mockAccessToken.token
+      );
       const client = new AuthorizationCode(clientConfig, clientSecret);
       const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
@@ -204,7 +213,10 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      await sessionManager.setSessionItem(
+        'access_token',
+        mockAccessToken.token
+      );
       await expect(async () => {
         const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.getToken(sessionManager);
@@ -224,8 +236,11 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       await expect(async () => {
         const client = new AuthorizationCode(clientConfig, clientSecret);
@@ -249,8 +264,11 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -289,8 +307,11 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const headerOverrides: SDKHeaderOverrideOptions = {
         framework: 'TypeScript-Framework',
@@ -335,16 +356,23 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = sessionManager.getSessionItem('refresh_token');
-      const foundAccessToken = sessionManager.getSessionItem('access_token');
-      const foundIdToken = sessionManager.getSessionItem('id_token');
+      const foundRefreshToken = await sessionManager.getSessionItem(
+        'refresh_token'
+      );
+      const foundAccessToken = await sessionManager.getSessionItem(
+        'access_token'
+      );
+      const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
       expect(foundRefreshToken).toBe(newRefreshToken);
@@ -353,14 +381,17 @@ describe('AuthorizationCode', () => {
   });
 
   describe('getUserProfile()', () => {
-    afterEach(() => {
+    afterEach(async () => {
       mocks.fetchClient.mockClear();
-      sessionManager.destroySession();
+      await sessionManager.destroySession();
     });
 
     it('fetches user profile using the available access token', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      await sessionManager.setSessionItem(
+        'access_token',
+        mockAccessToken.token
+      );
 
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${mockAccessToken.token}`);
@@ -386,7 +417,10 @@ describe('AuthorizationCode', () => {
 
     it('commits fetched user details to memory store', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      await sessionManager.setSessionItem(
+        'access_token',
+        mockAccessToken.token
+      );
       const userDetails = {
         family_name: 'family_name',
         given_name: 'give_name',
@@ -402,7 +436,9 @@ describe('AuthorizationCode', () => {
       const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getUserProfile(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
-      expect(sessionManager.getSessionItem('user')).toStrictEqual(userDetails);
+      expect(await sessionManager.getSessionItem('user')).toStrictEqual(
+        userDetails
+      );
     });
   });
 });

@@ -23,8 +23,8 @@ describe('AuthCodeWitPKCE', () => {
   });
 
   describe('createAuthorizationURL()', () => {
-    afterEach(() => {
-      sessionManager.destroySession();
+    afterEach(async () => {
+      await sessionManager.destroySession();
     });
 
     it('saves generated code verifier to session storage again state', async () => {
@@ -39,7 +39,7 @@ describe('AuthCodeWitPKCE', () => {
 
       const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-${state!}`;
       const codeVerifierState = JSON.parse(
-        sessionManager.getSessionItem(codeVerifierKey)! as string
+        (await sessionManager.getSessionItem(codeVerifierKey)) as string
       );
       expect(codeVerifierState).toBeDefined();
 
@@ -66,8 +66,8 @@ describe('AuthCodeWitPKCE', () => {
   });
 
   describe('handleRedirectFromAuthDomain()', () => {
-    afterEach(() => {
-      sessionManager.destroySession();
+    afterEach(async () => {
+      await sessionManager.destroySession();
       mocks.fetchClient.mockClear();
     });
 
@@ -100,7 +100,7 @@ describe('AuthCodeWitPKCE', () => {
       );
       const errorDescription = 'error_description';
       const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-state`;
-      sessionManager.setSessionItem(
+      await sessionManager.setSessionItem(
         codeVerifierKey,
         JSON.stringify({ codeVerifier: 'code-verifier' })
       );
@@ -133,7 +133,7 @@ describe('AuthCodeWitPKCE', () => {
         `${clientConfig.redirectURL}?state=state&code=code`
       );
       const codeVerifierKey = `${AuthCodeWithPKCE.STATE_KEY}-state`;
-      sessionManager.setSessionItem(
+      await sessionManager.setSessionItem(
         codeVerifierKey,
         JSON.stringify({ codeVerifier: 'code-verifier' })
       );
@@ -142,9 +142,13 @@ describe('AuthCodeWitPKCE', () => {
       await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = sessionManager.getSessionItem('refresh_token');
-      const foundAccessToken = sessionManager.getSessionItem('access_token');
-      const foundIdToken = sessionManager.getSessionItem('id_token');
+      const foundRefreshToken = await sessionManager.getSessionItem(
+        'refresh_token'
+      );
+      const foundAccessToken = await sessionManager.getSessionItem(
+        'access_token'
+      );
+      const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(mockAccessToken.token);
       expect(foundRefreshToken).toBe('refresh_token');
@@ -153,14 +157,17 @@ describe('AuthCodeWitPKCE', () => {
   });
 
   describe('getToken()', () => {
-    afterEach(() => {
-      sessionManager.destroySession();
+    afterEach(async () => {
+      await sessionManager.destroySession();
       mocks.fetchClient.mockClear();
     });
 
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      await sessionManager.setSessionItem(
+        'access_token',
+        mockAccessToken.token
+      );
       const client = new AuthCodeWithPKCE(clientConfig);
       const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
@@ -172,7 +179,10 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      await sessionManager.setSessionItem(
+        'access_token',
+        mockAccessToken.token
+      );
       await expect(async () => {
         const client = new AuthCodeWithPKCE(clientConfig);
         await client.getToken(sessionManager);
@@ -194,8 +204,11 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -233,8 +246,11 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const headerOverrides: SDKHeaderOverrideOptions = {
         framework: 'TypeScript-Framework',
@@ -276,16 +292,23 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      sessionManager.setSessionItem('access_token', expiredAccessToken.token);
-      sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem(
+        'access_token',
+        expiredAccessToken.token
+      );
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const client = new AuthCodeWithPKCE(clientConfig);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = sessionManager.getSessionItem('refresh_token');
-      const foundAccessToken = sessionManager.getSessionItem('access_token');
-      const foundIdToken = sessionManager.getSessionItem('id_token');
+      const foundRefreshToken = await sessionManager.getSessionItem(
+        'refresh_token'
+      );
+      const foundAccessToken = await sessionManager.getSessionItem(
+        'access_token'
+      );
+      const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
       expect(foundRefreshToken).toBe(newRefreshToken);

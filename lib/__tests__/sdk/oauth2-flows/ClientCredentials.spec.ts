@@ -37,8 +37,8 @@ describe('ClientCredentials', () => {
       'application/x-www-form-urlencoded; charset=UTF-8'
     );
 
-    afterEach(() => {
-      sessionManager.destroySession();
+    afterEach(async () => {
+      await sessionManager.destroySession();
       mocks.fetchClient.mockClear();
     });
 
@@ -61,7 +61,11 @@ describe('ClientCredentials', () => {
     it('return access token if an unexpired token is available in memory', async () => {
       const { authDomain } = clientConfig;
       const { token: mockAccessToken } = mocks.getMockAccessToken(authDomain);
-      commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
+      await commitTokenToMemory(
+        sessionManager,
+        mockAccessToken,
+        'access_token'
+      );
 
       const client = new ClientCredentials(clientConfig);
       const accessToken = await client.getToken(sessionManager);
@@ -144,7 +148,7 @@ describe('ClientCredentials', () => {
       const client = new ClientCredentials(clientConfig);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
-      expect(sessionManager.getSessionItem('access_token')).toBe(
+      expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
       );
     });

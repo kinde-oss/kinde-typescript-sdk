@@ -14,54 +14,59 @@ describe('token-claims', () => {
   const authDomain = 'https://local-testing@kinde.com';
   const { sessionManager } = mocks;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockAccessToken = mocks.getMockAccessToken();
     mockIdToken = mocks.getMockIdToken();
-    sessionManager.setSessionItem(
+    await sessionManager.setSessionItem(
       'access_token_payload',
       mockAccessToken.payload
     );
-    sessionManager.setSessionItem('id_token_payload', mockIdToken.payload);
-    sessionManager.setSessionItem('access_token', mockAccessToken.token);
-    sessionManager.setSessionItem('id_token', mockIdToken.token);
+    await sessionManager.setSessionItem(
+      'id_token_payload',
+      mockIdToken.payload
+    );
+    await sessionManager.setSessionItem('access_token', mockAccessToken.token);
+    await sessionManager.setSessionItem('id_token', mockIdToken.token);
   });
 
-  afterEach(() => {
-    sessionManager.destroySession();
+  afterEach(async () => {
+    await sessionManager.destroySession();
   });
 
   describe('getClaimValue', () => {
     it('returns value for a token claim if claim exists', () => {
-      Object.keys(mockAccessToken.payload).forEach((name: string) => {
-        const claimValue = getClaimValue(sessionManager, name);
+      Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
+        const claimValue = await getClaimValue(sessionManager, name);
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
         expect(claimValue).toBe(tokenPayload[name]);
       });
     });
 
-    it('return null if claim does not exist', () => {
+    it('return null if claim does not exist', async () => {
       const claimName = 'non-existant-claim';
-      const claimValue = getClaimValue(sessionManager, claimName);
+      const claimValue = await getClaimValue(sessionManager, claimName);
       expect(claimValue).toBe(null);
     });
 
-    it('throws error if access token is expired or not present', () => {
+    it('throws error if access token is expired or not present', async () => {
       const mockExpiredAccessToken = mocks.getMockAccessToken(authDomain, true);
-      sessionManager.setSessionItem(
+      await sessionManager.setSessionItem(
         'access_token',
         mockExpiredAccessToken.token
       );
-      expect(() => getClaimValue(sessionManager, 'claim')).toThrowError(
+      await expect(
+        async () => await getClaimValue(sessionManager, 'claim')
+      ).rejects.toThrowError(
         'No authentication credential found, when requesting claim claim'
       );
     });
 
-    it('throws error if id token is expired or not present', () => {
+    it('throws error if id token is expired or not present', async () => {
       const mockExpiredIdToken = mocks.getMockIdToken(authDomain, true);
-      sessionManager.setSessionItem('id_token', mockExpiredIdToken.token);
-      expect(() =>
-        getClaimValue(sessionManager, 'claim', 'id_token')
-      ).toThrowError(
+      await sessionManager.setSessionItem('id_token', mockExpiredIdToken.token);
+      await expect(
+        async () => await getClaimValue(sessionManager, 'claim', 'id_token')
+      ).rejects.toThrowError(
         'No authentication credential found, when requesting claim claim'
       );
     });
@@ -69,16 +74,16 @@ describe('token-claims', () => {
 
   describe('getClaim', () => {
     it('returns value for a token claim if claim exists', () => {
-      Object.keys(mockAccessToken.payload).forEach((name: string) => {
-        const claim = getClaim(sessionManager, name);
+      Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
+        const claim = await getClaim(sessionManager, name);
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
         expect(claim).toStrictEqual({ name, value: tokenPayload[name] });
       });
     });
 
-    it('return null if claim does not exist', () => {
+    it('return null if claim does not exist', async () => {
       const claimName = 'non-existant-claim';
-      const claim = getClaim(sessionManager, claimName);
+      const claim = await getClaim(sessionManager, claimName);
       expect(claim).toStrictEqual({ name: claimName, value: null });
     });
   });
@@ -86,34 +91,38 @@ describe('token-claims', () => {
   describe('getPermission', () => {
     it('return orgCode and isGranted = true if permission is given', () => {
       const { permissions } = mockAccessToken.payload;
-      permissions.forEach((permission) => {
-        expect(getPermission(sessionManager, permission)).toStrictEqual({
+      permissions.forEach(async (permission) => {
+        expect(await getPermission(sessionManager, permission)).toStrictEqual({
           orgCode: mockAccessToken.payload.org_code,
           isGranted: true,
         });
       });
     });
 
-    it('return isGranted = false is permission is not given', () => {
+    it('return isGranted = false is permission is not given', async () => {
       const orgCode = mockAccessToken.payload.org_code;
       const permissionName = 'non-existant-permission';
-      expect(getPermission(sessionManager, permissionName)).toStrictEqual({
-        orgCode,
-        isGranted: false,
-      });
+      expect(await getPermission(sessionManager, permissionName)).toStrictEqual(
+        {
+          orgCode,
+          isGranted: false,
+        }
+      );
     });
   });
   describe('getUserOrganizations', () => {
-    it('lists all user organizations using id token', () => {
+    it('lists all user organizations using id token', async () => {
       const orgCodes = mockIdToken.payload.org_codes;
-      expect(getUserOrganizations(sessionManager)).toStrictEqual({ orgCodes });
+      expect(await getUserOrganizations(sessionManager)).toStrictEqual({
+        orgCodes,
+      });
     });
   });
 
   describe('getOrganization', () => {
-    it('returns organization code using accesss token', () => {
+    it('returns organization code using accesss token', async () => {
       const orgCode = mockAccessToken.payload.org_code;
-      expect(getOrganization(sessionManager)).toStrictEqual({ orgCode });
+      expect(await getOrganization(sessionManager)).toStrictEqual({ orgCode });
     });
   });
 });

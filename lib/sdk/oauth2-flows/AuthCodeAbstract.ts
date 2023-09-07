@@ -94,7 +94,7 @@ export abstract class AuthCodeAbstract {
       sessionManager,
       callbackURL
     );
-    utilities.commitTokensToMemory(sessionManager, tokens);
+    await utilities.commitTokensToMemory(sessionManager, tokens);
   }
 
   /**
@@ -106,7 +106,7 @@ export abstract class AuthCodeAbstract {
    * @returns {Promise<string>}
    */
   public async getToken(sessionManager: SessionManager): Promise<string> {
-    const accessToken = utilities.getAccessToken(sessionManager);
+    const accessToken = await utilities.getAccessToken(sessionManager);
     if (!accessToken) {
       throw new Error('No authentication credential found');
     }
@@ -116,7 +116,7 @@ export abstract class AuthCodeAbstract {
       return accessToken;
     }
 
-    const refreshToken = utilities.getRefreshToken(sessionManager);
+    const refreshToken = await utilities.getRefreshToken(sessionManager);
     if (!refreshToken && isNodeEnvironment()) {
       throw Error('Cannot persist session no valid refresh token found');
     }
@@ -159,7 +159,7 @@ export abstract class AuthCodeAbstract {
     const config: RequestInit = { method: 'GET', headers };
     const response = await fetch(targetURL, config);
     const payload = (await response.json()) as UserType;
-    utilities.commitUserToMemory(sessionManager, payload);
+    await utilities.commitUserToMemory(sessionManager, payload);
     return payload;
   }
 
@@ -222,7 +222,7 @@ export abstract class AuthCodeAbstract {
 
     const errorPayload = payload as OAuth2CodeExchangeErrorResponse;
     if (errorPayload.error) {
-      sessionManager.destroySession();
+      await sessionManager.destroySession();
       const errorDescription = errorPayload.error_description;
       const message = errorDescription ?? errorPayload.error;
       throw new Error(message);

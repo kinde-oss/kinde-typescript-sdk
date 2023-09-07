@@ -30,7 +30,7 @@ export class BrowserSessionManager implements SessionManager {
    * Clears all items from session store.
    * @returns {void}
    */
-  destroySession(): void {
+  async destroySession(): Promise<void> {
     sessionStorage.clear();
     this.memCache = {};
   }
@@ -41,7 +41,7 @@ export class BrowserSessionManager implements SessionManager {
    * @param {unknown} itemValue
    * @returns {void}
    */
-  setSessionItem(itemKey: string, itemValue: unknown): void {
+  async setSessionItem(itemKey: string, itemValue: unknown): Promise<void> {
     const key = this.generateItemKey(itemKey);
     this.memCache[key] = itemValue;
   }
@@ -51,7 +51,10 @@ export class BrowserSessionManager implements SessionManager {
    * @param {string} itemKey
    * @param {unknown} itemValue
    */
-  setSessionItemBrowser(itemKey: string, itemValue: unknown): void {
+  async setSessionItemBrowser(
+    itemKey: string,
+    itemValue: unknown
+  ): Promise<void> {
     const key = this.generateItemKey(itemKey);
     const isString = typeof itemValue === 'string';
     const value = !isString ? JSON.stringify(itemValue) : itemValue;
@@ -63,7 +66,7 @@ export class BrowserSessionManager implements SessionManager {
    * @param {string} itemKey
    * @returns {unknown | null}
    */
-  getSessionItem(itemKey: string): unknown | null {
+  async getSessionItem(itemKey: string): Promise<unknown | null> {
     const key = this.generateItemKey(itemKey);
     return this.memCache[key] ?? null;
   }
@@ -73,7 +76,7 @@ export class BrowserSessionManager implements SessionManager {
    * @param {string} itemKey
    * @returns {unknown | null}
    */
-  getSessionItemBrowser(itemKey: string): unknown | null {
+  async getSessionItemBrowser(itemKey: string): Promise<unknown | null> {
     const key = this.generateItemKey(itemKey);
     return sessionStorage.getItem(key);
   }
@@ -83,7 +86,7 @@ export class BrowserSessionManager implements SessionManager {
    * @param {string} itemKey
    * @returns {void}
    */
-  removeSessionItem(itemKey: string): void {
+  async removeSessionItem(itemKey: string): Promise<void> {
     const key = this.generateItemKey(itemKey);
     delete this.memCache[key];
   }
@@ -93,7 +96,7 @@ export class BrowserSessionManager implements SessionManager {
    * @param {string} itemKey
    * @returns {void}
    */
-  removeSessionItemBrowser(itemKey: string): void {
+  async removeSessionItemBrowser(itemKey: string): Promise<void> {
     const key = this.generateItemKey(itemKey);
     sessionStorage.removeItem(key);
   }

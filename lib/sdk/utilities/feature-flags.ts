@@ -17,14 +17,15 @@ import {
  * @param {keyof FlagType} type
  * @returns {GetFlagType}
  */
-export const getFlag = (
+export const getFlag = async (
   sessionManager: SessionManager,
   code: string,
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
-): GetFlagType => {
+): Promise<GetFlagType> => {
   const featureFlags =
-    (getClaimValue(sessionManager, 'feature_flags') as FeatureFlags) ?? {};
+    ((await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags) ??
+    {};
   const flag = featureFlags[code];
 
   if (!flag && defaultValue === undefined) {
@@ -62,12 +63,13 @@ export const getFlag = (
  * @param {number} defaultValue
  * @returns {number} integer flag value
  */
-export const getIntegerFlag = (
+export const getIntegerFlag = async (
   sessionManager: SessionManager,
   code: string,
   defaultValue?: number
-): number => {
-  return getFlag(sessionManager, code, defaultValue, 'i').value as number;
+): Promise<number> => {
+  return (await getFlag(sessionManager, code, defaultValue, 'i'))
+    .value as number;
 };
 
 /**
@@ -78,12 +80,13 @@ export const getIntegerFlag = (
  * @param {string} defaultValue
  * @returns {string} string flag value
  */
-export const getStringFlag = (
+export const getStringFlag = async (
   sessionManager: SessionManager,
   code: string,
   defaultValue?: string
-): string => {
-  return getFlag(sessionManager, code, defaultValue, 's').value as string;
+): Promise<string> => {
+  return (await getFlag(sessionManager, code, defaultValue, 's'))
+    .value as string;
 };
 
 /**
@@ -94,10 +97,11 @@ export const getStringFlag = (
  * @param {boolean} defaultValue
  * @returns {boolean} boolean flag value
  */
-export const getBooleanFlag = (
+export const getBooleanFlag = async (
   sessionManager: SessionManager,
   code: string,
   defaultValue?: boolean
-): boolean => {
-  return getFlag(sessionManager, code, defaultValue, 'b').value as boolean;
+): Promise<boolean> => {
+  return (await getFlag(sessionManager, code, defaultValue, 'b'))
+    .value as boolean;
 };

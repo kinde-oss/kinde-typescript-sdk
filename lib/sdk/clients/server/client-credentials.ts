@@ -12,8 +12,8 @@ const createCCClient = (options: CCClientOptions) => {
    * @param {SessionManager} sessionManager
    * @returns {URL}
    */
-  const logout = (sessionManager: SessionManager): URL => {
-    sessionManager.destroySession();
+  const logout = async (sessionManager: SessionManager): Promise<URL> => {
+    await sessionManager.destroySession();
     return new URL(client.logoutEndpoint);
   };
 

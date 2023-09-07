@@ -32,14 +32,14 @@ export class ClientCredentials {
    * @returns {Promise<string>}
    */
   async getToken(sessionManager: SessionManager): Promise<string> {
-    const accessToken = utilities.getAccessToken(sessionManager);
+    const accessToken = await utilities.getAccessToken(sessionManager);
     const isTokenExpired = utilities.isTokenExpired(accessToken);
     if (accessToken && !isTokenExpired) {
       return accessToken;
     }
 
     const payload = await this.fetchAccessTokenFor(sessionManager);
-    utilities.commitTokenToMemory(
+    await utilities.commitTokenToMemory(
       sessionManager,
       payload.access_token,
       'access_token'
@@ -76,7 +76,7 @@ export class ClientCredentials {
 
     const errorPayload = payload as OAuth2CCTokenErrorResponse;
     if (errorPayload.error) {
-      sessionManager.destroySession();
+      await sessionManager.destroySession();
       const errorDescription = errorPayload.error_description;
       const message = errorDescription ?? errorPayload.error;
       throw new Error(message);
