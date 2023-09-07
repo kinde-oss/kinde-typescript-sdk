@@ -84,7 +84,7 @@ describe('AuthorizationCode', () => {
       const stateKey = AuthorizationCode.STATE_KEY;
       const storedState = (await sessionManager.getSessionItem(
         stateKey
-      )!) as string;
+      )) as string;
       expect(storedState).toBe(state);
     });
 
