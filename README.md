@@ -632,7 +632,7 @@ interface RegisterURLOptions {
 Notice that you are able to override the `state` parameter in `RegisterURLOptions`,
 if not provided then the SDK will assign a random string to this value, this
 applies to the `login` method discussed below as well. In addition it must be 
-noted that interally this method will ensure the resulting registration URL has
+noted that internally this method will ensure the resulting registration URL has
 the `start_page` query parameter to `'registration'`.
 
 ### `login`
@@ -655,8 +655,6 @@ interface LoginURLOptions {
   state?: string;
 }
 ```
-In addition it must be noted that interally this method will ensure that the
-resulting login URL has the `start_page` query parameter to `'login'`.
 
 ### `createOrg`
 This method will return a registration URL, with the `is_create_org` parameter
@@ -677,7 +675,7 @@ interface CreateOrgURLOptions {
   state?: string;
 }
 ```
-In addition it must be noted that as in the `registration` method above interally 
+In addition it must be noted that as in the `registration` method above internally 
 this method will also set the `start_page` query parameter to `'registration'`.
 in the resulting URL.
 
