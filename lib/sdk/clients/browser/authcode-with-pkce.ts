@@ -29,8 +29,7 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
    */
   const login = async (options?: LoginURLOptions): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
-      ...options,
-      start_page: 'login',
+      ...options
     });
   };
 
