@@ -18,6 +18,7 @@ import type {
   CreateRoleRequest,
   ErrorResponse,
   GetRolesResponse,
+  RolesPermissionResponseInner,
   SuccessResponse,
   UpdateRolePermissionsRequest,
   UpdateRolePermissionsResponse,
@@ -30,6 +31,8 @@ import {
     ErrorResponseToJSON,
     GetRolesResponseFromJSON,
     GetRolesResponseToJSON,
+    RolesPermissionResponseInnerFromJSON,
+    RolesPermissionResponseInnerToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
     UpdateRolePermissionsRequestFromJSON,
@@ -44,10 +47,27 @@ export interface CreateRoleOperationRequest {
     createRoleRequest?: CreateRoleRequest;
 }
 
+export interface DeleteRoleRequest {
+    roleId: string;
+}
+
+export interface GetRolePermissionRequest {
+    roleId: string;
+    permissionId: string;
+    sort?: GetRolePermissionSortEnum;
+    pageSize?: number | null;
+    nextToken?: string | null;
+}
+
 export interface GetRolesRequest {
     sort?: GetRolesSortEnum;
     pageSize?: number | null;
     nextToken?: string | null;
+}
+
+export interface RemoveRolePermissionRequest {
+    roleId: string;
+    permissionId: string;
 }
 
 export interface UpdateRolePermissionsOperationRequest {
@@ -105,6 +125,102 @@ export class RolesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Delete role
+     * Delete Role
+     */
+    async deleteRoleRaw(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.roleId === null || requestParameters.roleId === undefined) {
+            throw new runtime.RequiredError('roleId','Required parameter requestParameters.roleId was null or undefined when calling deleteRole.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/roles/{role_id}`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete role
+     * Delete Role
+     */
+    async deleteRole(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deleteRoleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get permissions for a role.
+     * Get Role Permissions
+     */
+    async getRolePermissionRaw(requestParameters: GetRolePermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<RolesPermissionResponseInner>>> {
+        if (requestParameters.roleId === null || requestParameters.roleId === undefined) {
+            throw new runtime.RequiredError('roleId','Required parameter requestParameters.roleId was null or undefined when calling getRolePermission.');
+        }
+
+        if (requestParameters.permissionId === null || requestParameters.permissionId === undefined) {
+            throw new runtime.RequiredError('permissionId','Required parameter requestParameters.permissionId was null or undefined when calling getRolePermission.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.sort !== undefined) {
+            queryParameters['sort'] = requestParameters.sort;
+        }
+
+        if (requestParameters.pageSize !== undefined) {
+            queryParameters['page_size'] = requestParameters.pageSize;
+        }
+
+        if (requestParameters.nextToken !== undefined) {
+            queryParameters['next_token'] = requestParameters.nextToken;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/roles/{role_id}/permission/{permission_id}`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))).replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RolesPermissionResponseInnerFromJSON));
+    }
+
+    /**
+     * Get permissions for a role.
+     * Get Role Permissions
+     */
+    async getRolePermission(requestParameters: GetRolePermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RolesPermissionResponseInner>> {
+        const response = await this.getRolePermissionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * The returned list can be sorted by role name or role ID in ascending or descending order. The number of records to return at a time can also be controlled using the `page_size` query string parameter. 
      * List Roles
      */
@@ -149,6 +265,50 @@ export class RolesApi extends runtime.BaseAPI {
      */
     async getRoles(requestParameters: GetRolesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetRolesResponse> {
         const response = await this.getRolesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Remove a permission from a role.
+     * Remove Role Permission
+     */
+    async removeRolePermissionRaw(requestParameters: RemoveRolePermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.roleId === null || requestParameters.roleId === undefined) {
+            throw new runtime.RequiredError('roleId','Required parameter requestParameters.roleId was null or undefined when calling removeRolePermission.');
+        }
+
+        if (requestParameters.permissionId === null || requestParameters.permissionId === undefined) {
+            throw new runtime.RequiredError('permissionId','Required parameter requestParameters.permissionId was null or undefined when calling removeRolePermission.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/roles/{role_id}/permission/{permission_id}`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))).replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Remove a permission from a role.
+     * Remove Role Permission
+     */
+    async removeRolePermission(requestParameters: RemoveRolePermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.removeRolePermissionRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -244,6 +404,16 @@ export class RolesApi extends runtime.BaseAPI {
 
 }
 
+/**
+ * @export
+ */
+export const GetRolePermissionSortEnum = {
+    NameAsc: 'name_asc',
+    NameDesc: 'name_desc',
+    IdAsc: 'id_asc',
+    IdDesc: 'id_desc'
+} as const;
+export type GetRolePermissionSortEnum = typeof GetRolePermissionSortEnum[keyof typeof GetRolePermissionSortEnum];
 /**
  * @export
  */

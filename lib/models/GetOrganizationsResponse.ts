@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Role } from './Role';
+import type { Organization } from './Organization';
 import {
-    RoleFromJSON,
-    RoleFromJSONTyped,
-    RoleToJSON,
-} from './Role';
+    OrganizationFromJSON,
+    OrganizationFromJSONTyped,
+    OrganizationToJSON,
+} from './Organization';
 
 /**
  * 
@@ -40,10 +40,10 @@ export interface GetOrganizationsResponse {
     message?: string;
     /**
      * 
-     * @type {Array<Role>}
+     * @type {Array<Organization>}
      * @memberof GetOrganizationsResponse
      */
-    roles?: Array<Role>;
+    organizations?: Array<Organization>;
     /**
      * Pagination token.
      * @type {string}
@@ -73,7 +73,7 @@ export function GetOrganizationsResponseFromJSONTyped(json: any, ignoreDiscrimin
         
         'code': !exists(json, 'code') ? undefined : json['code'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'roles': !exists(json, 'roles') ? undefined : ((json['roles'] as Array<any>).map(RoleFromJSON)),
+        'organizations': !exists(json, 'organizations') ? undefined : ((json['organizations'] as Array<any>).map(OrganizationFromJSON)),
         'nextToken': !exists(json, 'next_token') ? undefined : json['next_token'],
     };
 }
@@ -89,7 +89,7 @@ export function GetOrganizationsResponseToJSON(value?: GetOrganizationsResponse 
         
         'code': value.code,
         'message': value.message,
-        'roles': value.roles === undefined ? undefined : ((value.roles as Array<any>).map(RoleToJSON)),
+        'organizations': value.organizations === undefined ? undefined : ((value.organizations as Array<any>).map(OrganizationToJSON)),
         'next_token': value.nextToken,
     };
 }

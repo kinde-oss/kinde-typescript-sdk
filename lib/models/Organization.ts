@@ -37,6 +37,12 @@ export interface Organization {
      * @memberof Organization
      */
     isDefault?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof Organization
+     */
+    externalId?: string;
 }
 
 /**
@@ -61,6 +67,7 @@ export function OrganizationFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'code': !exists(json, 'code') ? undefined : json['code'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'isDefault': !exists(json, 'is_default') ? undefined : json['is_default'],
+        'externalId': !exists(json, 'external_id') ? undefined : json['external_id'],
     };
 }
 
@@ -76,6 +83,7 @@ export function OrganizationToJSON(value?: Organization | null): any {
         'code': value.code,
         'name': value.name,
         'is_default': value.isDefault,
+        'external_id': value.externalId,
     };
 }
 

@@ -32,6 +32,10 @@ export interface CreatePermissionOperationRequest {
     createPermissionRequest?: CreatePermissionRequest;
 }
 
+export interface DeletePermissionRequest {
+    permissionId: string;
+}
+
 export interface GetPermissionsRequest {
     sort?: GetPermissionsSortEnum;
     pageSize?: number | null;
@@ -84,6 +88,46 @@ export class PermissionsApi extends runtime.BaseAPI {
      */
     async createPermission(requestParameters: CreatePermissionOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.createPermissionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete permission
+     * Delete Permission
+     */
+    async deletePermissionRaw(requestParameters: DeletePermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.permissionId === null || requestParameters.permissionId === undefined) {
+            throw new runtime.RequiredError('permissionId','Required parameter requestParameters.permissionId was null or undefined when calling deletePermission.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/permissions/{permission_id}`.replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete permission
+     * Delete Permission
+     */
+    async deletePermission(requestParameters: DeletePermissionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deletePermissionRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

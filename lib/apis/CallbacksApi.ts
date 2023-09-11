@@ -16,20 +16,31 @@
 import * as runtime from '../runtime';
 import type {
   ErrorResponse,
+  LogoutRedirectUrls,
   RedirectCallbackUrls,
+  ReplaceLogoutRedirectURLsRequest,
   ReplaceRedirectCallbackURLsRequest,
   SuccessResponse,
 } from '../models/index';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    LogoutRedirectUrlsFromJSON,
+    LogoutRedirectUrlsToJSON,
     RedirectCallbackUrlsFromJSON,
     RedirectCallbackUrlsToJSON,
+    ReplaceLogoutRedirectURLsRequestFromJSON,
+    ReplaceLogoutRedirectURLsRequestToJSON,
     ReplaceRedirectCallbackURLsRequestFromJSON,
     ReplaceRedirectCallbackURLsRequestToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
 } from '../models/index';
+
+export interface AddLogoutRedirectURLsRequest {
+    appId: string;
+    replaceLogoutRedirectURLsRequest: ReplaceLogoutRedirectURLsRequest;
+}
 
 export interface AddRedirectCallbackURLsRequest {
     appId: string;
@@ -41,8 +52,22 @@ export interface DeleteCallbackURLsRequest {
     urls: string;
 }
 
+export interface DeleteLogoutURLsRequest {
+    appId: string;
+    urls: string;
+}
+
 export interface GetCallbackURLsRequest {
     appId: string;
+}
+
+export interface GetLogoutURLsRequest {
+    appId: string;
+}
+
+export interface ReplaceLogoutRedirectURLsOperationRequest {
+    appId: string;
+    replaceLogoutRedirectURLsRequest: ReplaceLogoutRedirectURLsRequest;
 }
 
 export interface ReplaceRedirectCallbackURLsOperationRequest {
@@ -54,6 +79,53 @@ export interface ReplaceRedirectCallbackURLsOperationRequest {
  * 
  */
 export class CallbacksApi extends runtime.BaseAPI {
+
+    /**
+     * Add additional logout redirect URLs. 
+     * Add Logout Redirect URLs
+     */
+    async addLogoutRedirectURLsRaw(requestParameters: AddLogoutRedirectURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.appId === null || requestParameters.appId === undefined) {
+            throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling addLogoutRedirectURLs.');
+        }
+
+        if (requestParameters.replaceLogoutRedirectURLsRequest === null || requestParameters.replaceLogoutRedirectURLsRequest === undefined) {
+            throw new runtime.RequiredError('replaceLogoutRedirectURLsRequest','Required parameter requestParameters.replaceLogoutRedirectURLsRequest was null or undefined when calling addLogoutRedirectURLs.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/applications/{app_id}/auth_logout_urls`.replace(`{${"app_id"}}`, encodeURIComponent(String(requestParameters.appId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReplaceLogoutRedirectURLsRequestToJSON(requestParameters.replaceLogoutRedirectURLsRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Add additional logout redirect URLs. 
+     * Add Logout Redirect URLs
+     */
+    async addLogoutRedirectURLs(requestParameters: AddLogoutRedirectURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.addLogoutRedirectURLsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Add additional redirect callback URLs. 
@@ -151,6 +223,54 @@ export class CallbacksApi extends runtime.BaseAPI {
     }
 
     /**
+     * Delete logout URLs. 
+     * Delete Logout URLs
+     */
+    async deleteLogoutURLsRaw(requestParameters: DeleteLogoutURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.appId === null || requestParameters.appId === undefined) {
+            throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling deleteLogoutURLs.');
+        }
+
+        if (requestParameters.urls === null || requestParameters.urls === undefined) {
+            throw new runtime.RequiredError('urls','Required parameter requestParameters.urls was null or undefined when calling deleteLogoutURLs.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.urls !== undefined) {
+            queryParameters['urls'] = requestParameters.urls;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/applications/{app_id}/auth_logout_urls`.replace(`{${"app_id"}}`, encodeURIComponent(String(requestParameters.appId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete logout URLs. 
+     * Delete Logout URLs
+     */
+    async deleteLogoutURLs(requestParameters: DeleteLogoutURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deleteLogoutURLsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Returns an application\'s redirect callback URLs. 
      * List Callback URLs
      */
@@ -187,6 +307,93 @@ export class CallbacksApi extends runtime.BaseAPI {
      */
     async getCallbackURLs(requestParameters: GetCallbackURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RedirectCallbackUrls> {
         const response = await this.getCallbackURLsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns an application\'s logout redirect URLs. 
+     * List Logout URLs
+     */
+    async getLogoutURLsRaw(requestParameters: GetLogoutURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LogoutRedirectUrls>> {
+        if (requestParameters.appId === null || requestParameters.appId === undefined) {
+            throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling getLogoutURLs.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/applications/{app_id}/auth_logout_urls`.replace(`{${"app_id"}}`, encodeURIComponent(String(requestParameters.appId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => LogoutRedirectUrlsFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns an application\'s logout redirect URLs. 
+     * List Logout URLs
+     */
+    async getLogoutURLs(requestParameters: GetLogoutURLsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LogoutRedirectUrls> {
+        const response = await this.getLogoutURLsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Replace all logout redirect URLs. 
+     * Replace Logout Redirect URLs
+     */
+    async replaceLogoutRedirectURLsRaw(requestParameters: ReplaceLogoutRedirectURLsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.appId === null || requestParameters.appId === undefined) {
+            throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling replaceLogoutRedirectURLs.');
+        }
+
+        if (requestParameters.replaceLogoutRedirectURLsRequest === null || requestParameters.replaceLogoutRedirectURLsRequest === undefined) {
+            throw new runtime.RequiredError('replaceLogoutRedirectURLsRequest','Required parameter requestParameters.replaceLogoutRedirectURLsRequest was null or undefined when calling replaceLogoutRedirectURLs.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/applications/{app_id}/auth_logout_urls`.replace(`{${"app_id"}}`, encodeURIComponent(String(requestParameters.appId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReplaceLogoutRedirectURLsRequestToJSON(requestParameters.replaceLogoutRedirectURLsRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Replace all logout redirect URLs. 
+     * Replace Logout Redirect URLs
+     */
+    async replaceLogoutRedirectURLs(requestParameters: ReplaceLogoutRedirectURLsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.replaceLogoutRedirectURLsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

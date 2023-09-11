@@ -36,7 +36,7 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    email?: string;
+    preferredEmail?: string;
     /**
      * User's last name.
      * @type {string}
@@ -50,12 +50,6 @@ export interface User {
      */
     firstName?: string;
     /**
-     * User's full name.
-     * @type {string}
-     * @memberof User
-     */
-    fullName?: string;
-    /**
      * Whether the user is currently suspended or not.
      * @type {boolean}
      * @memberof User
@@ -67,12 +61,6 @@ export interface User {
      * @memberof User
      */
     picture?: string;
-    /**
-     * Whether the user has been asked to reset their password.
-     * @type {boolean}
-     * @memberof User
-     */
-    isPasswordResetRequested?: boolean | null;
     /**
      * Total number of user sign ins.
      * @type {number}
@@ -120,13 +108,11 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'providedId': !exists(json, 'provided_id') ? undefined : json['provided_id'],
-        'email': !exists(json, 'email') ? undefined : json['email'],
+        'preferredEmail': !exists(json, 'preferred_email') ? undefined : json['preferred_email'],
         'lastName': !exists(json, 'last_name') ? undefined : json['last_name'],
         'firstName': !exists(json, 'first_name') ? undefined : json['first_name'],
-        'fullName': !exists(json, 'full_name') ? undefined : json['full_name'],
         'isSuspended': !exists(json, 'is_suspended') ? undefined : json['is_suspended'],
         'picture': !exists(json, 'picture') ? undefined : json['picture'],
-        'isPasswordResetRequested': !exists(json, 'is_password_reset_requested') ? undefined : json['is_password_reset_requested'],
         'totalSignIns': !exists(json, 'total_sign_ins') ? undefined : json['total_sign_ins'],
         'failedSignIns': !exists(json, 'failed_sign_ins') ? undefined : json['failed_sign_ins'],
         'lastSignedIn': !exists(json, 'last_signed_in') ? undefined : json['last_signed_in'],
@@ -145,13 +131,11 @@ export function UserToJSON(value?: User | null): any {
         
         'id': value.id,
         'provided_id': value.providedId,
-        'email': value.email,
+        'preferred_email': value.preferredEmail,
         'last_name': value.lastName,
         'first_name': value.firstName,
-        'full_name': value.fullName,
         'is_suspended': value.isSuspended,
         'picture': value.picture,
-        'is_password_reset_requested': value.isPasswordResetRequested,
         'total_sign_ins': value.totalSignIns,
         'failed_sign_ins': value.failedSignIns,
         'last_signed_in': value.lastSignedIn,
