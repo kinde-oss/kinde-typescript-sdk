@@ -79,7 +79,6 @@ import {
   createKindeServerClient, 
   GrantType,
   type ACClientOptions,
-  type ACClient, 
 } from "@kinde-oss/kinde-typescript-sdk";
 
 const clientOptions: ACClientOptions = {
@@ -90,7 +89,7 @@ const clientOptions: ACClientOptions = {
   redirectURL: process.env.KINDE_REDIRECT_URL
 };
 
-const client = createKindeServerClient<ACClient, ACClientOptions>(
+const client = createKindeServerClient(
   GrantType.AUTHORIZATION_CODE, clientOptions
 );
 ```
@@ -101,7 +100,6 @@ import {
   createKindeServerClient, 
   GrantType,
   type PKCEClientOptions,
-  type ACClient, 
 } from "@kinde-oss/kinde-typescript-sdk";
 
 const clientOptions: PKCEClientOptions = {
@@ -111,7 +109,7 @@ const clientOptions: PKCEClientOptions = {
   redirectURL: process.env.KINDE_REDIRECT_URL
 };
 
-const client = createKindeServerClient<ACClient, PKCEClientOptions>(
+const client = createKindeServerClient(
   GrantType.PKCE, clientOptions
 );
 ```
@@ -122,7 +120,6 @@ import {
   createKindeServerClient, 
   GrantType,
   type CCClientOptions,
-  type CCClient, 
 } from "@kinde-oss/kinde-typescript-sdk";
 
 const clientOptions: CCClientOptions = {
@@ -132,7 +129,7 @@ const clientOptions: CCClientOptions = {
   logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL
 };
 
-const client = createKindeServerClient<CCClient, CCClientOptions>(
+const client = createKindeServerClient(
   GrantType.CLIENT_CREDENTIALS, clientOptions
 )
 ```
@@ -181,7 +178,6 @@ import {
   createKindeServerClient, 
   GrantType,
   type ACClientOptions,
-  type ACClient, 
 } from "@kinde-oss/kinde-typescript-sdk";
 
 const clientOptions: ACClientOptions = {
@@ -194,7 +190,7 @@ const clientOptions: ACClientOptions = {
   audience: 'api.example.com/v1'
 };
 
-const client = createKindeServerClient<ACClient, ACClientOptions>(
+const client = createKindeServerClient(
   GrantType.AUTHORIZATION_CODE, clientOptions
 );
 ```
@@ -230,7 +226,6 @@ import {
   createKindeServerClient, 
   GrantType,
   type ACClientOptions,
-  type ACClient, 
 } from "@kinde-oss/kinde-typescript-sdk";
 
 const clientOptions: ACClientOptions = {
@@ -243,7 +238,7 @@ const clientOptions: ACClientOptions = {
   framework: 'ExpressJS'
 };
 
-const client = createKindeServerClient<ACClient, ACClientOptions>(
+const client = createKindeServerClient(
   GrantType.AUTHORIZATION_CODE, clientOptions
 );
 ```

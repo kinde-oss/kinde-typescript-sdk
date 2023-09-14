@@ -53,7 +53,6 @@ export interface DeleteRoleRequest {
 
 export interface GetRolePermissionRequest {
     roleId: string;
-    permissionId: string;
     sort?: GetRolePermissionSortEnum;
     pageSize?: number | null;
     nextToken?: string | null;
@@ -173,10 +172,6 @@ export class RolesApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('roleId','Required parameter requestParameters.roleId was null or undefined when calling getRolePermission.');
         }
 
-        if (requestParameters.permissionId === null || requestParameters.permissionId === undefined) {
-            throw new runtime.RequiredError('permissionId','Required parameter requestParameters.permissionId was null or undefined when calling getRolePermission.');
-        }
-
         const queryParameters: any = {};
 
         if (requestParameters.sort !== undefined) {
@@ -202,7 +197,7 @@ export class RolesApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/roles/{role_id}/permission/{permission_id}`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))).replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
+            path: `/api/v1/roles/{role_id}/permissions`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
