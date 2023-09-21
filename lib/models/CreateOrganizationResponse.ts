@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { CreateOrganizationResponseOrganization } from './CreateOrganizationResponseOrganization';
+import { exists, mapValues } from '../runtime.js';
+import type { CreateOrganizationResponseOrganization } from './CreateOrganizationResponseOrganization.js';
 import {
     CreateOrganizationResponseOrganizationFromJSON,
     CreateOrganizationResponseOrganizationFromJSONTyped,
     CreateOrganizationResponseOrganizationToJSON,
-} from './CreateOrganizationResponseOrganization';
+} from './CreateOrganizationResponseOrganization.js';
 
 /**
  * 

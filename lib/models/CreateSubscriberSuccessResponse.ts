@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { CreateSubscriberSuccessResponseSubscriber } from './CreateSubscriberSuccessResponseSubscriber';
+import { exists, mapValues } from '../runtime.js';
+import type { CreateSubscriberSuccessResponseSubscriber } from './CreateSubscriberSuccessResponseSubscriber.js';
 import {
     CreateSubscriberSuccessResponseSubscriberFromJSON,
     CreateSubscriberSuccessResponseSubscriberFromJSONTyped,
     CreateSubscriberSuccessResponseSubscriberToJSON,
-} from './CreateSubscriberSuccessResponseSubscriber';
+} from './CreateSubscriberSuccessResponseSubscriber.js';
 
 /**
  * 

@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { Subscriber } from './Subscriber';
+import { exists, mapValues } from '../runtime.js';
+import type { Subscriber } from './Subscriber.js';
 import {
     SubscriberFromJSON,
     SubscriberFromJSONTyped,
     SubscriberToJSON,
-} from './Subscriber';
+} from './Subscriber.js';
 
 /**
  * 

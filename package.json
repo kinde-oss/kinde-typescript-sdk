@@ -1,23 +1,29 @@
 {
   "name": "@kinde-oss/kinde-typescript-sdk",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Kinde Typescript SDK",
   "main": "dist-cjs/index.js",
   "module": "dist/index.js",
-  "types": "dist/types",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist",
     "dist-cjs"
   ],
   "exports": {
     ".": {
-      "require": "./dist-cjs/index.js",
-      "import": "./dist/index.js"
+      "require": {
+        "types": "./dist-cjs/types/index.d.ts",
+        "default": "./dist-cjs/index.js"
+      },
+      "import":{
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/index.js"
+      }
     }
   },
   "scripts": {
     "build": "tsc && tsc -p tsconfig.cjs.json",
-    "postbuild": "node sdk-version.js clean",
+    "postbuild": "node sdk-version.js clean && ncp ./package-cjs.json ./dist-cjs/package.json && ncp ./package-esm.json ./dist/package.json",
     "prebuild": "node sdk-version.js && rimraf dist dist-cjs",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -57,6 +63,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "jsdom": "^22.0.0",
     "lint-staged": "^13.2.2",
+    "ncp": "^2.0.0",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.0",

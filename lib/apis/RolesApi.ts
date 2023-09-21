@@ -13,7 +13,7 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   CreateRoleRequest,
   ErrorResponse,
@@ -23,7 +23,7 @@ import type {
   UpdateRolePermissionsRequest,
   UpdateRolePermissionsResponse,
   UpdateRolesRequest,
-} from '../models/index';
+} from '../models/index.js';
 import {
     CreateRoleRequestFromJSON,
     CreateRoleRequestToJSON,
@@ -41,7 +41,7 @@ import {
     UpdateRolePermissionsResponseToJSON,
     UpdateRolesRequestFromJSON,
     UpdateRolesRequestToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface CreateRoleOperationRequest {
     createRoleRequest?: CreateRoleRequest;

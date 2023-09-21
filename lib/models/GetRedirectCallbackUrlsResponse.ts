@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { RedirectCallbackUrls } from './RedirectCallbackUrls';
+import { exists, mapValues } from '../runtime.js';
+import type { RedirectCallbackUrls } from './RedirectCallbackUrls.js';
 import {
     RedirectCallbackUrlsFromJSON,
     RedirectCallbackUrlsFromJSONTyped,
     RedirectCallbackUrlsToJSON,
-} from './RedirectCallbackUrls';
+} from './RedirectCallbackUrls.js';
 
 /**
  * 

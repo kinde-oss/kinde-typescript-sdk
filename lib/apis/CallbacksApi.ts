@@ -13,7 +13,7 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   ErrorResponse,
   LogoutRedirectUrls,
@@ -21,7 +21,7 @@ import type {
   ReplaceLogoutRedirectURLsRequest,
   ReplaceRedirectCallbackURLsRequest,
   SuccessResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
@@ -35,7 +35,7 @@ import {
     ReplaceRedirectCallbackURLsRequestToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface AddLogoutRedirectURLsRequest {
     appId: string;

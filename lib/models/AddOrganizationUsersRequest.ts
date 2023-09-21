@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { AddOrganizationUsersRequestUsersInner } from './AddOrganizationUsersRequestUsersInner';
+import { exists, mapValues } from '../runtime.js';
+import type { AddOrganizationUsersRequestUsersInner } from './AddOrganizationUsersRequestUsersInner.js';
 import {
     AddOrganizationUsersRequestUsersInnerFromJSON,
     AddOrganizationUsersRequestUsersInnerFromJSONTyped,
     AddOrganizationUsersRequestUsersInnerToJSON,
-} from './AddOrganizationUsersRequestUsersInner';
+} from './AddOrganizationUsersRequestUsersInner.js';
 
 /**
  * 

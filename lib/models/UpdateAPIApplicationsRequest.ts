@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { UpdateAPIApplicationsRequestApplicationsInner } from './UpdateAPIApplicationsRequestApplicationsInner';
+import { exists, mapValues } from '../runtime.js';
+import type { UpdateAPIApplicationsRequestApplicationsInner } from './UpdateAPIApplicationsRequestApplicationsInner.js';
 import {
     UpdateAPIApplicationsRequestApplicationsInnerFromJSON,
     UpdateAPIApplicationsRequestApplicationsInnerFromJSONTyped,
     UpdateAPIApplicationsRequestApplicationsInnerToJSON,
-} from './UpdateAPIApplicationsRequestApplicationsInner';
+} from './UpdateAPIApplicationsRequestApplicationsInner.js';
 
 /**
  * 

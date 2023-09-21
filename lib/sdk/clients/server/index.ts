@@ -1,7 +1,7 @@
-import createAuthCodeClient from './authorization-code';
-import { isNodeEnvironment } from '../../environment';
-import createCCClient from './client-credentials';
-import { GrantType } from '../../oauth2-flows';
+import createAuthCodeClient from './authorization-code.js';
+import { isNodeEnvironment } from '../../environment.js';
+import createCCClient from './client-credentials.js';
+import { GrantType } from '../../oauth2-flows/index.js';
 
 import type {
   CCClient,
@@ -9,7 +9,7 @@ import type {
   PKCEClientOptions,
   ACClientOptions,
   CCClientOptions,
-} from '../types';
+} from '../types.js';
 
 type Options<T> = T extends GrantType.PKCE ? PKCEClientOptions : T extends GrantType.AUTHORIZATION_CODE ? ACClientOptions : T extends GrantType.CLIENT_CREDENTIALS ? CCClientOptions : never;
 type Client<T> = T extends PKCEClientOptions ? ACClient : T extends ACClientOptions ? ACClient : T extends  CCClientOptions ? CCClient : never; 

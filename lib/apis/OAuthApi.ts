@@ -13,13 +13,13 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   TokenErrorResponse,
   TokenIntrospect,
   UserProfile,
   UserProfileV2,
-} from '../models/index';
+} from '../models/index.js';
 import {
     TokenErrorResponseFromJSON,
     TokenErrorResponseToJSON,
@@ -29,7 +29,7 @@ import {
     UserProfileToJSON,
     UserProfileV2FromJSON,
     UserProfileV2ToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface TokenIntrospectionRequest {
     token?: string;

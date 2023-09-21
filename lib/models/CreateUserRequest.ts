@@ -12,19 +12,19 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { CreateUserRequestIdentitiesInner } from './CreateUserRequestIdentitiesInner';
+import { exists, mapValues } from '../runtime.js';
+import type { CreateUserRequestIdentitiesInner } from './CreateUserRequestIdentitiesInner.js';
 import {
     CreateUserRequestIdentitiesInnerFromJSON,
     CreateUserRequestIdentitiesInnerFromJSONTyped,
     CreateUserRequestIdentitiesInnerToJSON,
-} from './CreateUserRequestIdentitiesInner';
-import type { CreateUserRequestProfile } from './CreateUserRequestProfile';
+} from './CreateUserRequestIdentitiesInner.js';
+import type { CreateUserRequestProfile } from './CreateUserRequestProfile.js';
 import {
     CreateUserRequestProfileFromJSON,
     CreateUserRequestProfileFromJSONTyped,
     CreateUserRequestProfileToJSON,
-} from './CreateUserRequestProfile';
+} from './CreateUserRequestProfile.js';
 
 /**
  * 

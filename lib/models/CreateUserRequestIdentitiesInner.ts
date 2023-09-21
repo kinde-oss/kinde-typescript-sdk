@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { CreateUserRequestIdentitiesInnerDetails } from './CreateUserRequestIdentitiesInnerDetails';
+import { exists, mapValues } from '../runtime.js';
+import type { CreateUserRequestIdentitiesInnerDetails } from './CreateUserRequestIdentitiesInnerDetails.js';
 import {
     CreateUserRequestIdentitiesInnerDetailsFromJSON,
     CreateUserRequestIdentitiesInnerDetailsFromJSONTyped,
     CreateUserRequestIdentitiesInnerDetailsToJSON,
-} from './CreateUserRequestIdentitiesInnerDetails';
+} from './CreateUserRequestIdentitiesInnerDetails.js';
 
 /**
  * The result of the user creation operation.

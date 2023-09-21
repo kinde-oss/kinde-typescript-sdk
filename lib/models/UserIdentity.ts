@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { UserIdentityResult } from './UserIdentityResult';
+import { exists, mapValues } from '../runtime.js';
+import type { UserIdentityResult } from './UserIdentityResult.js';
 import {
     UserIdentityResultFromJSON,
     UserIdentityResultFromJSONTyped,
     UserIdentityResultToJSON,
-} from './UserIdentityResult';
+} from './UserIdentityResult.js';
 
 /**
  * 

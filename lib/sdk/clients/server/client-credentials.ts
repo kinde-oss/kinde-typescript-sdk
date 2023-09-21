@@ -1,7 +1,7 @@
-import { type SessionManager } from '../../session-managers';
-import { ClientCredentials } from '../../oauth2-flows';
-import type { CCClientOptions } from '../types';
-import * as utilities from '../../utilities';
+import { type SessionManager } from '../../session-managers/index.js';
+import { ClientCredentials } from '../../oauth2-flows/index.js';
+import type { CCClientOptions } from '../types.js';
+import * as utilities from '../../utilities/index.js';
 
 const createCCClient = (options: CCClientOptions) => {
   const client = new ClientCredentials(options);

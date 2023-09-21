@@ -13,7 +13,7 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   CreateUserRequest,
   CreateUserResponse,
@@ -22,7 +22,7 @@ import type {
   UpdateUserRequest,
   User,
   UsersResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     CreateUserRequestFromJSON,
     CreateUserRequestToJSON,
@@ -38,7 +38,7 @@ import {
     UserToJSON,
     UsersResponseFromJSON,
     UsersResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface CreateUserOperationRequest {
     createUserRequest?: CreateUserRequest;

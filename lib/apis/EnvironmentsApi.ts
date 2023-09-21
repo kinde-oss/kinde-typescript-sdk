@@ -13,13 +13,13 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   ErrorResponse,
   GetEnvironmentFeatureFlagsResponse,
   SuccessResponse,
   UpdateEnvironementFeatureFlagOverrideRequest,
-} from '../models/index';
+} from '../models/index.js';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
@@ -29,7 +29,7 @@ import {
     SuccessResponseToJSON,
     UpdateEnvironementFeatureFlagOverrideRequestFromJSON,
     UpdateEnvironementFeatureFlagOverrideRequestToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface DeleteEnvironementFeatureFlagOverrideRequest {
     featureFlagKey: string;

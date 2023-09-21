@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { OrganizationUser } from './OrganizationUser';
+import { exists, mapValues } from '../runtime.js';
+import type { OrganizationUser } from './OrganizationUser.js';
 import {
     OrganizationUserFromJSON,
     OrganizationUserFromJSONTyped,
     OrganizationUserToJSON,
-} from './OrganizationUser';
+} from './OrganizationUser.js';
 
 /**
  * 

@@ -1,6 +1,6 @@
-import createAuthCodeWithPKCEClient from './authcode-with-pkce';
-import { isBrowserEnvironment } from '../../environment';
-import type { PKCEClientOptions } from '../types';
+import createAuthCodeWithPKCEClient from './authcode-with-pkce.js';
+import { isBrowserEnvironment } from '../../environment.js';
+import type { PKCEClientOptions } from '../types.js';
 
 export const createKindeBrowserClient = (options: PKCEClientOptions) => {
   if (!isBrowserEnvironment()) {

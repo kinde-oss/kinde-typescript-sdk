@@ -1,14 +1,14 @@
-import { AuthorizationCode, AuthCodeWithPKCE } from '../../oauth2-flows';
-import { type SessionManager } from '../../session-managers';
-import type { UserType } from '../../utilities';
-import * as utilities from '../../utilities';
+import { AuthorizationCode, AuthCodeWithPKCE } from '../../oauth2-flows/index.js';
+import { type SessionManager } from '../../session-managers/index.js';
+import type { UserType } from '../../utilities/index.js';
+import * as utilities from '../../utilities/index.js';
 
 import type {
   CreateOrgURLOptions,
   RegisterURLOptions,
   LoginURLOptions,
   ACClientOptions,
-} from '../types';
+} from '../types.js';
 
 const createAuthorizationCodeClient = (
   options: ACClientOptions,

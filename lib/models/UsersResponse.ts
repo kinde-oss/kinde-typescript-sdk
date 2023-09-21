@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { User } from './User';
+import { exists, mapValues } from '../runtime.js';
+import type { User } from './User.js';
 import {
     UserFromJSON,
     UserFromJSONTyped,
     UserToJSON,
-} from './User';
+} from './User.js';
 
 /**
  * 

@@ -1,15 +1,15 @@
-import { type SessionManager } from '../session-managers';
-import { isNodeEnvironment } from '../environment';
-import type { UserType } from '../utilities';
-import * as utilities from '../utilities';
-import { getSDKHeader } from '../version';
+import { type SessionManager } from '../session-managers/index.js';
+import { isNodeEnvironment } from '../environment.js';
+import type { UserType } from '../utilities/index.js';
+import * as utilities from '../utilities/index.js';
+import { getSDKHeader } from '../version.js';
 
 import type {
   OAuth2CodeExchangeErrorResponse,
   OAuth2CodeExchangeResponse,
   AuthorizationCodeOptions,
   AuthURLOptions,
-} from './types';
+} from './types.js';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows

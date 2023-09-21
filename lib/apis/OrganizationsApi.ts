@@ -13,7 +13,7 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   AddOrganizationUsersRequest,
   AddOrganizationUsersResponse,
@@ -32,7 +32,7 @@ import type {
   UpdateOrganizationRequest,
   UpdateOrganizationUsersRequest,
   UpdateOrganizationUsersResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     AddOrganizationUsersRequestFromJSON,
     AddOrganizationUsersRequestToJSON,
@@ -68,7 +68,7 @@ import {
     UpdateOrganizationUsersRequestToJSON,
     UpdateOrganizationUsersResponseFromJSON,
     UpdateOrganizationUsersResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface AddOrganizationUsersOperationRequest {
     orgCode: string;

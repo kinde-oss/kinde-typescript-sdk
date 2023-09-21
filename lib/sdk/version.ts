@@ -5,7 +5,7 @@
  * file.
  */
 
-import { type SDKHeaderOverrideOptions } from './oauth2-flows';
+import { type SDKHeaderOverrideOptions } from './oauth2-flows/index.js';
 
 export const SDK_VERSION = 'SDK_VERSION_PLACEHOLDER' as const;
 

@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { CreateApplicationResponseApplication } from './CreateApplicationResponseApplication';
+import { exists, mapValues } from '../runtime.js';
+import type { CreateApplicationResponseApplication } from './CreateApplicationResponseApplication.js';
 import {
     CreateApplicationResponseApplicationFromJSON,
     CreateApplicationResponseApplicationFromJSONTyped,
     CreateApplicationResponseApplicationToJSON,
-} from './CreateApplicationResponseApplication';
+} from './CreateApplicationResponseApplication.js';
 
 /**
  * 

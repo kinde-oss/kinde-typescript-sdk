@@ -13,12 +13,12 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   CreatePermissionRequest,
   ErrorResponse,
   SuccessResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     CreatePermissionRequestFromJSON,
     CreatePermissionRequestToJSON,
@@ -26,7 +26,7 @@ import {
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface CreatePermissionOperationRequest {
     createPermissionRequest?: CreatePermissionRequest;

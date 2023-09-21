@@ -13,13 +13,13 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   ConnectedAppsAccessToken,
   ConnectedAppsAuthUrl,
   ErrorResponse,
   SuccessResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     ConnectedAppsAccessTokenFromJSON,
     ConnectedAppsAccessTokenToJSON,
@@ -29,7 +29,7 @@ import {
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface GetConnectedAppAuthUrlRequest {
     keyCodeRef: string;

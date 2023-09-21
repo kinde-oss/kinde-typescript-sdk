@@ -1,12 +1,12 @@
-import { type SessionManager } from '../session-managers';
-import { AuthCodeAbstract } from './AuthCodeAbstract';
-import * as utilities from '../utilities';
+import { type SessionManager } from '../session-managers/index.js';
+import { AuthCodeAbstract } from './AuthCodeAbstract.js';
+import * as utilities from '../utilities/index.js';
 
 import type {
   OAuth2CodeExchangeResponse,
   AuthorizationCodeOptions,
   AuthURLOptions,
-} from './types';
+} from './types.js';
 
 /**
  * Class provides implementation for the authorization code OAuth2.0 flow.

@@ -1,12 +1,12 @@
-import { type SessionManager } from '../session-managers';
-import { getClaimValue } from './token-claims';
+import { type SessionManager } from '../session-managers/index.js';
+import { getClaimValue } from './token-claims.js';
 
 import {
   type FeatureFlags,
   type GetFlagType,
   type FlagType,
   FlagDataType,
-} from './types';
+} from './types.js';
 
 /**
  * Method extracts the provided feature flag from the access token in the

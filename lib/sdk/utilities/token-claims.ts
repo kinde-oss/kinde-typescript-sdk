@@ -1,6 +1,6 @@
-import { type SessionManager } from '../session-managers';
-import { isTokenExpired } from './token-utils';
-import { type ClaimTokenType } from './types';
+import { type SessionManager } from '../session-managers/index.js';
+import { isTokenExpired } from './token-utils.js';
+import { type ClaimTokenType } from './types.js';
 
 /**
  * Method extracts the provided claim from the provided token type in the

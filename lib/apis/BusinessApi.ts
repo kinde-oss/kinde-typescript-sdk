@@ -13,17 +13,17 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   ErrorResponse,
   SuccessResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface GetBusinessRequest {
     code: string;

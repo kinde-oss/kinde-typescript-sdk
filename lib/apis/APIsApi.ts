@@ -13,7 +13,7 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   AddAPIsRequest,
   Api,
@@ -21,7 +21,7 @@ import type {
   ErrorResponse,
   SuccessResponse,
   UpdateAPIApplicationsRequest,
-} from '../models/index';
+} from '../models/index.js';
 import {
     AddAPIsRequestFromJSON,
     AddAPIsRequestToJSON,
@@ -35,7 +35,7 @@ import {
     SuccessResponseToJSON,
     UpdateAPIApplicationsRequestFromJSON,
     UpdateAPIApplicationsRequestToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface AddAPIsOperationRequest {
     addAPIsRequest: AddAPIsRequest;

@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { GetOrganizationFeatureFlagsResponseFeatureFlagsValue } from './GetOrganizationFeatureFlagsResponseFeatureFlagsValue';
+import { exists, mapValues } from '../runtime.js';
+import type { GetOrganizationFeatureFlagsResponseFeatureFlagsValue } from './GetOrganizationFeatureFlagsResponseFeatureFlagsValue.js';
 import {
     GetOrganizationFeatureFlagsResponseFeatureFlagsValueFromJSON,
     GetOrganizationFeatureFlagsResponseFeatureFlagsValueFromJSONTyped,
     GetOrganizationFeatureFlagsResponseFeatureFlagsValueToJSON,
-} from './GetOrganizationFeatureFlagsResponseFeatureFlagsValue';
+} from './GetOrganizationFeatureFlagsResponseFeatureFlagsValue.js';
 
 /**
  * 

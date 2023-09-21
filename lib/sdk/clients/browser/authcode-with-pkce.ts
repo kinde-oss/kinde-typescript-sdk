@@ -1,20 +1,20 @@
-import { BrowserSessionManager } from '../../session-managers';
-import { AuthCodeWithPKCE } from '../../oauth2-flows';
-import * as utilities from '../../utilities';
+import { BrowserSessionManager } from '../../session-managers/index.js';
+import { AuthCodeWithPKCE } from '../../oauth2-flows/index.js';
+import * as utilities from '../../utilities/index.js';
 
 import type {
   UserType,
   ClaimTokenType,
   GetFlagType,
   FlagType,
-} from '../../utilities';
+} from '../../utilities/index.js';
 
 import type {
   CreateOrgURLOptions,
   RegisterURLOptions,
   LoginURLOptions,
   PKCEClientOptions,
-} from '../types';
+} from '../types.js';
 
 const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   const { featureFlags, tokenClaims } = utilities;

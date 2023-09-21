@@ -1,5 +1,5 @@
-import type { TokenCollection, UserType, TokenType } from './types';
-import { type SessionManager } from '../session-managers';
+import type { TokenCollection, UserType, TokenType } from './types.js';
+import { type SessionManager } from '../session-managers/index.js';
 
 /**
  * Parses a provided JWT token to extract the payload segment of said

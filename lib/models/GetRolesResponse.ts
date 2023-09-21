@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { Roles } from './Roles';
+import { exists, mapValues } from '../runtime.js';
+import type { Roles } from './Roles.js';
 import {
     RolesFromJSON,
     RolesFromJSONTyped,
     RolesToJSON,
-} from './Roles';
+} from './Roles.js';
 
 /**
  * 

@@ -13,7 +13,7 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   CreateApplicationRequest,
   CreateApplicationResponse,
@@ -21,7 +21,7 @@ import type {
   GetApplicationResponse,
   GetApplicationsResponse,
   UpdateApplicationRequest,
-} from '../models/index';
+} from '../models/index.js';
 import {
     CreateApplicationRequestFromJSON,
     CreateApplicationRequestToJSON,
@@ -35,7 +35,7 @@ import {
     GetApplicationsResponseToJSON,
     UpdateApplicationRequestFromJSON,
     UpdateApplicationRequestToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface CreateApplicationOperationRequest {
     createApplicationRequest?: CreateApplicationRequest;

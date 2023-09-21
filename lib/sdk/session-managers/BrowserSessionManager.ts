@@ -1,5 +1,5 @@
-import { isBrowserEnvironment } from '../environment';
-import { type SessionManager } from './types';
+import { isBrowserEnvironment } from '../environment.js';
+import { type SessionManager } from './types.js';
 
 /**
  * Provides a session manager implementation for the browser.

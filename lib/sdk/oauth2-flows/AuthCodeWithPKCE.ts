@@ -1,17 +1,17 @@
-import { isBrowserEnvironment } from '../environment';
-import { AuthCodeAbstract } from './AuthCodeAbstract';
-import * as utilities from '../utilities';
+import { isBrowserEnvironment } from '../environment.js';
+import { AuthCodeAbstract } from './AuthCodeAbstract.js';
+import * as utilities from '../utilities/index.js';
 
 import {
   type BrowserSessionManager,
   type SessionManager,
-} from '../session-managers';
+} from '../session-managers/index.js';
 
 import type {
   OAuth2CodeExchangeResponse,
   AuthURLOptions,
   AuthorizationCodeOptions,
-} from './types';
+} from './types.js';
 
 /**
  * Class provides implementation for the authorization code with PKCE extension

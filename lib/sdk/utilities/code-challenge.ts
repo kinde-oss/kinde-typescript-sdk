@@ -1,4 +1,4 @@
-import { generateRandomString } from './random-string';
+import { generateRandomString } from './random-string.js';
 import { subtle } from 'uncrypto';
 
 /**

@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { ModelError } from './ModelError';
+import { exists, mapValues } from '../runtime.js';
+import type { ModelError } from './ModelError.js';
 import {
     ModelErrorFromJSON,
     ModelErrorFromJSONTyped,
     ModelErrorToJSON,
-} from './ModelError';
+} from './ModelError.js';
 
 /**
  * 

@@ -13,13 +13,13 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   CreateSubscriberSuccessResponse,
   ErrorResponse,
   GetSubscriberResponse,
   GetSubscribersResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     CreateSubscriberSuccessResponseFromJSON,
     CreateSubscriberSuccessResponseToJSON,
@@ -29,7 +29,7 @@ import {
     GetSubscriberResponseToJSON,
     GetSubscribersResponseFromJSON,
     GetSubscribersResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface CreateSubscriberRequest {
     firstName: string;

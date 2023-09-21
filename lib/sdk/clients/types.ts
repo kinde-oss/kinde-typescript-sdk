@@ -1,11 +1,11 @@
-import { type default as createAuthCodeClient } from './server/authorization-code';
-import { type default as createCCClient } from './server/client-credentials';
+import { type default as createAuthCodeClient } from './server/authorization-code.js';
+import { type default as createCCClient } from './server/client-credentials.js';
 
 import type {
   ClientCredentialsOptions,
   AuthorizationCodeOptions,
   AuthURLOptions,
-} from '../oauth2-flows';
+} from '../oauth2-flows/index.js';
 
 export interface PKCEClientOptions extends AuthorizationCodeOptions {}
 export interface CCClientOptions extends ClientCredentialsOptions {}

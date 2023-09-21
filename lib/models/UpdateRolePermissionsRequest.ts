@@ -12,13 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { UpdateRolePermissionsRequestPermissionsInner } from './UpdateRolePermissionsRequestPermissionsInner';
+import { exists, mapValues } from '../runtime.js';
+import type { UpdateRolePermissionsRequestPermissionsInner } from './UpdateRolePermissionsRequestPermissionsInner.js';
 import {
     UpdateRolePermissionsRequestPermissionsInnerFromJSON,
     UpdateRolePermissionsRequestPermissionsInnerFromJSONTyped,
     UpdateRolePermissionsRequestPermissionsInnerToJSON,
-} from './UpdateRolePermissionsRequestPermissionsInner';
+} from './UpdateRolePermissionsRequestPermissionsInner.js';
 
 /**
  * 

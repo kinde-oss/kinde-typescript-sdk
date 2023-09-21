@@ -13,14 +13,14 @@
  */
 
 
-import * as runtime from '../runtime';
+import * as runtime from '../runtime.js';
 import type {
   SuccessResponse,
-} from '../models/index';
+} from '../models/index.js';
 import {
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/index.js';
 
 export interface GetTimezonesRequest {
     timezoneKey?: string;

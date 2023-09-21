@@ -1,12 +1,12 @@
-import { type SessionManager } from '../session-managers';
-import * as utilities from '../utilities';
-import { getSDKHeader } from '../version';
+import { type SessionManager } from '../session-managers/index.js';
+import * as utilities from '../utilities/index.js';
+import { getSDKHeader } from '../version.js';
 
 import type {
   OAuth2CCTokenErrorResponse,
   ClientCredentialsOptions,
   OAuth2CCTokenResponse,
-} from './types';
+} from './types.js';
 
 /**
  * Class provides implementation for the client credentials OAuth2.0 flow.
