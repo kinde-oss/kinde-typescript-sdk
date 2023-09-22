@@ -40,13 +40,13 @@ brew install curl
 1. Clone the repository to your machine:
 
    ```bash
-   git clone https://github.com/kinde-oss/kinde-typescript-generator.git
+   git clone https://github.com/kinde-oss/kinde-typescript-sdk.git
    ```
 
-2. Go into the project:
+2. Go into the genetator folder:
 
    ```bash
-   cd kinde-typescript-generator
+   cd generator
    ```
 
 3. Install the OpenAPI Generator tool:
