@@ -263,6 +263,10 @@ export abstract class AuthCodeAbstract {
       searchParams.append('is_create_org', 'true');
     }
 
+    if(options.post_login_redirect_url) {
+      searchParams.append('post_login_redirect_url', options.post_login_redirect_url);
+    }
+
     return searchParams;
   }
 }
