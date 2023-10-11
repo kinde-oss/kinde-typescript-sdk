@@ -59,4 +59,5 @@ export interface AuthURLOptions {
   org_name?: string;
   org_code?: string;
   state?: string;
+  post_login_redirect_url?: string;
 }
