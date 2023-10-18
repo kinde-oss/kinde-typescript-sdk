@@ -1,7 +1,7 @@
+import { default as withAuthUtilities } from "./with-auth-utilities.js";
 import { type SessionManager } from '../../session-managers/index.js';
 import { ClientCredentials } from '../../oauth2-flows/index.js';
 import type { CCClientOptions } from '../types.js';
-import * as utilities from '../../utilities/index.js';
 
 const createCCClient = (options: CCClientOptions) => {
   const client = new ClientCredentials(options);
@@ -40,8 +40,7 @@ const createCCClient = (options: CCClientOptions) => {
   };
 
   return {
-    ...utilities.featureFlags,
-    ...utilities.tokenClaims,
+    ...withAuthUtilities(isAuthenticated),
     isAuthenticated,
     getToken,
     logout,
