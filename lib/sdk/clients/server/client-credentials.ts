@@ -27,9 +27,22 @@ const createCCClient = (options: CCClientOptions) => {
     return await client.getToken(sessionManager);
   };
 
+  /**
+   * Method acts as a wrapper around the `isAuthenticated` method provided by the
+   * `ClientCredentials` client created above.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<Boolean>}
+   */
+  const isAuthenticated = async (
+    sessionManager: SessionManager
+  ): Promise<boolean> => {
+    return await client.isAuthenticated(sessionManager);
+  };
+
   return {
     ...utilities.featureFlags,
     ...utilities.tokenClaims,
+    isAuthenticated,
     getToken,
     logout,
   };

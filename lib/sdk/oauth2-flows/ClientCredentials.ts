@@ -86,6 +86,24 @@ export class ClientCredentials {
   }
 
   /**
+   * Method returns a boolean indicating if the access token in session is expired
+   * or not, in the event the token is expired it makes use of the `getToken` method
+   * above to first refresh it, in the event refresh fails false is returned.
+   * @param sessionManager
+   * @returns {Promise<boolean>}
+   */
+  public async isAuthenticated(
+    sessionManager: SessionManager
+  ): Promise<boolean> {
+    try {
+      await this.getToken(sessionManager);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Method provides the query params required for generating the token URL for
    * obtaining the required access token.
    * @returns {URLSearchParams}
