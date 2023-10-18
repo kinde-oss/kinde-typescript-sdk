@@ -15,15 +15,6 @@ export const getClaimValue = async (
   claim: string,
   type: ClaimTokenType = 'access_token'
 ): Promise<unknown | null> => {
-  const token = (await sessionManager.getSessionItem(type as string)) as
-    | string
-    | null;
-  if (isTokenExpired(token)) {
-    throw new Error(
-      `No authentication credential found, when requesting claim ${claim}`
-    );
-  }
-
   const tokenPayload = (await sessionManager.getSessionItem(
     `${type}_payload`
   )) as Record<string, unknown>;
