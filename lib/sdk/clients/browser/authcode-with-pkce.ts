@@ -115,6 +115,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     code: string,
     defaultValue?: number
   ): Promise<number> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return integer flag "${code}", no authentication credential found`,
+      );
+    }
     return await featureFlags.getIntegerFlag(
       sessionManager,
       code,
@@ -133,6 +138,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     code: string,
     defaultValue?: string
   ): Promise<string> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return string flag "${code}", no authentication credential found`,
+      );
+    }
     return await featureFlags.getStringFlag(sessionManager, code, defaultValue);
   };
 
@@ -147,6 +157,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     code: string,
     defaultValue?: boolean
   ): Promise<boolean> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return boolean flag "${code}", no authentication credential found`,
+      );
+    }
     return await featureFlags.getBooleanFlag(
       sessionManager,
       code,
@@ -161,10 +176,15 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
    * @param {ClaimTokenType} type
    * @returns {unknown | null}
    */
-  const getClaimValue = (
+  const getClaimValue = async (
     claim: string,
     type: ClaimTokenType = 'access_token'
-  ): unknown | null => {
+  ): Promise<unknown | null> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return claim "${claim}", no authentication credential found`,
+      );
+    }
     return tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
@@ -179,6 +199,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     claim: string,
     type: ClaimTokenType = 'access_token'
   ): Promise<{ name: string; value: unknown | null }> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return claim "${claim}", no authentication credential found`,
+      );
+    }
     return await tokenClaims.getClaim(sessionManager, claim, type);
   };
 
@@ -192,6 +217,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
   const getPermission = async (
     name: string
   ): Promise<{ orgCode: string | null; isGranted: boolean }> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return permission "${name}", no authentication credential found`,
+      );
+    }
     return await tokenClaims.getPermission(sessionManager, name);
   };
 
@@ -200,6 +230,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
    * @returns {{ orgCode: string | null }}
    */
   const getOrganization = async (): Promise<{ orgCode: string | null }> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        'Cannot return user organization, no authentication credential found',
+      );
+    }
     return await tokenClaims.getOrganization(sessionManager);
   };
 
@@ -209,6 +244,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
    * @returns {{ orgCodes: string[] }}
    */
   const getUserOrganizations = async (): Promise<{ orgCodes: string[] }> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        'Cannot return user organizations, no authentication credential found',
+      );
+    }
     return await tokenClaims.getUserOrganizations(sessionManager);
   };
 
@@ -221,6 +261,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     permissions: string[];
     orgCode: string | null;
   }> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        'Cannot return user permissions, no authentication credential found',
+      );
+    }
     return await tokenClaims.getPermissions(sessionManager);
   };
 
@@ -246,6 +291,11 @@ const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
     defaultValue?: FlagType[keyof FlagType],
     type?: keyof FlagType
   ): Promise<GetFlagType> => {
+    if (!(await isAuthenticated())) {
+      throw new Error(
+        `Cannot return flag "${code}", no authentication credential found`,
+      );
+    }
     return await featureFlags.getFlag(sessionManager, code, defaultValue, type);
   };
 
