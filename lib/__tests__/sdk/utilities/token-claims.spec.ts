@@ -47,29 +47,6 @@ describe('token-claims', () => {
       const claimValue = await getClaimValue(sessionManager, claimName);
       expect(claimValue).toBe(null);
     });
-
-    it('throws error if access token is expired or not present', async () => {
-      const mockExpiredAccessToken = mocks.getMockAccessToken(authDomain, true);
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockExpiredAccessToken.token
-      );
-      await expect(
-        async () => await getClaimValue(sessionManager, 'claim')
-      ).rejects.toThrowError(
-        'No authentication credential found, when requesting claim claim'
-      );
-    });
-
-    it('throws error if id token is expired or not present', async () => {
-      const mockExpiredIdToken = mocks.getMockIdToken(authDomain, true);
-      await sessionManager.setSessionItem('id_token', mockExpiredIdToken.token);
-      await expect(
-        async () => await getClaimValue(sessionManager, 'claim', 'id_token')
-      ).rejects.toThrowError(
-        'No authentication credential found, when requesting claim claim'
-      );
-    });
   });
 
   describe('getClaim', () => {

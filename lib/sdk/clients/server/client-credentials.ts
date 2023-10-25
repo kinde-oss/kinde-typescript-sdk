@@ -1,7 +1,7 @@
+import { default as withAuthUtilities } from "./with-auth-utilities.js";
 import { type SessionManager } from '../../session-managers/index.js';
 import { ClientCredentials } from '../../oauth2-flows/index.js';
 import type { CCClientOptions } from '../types.js';
-import * as utilities from '../../utilities/index.js';
 
 const createCCClient = (options: CCClientOptions) => {
   const client = new ClientCredentials(options);
@@ -27,9 +27,21 @@ const createCCClient = (options: CCClientOptions) => {
     return await client.getToken(sessionManager);
   };
 
+  /**
+   * Method acts as a wrapper around the `isAuthenticated` method provided by the
+   * `ClientCredentials` client created above.
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<Boolean>}
+   */
+  const isAuthenticated = async (
+    sessionManager: SessionManager
+  ): Promise<boolean> => {
+    return await client.isAuthenticated(sessionManager);
+  };
+
   return {
-    ...utilities.featureFlags,
-    ...utilities.tokenClaims,
+    ...withAuthUtilities(isAuthenticated),
+    isAuthenticated,
     getToken,
     logout,
   };
