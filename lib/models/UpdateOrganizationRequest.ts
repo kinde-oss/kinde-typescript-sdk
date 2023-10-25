@@ -55,6 +55,12 @@ export interface UpdateOrganizationRequest {
      * @memberof UpdateOrganizationRequest
      */
     linkColor?: string;
+    /**
+     * The organization's handle.
+     * @type {string}
+     * @memberof UpdateOrganizationRequest
+     */
+    handle?: string;
 }
 
 /**
@@ -82,6 +88,7 @@ export function UpdateOrganizationRequestFromJSONTyped(json: any, ignoreDiscrimi
         'buttonColor': !exists(json, 'button_color') ? undefined : json['button_color'],
         'buttonTextColor': !exists(json, 'button_text_color') ? undefined : json['button_text_color'],
         'linkColor': !exists(json, 'link_color') ? undefined : json['link_color'],
+        'handle': !exists(json, 'handle') ? undefined : json['handle'],
     };
 }
 
@@ -100,6 +107,7 @@ export function UpdateOrganizationRequestToJSON(value?: UpdateOrganizationReques
         'button_color': value.buttonColor,
         'button_text_color': value.buttonTextColor,
         'link_color': value.linkColor,
+        'handle': value.handle,
     };
 }
 

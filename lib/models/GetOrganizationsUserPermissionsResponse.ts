@@ -43,7 +43,7 @@ export interface GetOrganizationsUserPermissionsResponse {
      * @type {Array<OrganizationUserPermission>}
      * @memberof GetOrganizationsUserPermissionsResponse
      */
-    roles?: Array<OrganizationUserPermission>;
+    permissions?: Array<OrganizationUserPermission>;
 }
 
 /**
@@ -67,7 +67,7 @@ export function GetOrganizationsUserPermissionsResponseFromJSONTyped(json: any, 
         
         'code': !exists(json, 'code') ? undefined : json['code'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'roles': !exists(json, 'roles') ? undefined : ((json['roles'] as Array<any>).map(OrganizationUserPermissionFromJSON)),
+        'permissions': !exists(json, 'permissions') ? undefined : ((json['permissions'] as Array<any>).map(OrganizationUserPermissionFromJSON)),
     };
 }
 
@@ -82,7 +82,7 @@ export function GetOrganizationsUserPermissionsResponseToJSON(value?: GetOrganiz
         
         'code': value.code,
         'message': value.message,
-        'roles': value.roles === undefined ? undefined : ((value.roles as Array<any>).map(OrganizationUserPermissionToJSON)),
+        'permissions': value.permissions === undefined ? undefined : ((value.permissions as Array<any>).map(OrganizationUserPermissionToJSON)),
     };
 }
 

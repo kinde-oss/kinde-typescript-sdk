@@ -20,6 +20,7 @@ import type {
   ErrorResponse,
   GetApplicationResponse,
   GetApplicationsResponse,
+  SuccessResponse,
   UpdateApplicationRequest,
 } from '../models/index.js';
 import {
@@ -33,12 +34,18 @@ import {
     GetApplicationResponseToJSON,
     GetApplicationsResponseFromJSON,
     GetApplicationsResponseToJSON,
+    SuccessResponseFromJSON,
+    SuccessResponseToJSON,
     UpdateApplicationRequestFromJSON,
     UpdateApplicationRequestToJSON,
 } from '../models/index.js';
 
 export interface CreateApplicationOperationRequest {
     createApplicationRequest?: CreateApplicationRequest;
+}
+
+export interface DeleteApplicationRequest {
+    applicationId: string;
 }
 
 export interface GetApplicationRequest {
@@ -97,6 +104,46 @@ export class ApplicationsApi extends runtime.BaseAPI {
      */
     async createApplication(requestParameters: CreateApplicationOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateApplicationResponse> {
         const response = await this.createApplicationRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete application. 
+     * Delete Application
+     */
+    async deleteApplicationRaw(requestParameters: DeleteApplicationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters.applicationId === null || requestParameters.applicationId === undefined) {
+            throw new runtime.RequiredError('applicationId','Required parameter requestParameters.applicationId was null or undefined when calling deleteApplication.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("kindeBearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/applications/{application_id}`.replace(`{${"application_id"}}`, encodeURIComponent(String(requestParameters.applicationId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete application. 
+     * Delete Application
+     */
+    async deleteApplication(requestParameters: DeleteApplicationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.deleteApplicationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

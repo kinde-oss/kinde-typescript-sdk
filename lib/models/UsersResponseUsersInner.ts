@@ -23,103 +23,103 @@ import {
 /**
  * 
  * @export
- * @interface User
+ * @interface UsersResponseUsersInner
  */
-export interface User {
+export interface UsersResponseUsersInner {
     /**
      * Unique id of the user in Kinde.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     id?: string;
     /**
      * External id for user.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     providedId?: string;
     /**
      * Default email address of the user in Kinde.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
-    preferredEmail?: string;
+    email?: string;
     /**
      * User's last name.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     lastName?: string;
     /**
      * User's first name.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     firstName?: string;
     /**
      * Whether the user is currently suspended or not.
      * @type {boolean}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     isSuspended?: boolean;
     /**
      * User's profile picture URL.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     picture?: string;
     /**
      * Total number of user sign ins.
      * @type {number}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     totalSignIns?: number | null;
     /**
      * Number of consecutive failed user sign ins.
      * @type {number}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     failedSignIns?: number | null;
     /**
      * Last sign in date in ISO 8601 format.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     lastSignedIn?: string | null;
     /**
      * Date of user creation in ISO 8601 format.
      * @type {string}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     createdOn?: string | null;
     /**
      * Array of organizations a user belongs to.
      * @type {Array<string>}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     organizations?: Array<string>;
     /**
      * Array of identities belonging to the user.
      * @type {Array<UserIdentitiesInner>}
-     * @memberof User
+     * @memberof UsersResponseUsersInner
      */
     identities?: Array<UserIdentitiesInner>;
 }
 
 /**
- * Check if a given object implements the User interface.
+ * Check if a given object implements the UsersResponseUsersInner interface.
  */
-export function instanceOfUser(value: object): boolean {
+export function instanceOfUsersResponseUsersInner(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function UserFromJSON(json: any): User {
-    return UserFromJSONTyped(json, false);
+export function UsersResponseUsersInnerFromJSON(json: any): UsersResponseUsersInner {
+    return UsersResponseUsersInnerFromJSONTyped(json, false);
 }
 
-export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User {
+export function UsersResponseUsersInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): UsersResponseUsersInner {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -127,7 +127,7 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'providedId': !exists(json, 'provided_id') ? undefined : json['provided_id'],
-        'preferredEmail': !exists(json, 'preferred_email') ? undefined : json['preferred_email'],
+        'email': !exists(json, 'email') ? undefined : json['email'],
         'lastName': !exists(json, 'last_name') ? undefined : json['last_name'],
         'firstName': !exists(json, 'first_name') ? undefined : json['first_name'],
         'isSuspended': !exists(json, 'is_suspended') ? undefined : json['is_suspended'],
@@ -141,7 +141,7 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
     };
 }
 
-export function UserToJSON(value?: User | null): any {
+export function UsersResponseUsersInnerToJSON(value?: UsersResponseUsersInner | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -152,7 +152,7 @@ export function UserToJSON(value?: User | null): any {
         
         'id': value.id,
         'provided_id': value.providedId,
-        'preferred_email': value.preferredEmail,
+        'email': value.email,
         'last_name': value.lastName,
         'first_name': value.firstName,
         'is_suspended': value.isSuspended,

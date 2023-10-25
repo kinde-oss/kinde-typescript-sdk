@@ -127,6 +127,7 @@ export interface GetOrganizationFeatureFlagsRequest {
 export interface GetOrganizationUserPermissionsRequest {
     orgCode: string;
     userId: string;
+    expand?: string | null;
 }
 
 export interface GetOrganizationUserRolesRequest {
@@ -140,6 +141,7 @@ export interface GetOrganizationUsersRequest {
     pageSize?: number | null;
     nextToken?: string | null;
     permissions?: string;
+    roles?: string;
 }
 
 export interface GetOrganizationsRequest {
@@ -672,6 +674,10 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters.expand !== undefined) {
+            queryParameters['expand'] = requestParameters.expand;
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
@@ -770,6 +776,10 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
         if (requestParameters.permissions !== undefined) {
             queryParameters['permissions'] = requestParameters.permissions;
+        }
+
+        if (requestParameters.roles !== undefined) {
+            queryParameters['roles'] = requestParameters.roles;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

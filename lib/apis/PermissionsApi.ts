@@ -17,6 +17,7 @@ import * as runtime from '../runtime.js';
 import type {
   CreatePermissionRequest,
   ErrorResponse,
+  GetPermissionsResponse,
   SuccessResponse,
 } from '../models/index.js';
 import {
@@ -24,6 +25,8 @@ import {
     CreatePermissionRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    GetPermissionsResponseFromJSON,
+    GetPermissionsResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
 } from '../models/index.js';
@@ -135,7 +138,7 @@ export class PermissionsApi extends runtime.BaseAPI {
      * The returned list can be sorted by permission name or permission ID in ascending or descending order. The number of records to return at a time can also be controlled using the `page_size` query string parameter. 
      * List Permissions
      */
-    async getPermissionsRaw(requestParameters: GetPermissionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async getPermissionsRaw(requestParameters: GetPermissionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPermissionsResponse>> {
         const queryParameters: any = {};
 
         if (requestParameters.sort !== undefined) {
@@ -167,14 +170,14 @@ export class PermissionsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetPermissionsResponseFromJSON(jsonValue));
     }
 
     /**
      * The returned list can be sorted by permission name or permission ID in ascending or descending order. The number of records to return at a time can also be controlled using the `page_size` query string parameter. 
      * List Permissions
      */
-    async getPermissions(requestParameters: GetPermissionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+    async getPermissions(requestParameters: GetPermissionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetPermissionsResponse> {
         const response = await this.getPermissionsRaw(requestParameters, initOverrides);
         return await response.value();
     }

@@ -20,6 +20,7 @@ import type {
   ErrorResponse,
   SuccessResponse,
   UpdateUserRequest,
+  UpdateUserResponse,
   User,
   UsersResponse,
 } from '../models/index.js';
@@ -34,6 +35,8 @@ import {
     SuccessResponseToJSON,
     UpdateUserRequestFromJSON,
     UpdateUserRequestToJSON,
+    UpdateUserResponseFromJSON,
+    UpdateUserResponseToJSON,
     UserFromJSON,
     UserToJSON,
     UsersResponseFromJSON,
@@ -316,7 +319,7 @@ export class UsersApi extends runtime.BaseAPI {
      * Update a user record. 
      * Update User
      */
-    async updateUserRaw(requestParameters: UpdateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async updateUserRaw(requestParameters: UpdateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateUserResponse>> {
         if (requestParameters.updateUserRequest === null || requestParameters.updateUserRequest === undefined) {
             throw new runtime.RequiredError('updateUserRequest','Required parameter requestParameters.updateUserRequest was null or undefined when calling updateUser.');
         }
@@ -347,14 +350,14 @@ export class UsersApi extends runtime.BaseAPI {
             body: UpdateUserRequestToJSON(requestParameters.updateUserRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateUserResponseFromJSON(jsonValue));
     }
 
     /**
      * Update a user record. 
      * Update User
      */
-    async updateUser(requestParameters: UpdateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async updateUser(requestParameters: UpdateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateUserResponse> {
         const response = await this.updateUserRaw(requestParameters, initOverrides);
         return await response.value();
     }

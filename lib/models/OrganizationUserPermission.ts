@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime.js';
+import type { OrganizationUserPermissionRolesInner } from './OrganizationUserPermissionRolesInner.js';
+import {
+    OrganizationUserPermissionRolesInnerFromJSON,
+    OrganizationUserPermissionRolesInnerFromJSONTyped,
+    OrganizationUserPermissionRolesInnerToJSON,
+} from './OrganizationUserPermissionRolesInner.js';
+
 /**
  * 
  * @export
@@ -43,6 +50,12 @@ export interface OrganizationUserPermission {
      * @memberof OrganizationUserPermission
      */
     description?: string;
+    /**
+     * 
+     * @type {Array<OrganizationUserPermissionRolesInner>}
+     * @memberof OrganizationUserPermission
+     */
+    roles?: Array<OrganizationUserPermissionRolesInner>;
 }
 
 /**
@@ -68,6 +81,7 @@ export function OrganizationUserPermissionFromJSONTyped(json: any, ignoreDiscrim
         'key': !exists(json, 'key') ? undefined : json['key'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'roles': !exists(json, 'roles') ? undefined : ((json['roles'] as Array<any>).map(OrganizationUserPermissionRolesInnerFromJSON)),
     };
 }
 
@@ -84,6 +98,7 @@ export function OrganizationUserPermissionToJSON(value?: OrganizationUserPermiss
         'key': value.key,
         'name': value.name,
         'description': value.description,
+        'roles': value.roles === undefined ? undefined : ((value.roles as Array<any>).map(OrganizationUserPermissionRolesInnerToJSON)),
     };
 }
 

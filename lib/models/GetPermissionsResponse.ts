@@ -13,59 +13,59 @@
  */
 
 import { exists, mapValues } from '../runtime.js';
-import type { UsersResponseUsersInner } from './UsersResponseUsersInner.js';
+import type { Permissions } from './Permissions.js';
 import {
-    UsersResponseUsersInnerFromJSON,
-    UsersResponseUsersInnerFromJSONTyped,
-    UsersResponseUsersInnerToJSON,
-} from './UsersResponseUsersInner.js';
+    PermissionsFromJSON,
+    PermissionsFromJSONTyped,
+    PermissionsToJSON,
+} from './Permissions.js';
 
 /**
  * 
  * @export
- * @interface UsersResponse
+ * @interface GetPermissionsResponse
  */
-export interface UsersResponse {
+export interface GetPermissionsResponse {
     /**
      * Response code.
      * @type {string}
-     * @memberof UsersResponse
+     * @memberof GetPermissionsResponse
      */
     code?: string;
     /**
      * Response message.
      * @type {string}
-     * @memberof UsersResponse
+     * @memberof GetPermissionsResponse
      */
     message?: string;
     /**
      * 
-     * @type {Array<UsersResponseUsersInner>}
-     * @memberof UsersResponse
+     * @type {Array<Permissions>}
+     * @memberof GetPermissionsResponse
      */
-    users?: Array<UsersResponseUsersInner>;
+    permissions?: Array<Permissions>;
     /**
      * Pagination token.
      * @type {string}
-     * @memberof UsersResponse
+     * @memberof GetPermissionsResponse
      */
     nextToken?: string;
 }
 
 /**
- * Check if a given object implements the UsersResponse interface.
+ * Check if a given object implements the GetPermissionsResponse interface.
  */
-export function instanceOfUsersResponse(value: object): boolean {
+export function instanceOfGetPermissionsResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function UsersResponseFromJSON(json: any): UsersResponse {
-    return UsersResponseFromJSONTyped(json, false);
+export function GetPermissionsResponseFromJSON(json: any): GetPermissionsResponse {
+    return GetPermissionsResponseFromJSONTyped(json, false);
 }
 
-export function UsersResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): UsersResponse {
+export function GetPermissionsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetPermissionsResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -73,12 +73,12 @@ export function UsersResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'code': !exists(json, 'code') ? undefined : json['code'],
         'message': !exists(json, 'message') ? undefined : json['message'],
-        'users': !exists(json, 'users') ? undefined : ((json['users'] as Array<any>).map(UsersResponseUsersInnerFromJSON)),
+        'permissions': !exists(json, 'permissions') ? undefined : ((json['permissions'] as Array<any>).map(PermissionsFromJSON)),
         'nextToken': !exists(json, 'next_token') ? undefined : json['next_token'],
     };
 }
 
-export function UsersResponseToJSON(value?: UsersResponse | null): any {
+export function GetPermissionsResponseToJSON(value?: GetPermissionsResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -89,7 +89,7 @@ export function UsersResponseToJSON(value?: UsersResponse | null): any {
         
         'code': value.code,
         'message': value.message,
-        'users': value.users === undefined ? undefined : ((value.users as Array<any>).map(UsersResponseUsersInnerToJSON)),
+        'permissions': value.permissions === undefined ? undefined : ((value.permissions as Array<any>).map(PermissionsToJSON)),
         'next_token': value.nextToken,
     };
 }

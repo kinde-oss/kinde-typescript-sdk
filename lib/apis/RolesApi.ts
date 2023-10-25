@@ -289,7 +289,7 @@ export class RolesApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/roles/{role_id}/permission/{permission_id}`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))).replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
+            path: `/api/v1/roles/{role_id}/permissions/{permission_id}`.replace(`{${"role_id"}}`, encodeURIComponent(String(requestParameters.roleId))).replace(`{${"permission_id"}}`, encodeURIComponent(String(requestParameters.permissionId))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,

@@ -30,8 +30,20 @@ export interface CreateApplicationRequest {
      * @type {string}
      * @memberof CreateApplicationRequest
      */
-    type?: string;
+    type?: CreateApplicationRequestTypeEnum;
 }
+
+
+/**
+ * @export
+ */
+export const CreateApplicationRequestTypeEnum = {
+    Reg: 'reg',
+    Spa: 'spa',
+    M2m: 'm2m'
+} as const;
+export type CreateApplicationRequestTypeEnum = typeof CreateApplicationRequestTypeEnum[keyof typeof CreateApplicationRequestTypeEnum];
+
 
 /**
  * Check if a given object implements the CreateApplicationRequest interface.

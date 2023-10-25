@@ -1,6 +1,6 @@
 {
   "name": "@kinde-oss/kinde-typescript-sdk",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Kinde Typescript SDK",
   "main": "dist-cjs/index.js",
   "module": "dist/index.js",

@@ -16,49 +16,37 @@ import { exists, mapValues } from '../runtime.js';
 /**
  * 
  * @export
- * @interface Roles
+ * @interface OrganizationUserPermissionRolesInner
  */
-export interface Roles {
+export interface OrganizationUserPermissionRolesInner {
     /**
-     * The role's id.
+     * 
      * @type {string}
-     * @memberof Roles
+     * @memberof OrganizationUserPermissionRolesInner
      */
     id?: string;
     /**
-     * The role identifier to use in code.
+     * 
      * @type {string}
-     * @memberof Roles
+     * @memberof OrganizationUserPermissionRolesInner
      */
     key?: string;
-    /**
-     * The role's name.
-     * @type {string}
-     * @memberof Roles
-     */
-    name?: string;
-    /**
-     * The role's description.
-     * @type {string}
-     * @memberof Roles
-     */
-    description?: string;
 }
 
 /**
- * Check if a given object implements the Roles interface.
+ * Check if a given object implements the OrganizationUserPermissionRolesInner interface.
  */
-export function instanceOfRoles(value: object): boolean {
+export function instanceOfOrganizationUserPermissionRolesInner(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function RolesFromJSON(json: any): Roles {
-    return RolesFromJSONTyped(json, false);
+export function OrganizationUserPermissionRolesInnerFromJSON(json: any): OrganizationUserPermissionRolesInner {
+    return OrganizationUserPermissionRolesInnerFromJSONTyped(json, false);
 }
 
-export function RolesFromJSONTyped(json: any, ignoreDiscriminator: boolean): Roles {
+export function OrganizationUserPermissionRolesInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): OrganizationUserPermissionRolesInner {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -66,12 +54,10 @@ export function RolesFromJSONTyped(json: any, ignoreDiscriminator: boolean): Rol
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'key': !exists(json, 'key') ? undefined : json['key'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'description': !exists(json, 'description') ? undefined : json['description'],
     };
 }
 
-export function RolesToJSON(value?: Roles | null): any {
+export function OrganizationUserPermissionRolesInnerToJSON(value?: OrganizationUserPermissionRolesInner | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -82,8 +68,6 @@ export function RolesToJSON(value?: Roles | null): any {
         
         'id': value.id,
         'key': value.key,
-        'name': value.name,
-        'description': value.description,
     };
 }
 
