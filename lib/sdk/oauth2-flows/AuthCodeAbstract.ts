@@ -234,39 +234,38 @@ export abstract class AuthCodeAbstract {
 	 */
 	protected generateAuthURLParams(options: AuthURLOptions = {}): URLSearchParams {
 		const searchParams = this.getBaseAuthURLParams();
-		searchParams.append(
-			'scope',
-			this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES
-		);
+
+		let searchParamsObject: Record<string, string> = {
+			scope: this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES,
+		};
 
 		if (this.config.audience) {
-			searchParams.append('audience', this.config.audience);
+			searchParamsObject.audience = this.config.audience;
 		}
 
 		if (options.start_page) {
-			searchParams.append('start_page', options.start_page);
+			searchParamsObject.start_page = options.start_page;
 		}
 
 		if (options.org_code) {
-			searchParams.append('org_code', options.org_code);
+			searchParamsObject.org_code = options.org_code;
 		}
 
 		if (options.is_create_org) {
-			searchParams.append('org_name', options.org_name ?? '');
-			searchParams.append('is_create_org', 'true');
+			searchParamsObject.org_name = options.org_name ?? '';
+			searchParamsObject.is_create_org = 'true';
 		}
 
 		if (options.post_login_redirect_url) {
-			searchParams.append(
-				'post_login_redirect_url',
-				options.post_login_redirect_url
-			);
+			searchParamsObject.post_login_redirect_url = options.post_login_redirect_url;
 		}
 
 		if (options.authUrlParams) {
-			for (const key in options.authUrlParams)
-				searchParams.append(key, options.authUrlParams[key]);
+			searchParamsObject = Object.assign(options.authUrlParams, searchParamsObject);
 		}
+
+		for (const key in searchParamsObject)
+			searchParams.append(key, searchParamsObject[key]);
 
 		return searchParams;
 	}
