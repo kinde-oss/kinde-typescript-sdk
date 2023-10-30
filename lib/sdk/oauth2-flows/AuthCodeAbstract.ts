@@ -261,7 +261,7 @@ export abstract class AuthCodeAbstract {
 		}
 
 		if (options.authUrlParams) {
-			searchParamsObject = Object.assign(options.authUrlParams, searchParamsObject);
+			searchParamsObject = { ...options.authUrlParams, ...searchParamsObject };
 		}
 
 		for (const key in searchParamsObject)
