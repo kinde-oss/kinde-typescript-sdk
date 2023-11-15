@@ -15,7 +15,7 @@
         "types": "./dist-cjs/types/index.d.ts",
         "default": "./dist-cjs/index.js"
       },
-      "import":{
+      "import": {
         "types": "./dist/types/index.d.ts",
         "default": "./dist/index.js"
       }
@@ -70,6 +70,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "jwt-decode": "^4.0.0",
     "uncrypto": "^0.1.3"
   }
 }
