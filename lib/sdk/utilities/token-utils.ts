@@ -37,11 +37,12 @@ export const commitTokenToMemory = async (
   token: string,
   type: TokenType
 ): Promise<void> => {
-  const tokenPayload = jwtDecode(token);
   await sessionManager.setSessionItem(type, token);
   if (type === 'access_token') {
+    const tokenPayload = jwtDecode(token);
     await sessionManager.setSessionItem('access_token_payload', tokenPayload);
   } else if (type === 'id_token') {
+    const tokenPayload = jwtDecode(token);
     await sessionManager.setSessionItem('id_token_payload', tokenPayload);
     await commitUserToMemoryFromToken(sessionManager, token);
   }
