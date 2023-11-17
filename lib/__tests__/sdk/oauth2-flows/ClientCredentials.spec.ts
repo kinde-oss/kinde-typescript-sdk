@@ -142,14 +142,14 @@ describe('ClientCredentials', () => {
     it('commits access token to memory, when a new one is fetched', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
-        json: () => ({ access_token: mockAccessToken }),
+        json: () => ({ access_token: mockAccessToken.token }),
       });
 
       const client = new ClientCredentials(clientConfig);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
       expect(await sessionManager.getSessionItem('access_token')).toBe(
-        mockAccessToken
+        mockAccessToken.token
       );
     });
   });
