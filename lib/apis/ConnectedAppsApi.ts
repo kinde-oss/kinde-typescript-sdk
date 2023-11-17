@@ -33,7 +33,8 @@ import {
 
 export interface GetConnectedAppAuthUrlRequest {
     keyCodeRef: string;
-    userId: string;
+    userId?: string;
+    orgCode?: string;
 }
 
 export interface GetConnectedAppTokenRequest {
@@ -58,10 +59,6 @@ export class ConnectedAppsApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('keyCodeRef','Required parameter requestParameters.keyCodeRef was null or undefined when calling getConnectedAppAuthUrl.');
         }
 
-        if (requestParameters.userId === null || requestParameters.userId === undefined) {
-            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling getConnectedAppAuthUrl.');
-        }
-
         const queryParameters: any = {};
 
         if (requestParameters.keyCodeRef !== undefined) {
@@ -70,6 +67,10 @@ export class ConnectedAppsApi extends runtime.BaseAPI {
 
         if (requestParameters.userId !== undefined) {
             queryParameters['user_id'] = requestParameters.userId;
+        }
+
+        if (requestParameters.orgCode !== undefined) {
+            queryParameters['org_code'] = requestParameters.orgCode;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

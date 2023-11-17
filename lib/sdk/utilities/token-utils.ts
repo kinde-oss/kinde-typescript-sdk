@@ -1,19 +1,7 @@
+import { type JwtPayload, jwtDecode } from 'jwt-decode';
 import type { TokenCollection, UserType, TokenType } from './types.js';
 import { type SessionManager } from '../session-managers/index.js';
 
-/**
- * Parses a provided JWT token to extract the payload segment of said
- * token.
- * @param token {string}
- * @returns {any}
- */
-const getTokenPayload = (token: string): any => {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    return null;
-  }
-};
 
 /**
  * Extracts the payload from the provided idToken and saves the extracted
@@ -26,13 +14,13 @@ const commitUserToMemoryFromToken = async (
   sessionManager: SessionManager,
   idToken: string
 ): Promise<void> => {
-  const idTokenPayload = getTokenPayload(idToken);
+  const idTokenPayload = jwtDecode<UserType&JwtPayload>(idToken);
   const user: UserType = {
     family_name: idTokenPayload.family_name,
     given_name: idTokenPayload.given_name,
     picture: idTokenPayload.picture ?? null,
     email: idTokenPayload.email,
-    id: idTokenPayload.sub,
+    id: idTokenPayload.sub!,
   };
 
   await sessionManager.setSessionItem('user', user);
@@ -49,7 +37,7 @@ export const commitTokenToMemory = async (
   token: string,
   type: TokenType
 ): Promise<void> => {
-  const tokenPayload = getTokenPayload(token);
+  const tokenPayload = jwtDecode(token);
   await sessionManager.setSessionItem(type, token);
   if (type === 'access_token') {
     await sessionManager.setSessionItem('access_token_payload', tokenPayload);
@@ -138,6 +126,6 @@ export const commitUserToMemory = async (
 export const isTokenExpired = (token: string | null): boolean => {
   if (!token) return true;
   const currentUnixTime = Math.floor(Date.now() / 1000);
-  const tokenPayload = getTokenPayload(token);
-  return currentUnixTime >= tokenPayload.exp;
+  const tokenPayload = jwtDecode(token);
+  return currentUnixTime >= tokenPayload.exp!;
 };
