@@ -17,14 +17,6 @@ describe('token-claims', () => {
   beforeEach(async () => {
     mockAccessToken = mocks.getMockAccessToken();
     mockIdToken = mocks.getMockIdToken();
-    await sessionManager.setSessionItem(
-      'access_token_payload',
-      mockAccessToken.payload
-    );
-    await sessionManager.setSessionItem(
-      'id_token_payload',
-      mockIdToken.payload
-    );
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
     await sessionManager.setSessionItem('id_token', mockIdToken.token);
   });
@@ -38,7 +30,7 @@ describe('token-claims', () => {
       Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
         const claimValue = await getClaimValue(sessionManager, name);
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
-        expect(claimValue).toBe(tokenPayload[name]);
+        expect(claimValue).toStrictEqual(tokenPayload[name]);
       });
     });
 
