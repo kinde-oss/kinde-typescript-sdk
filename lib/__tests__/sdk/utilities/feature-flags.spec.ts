@@ -12,10 +12,6 @@ describe('feature-flags', () => {
 
   beforeEach(async () => {
     mockAccessToken = mocks.getMockAccessToken();
-    await sessionManager.setSessionItem(
-      'access_token_payload',
-      mockAccessToken.payload
-    );
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
   });
 

@@ -38,12 +38,7 @@ export const commitTokenToMemory = async (
   type: TokenType
 ): Promise<void> => {
   await sessionManager.setSessionItem(type, token);
-  if (type === 'access_token') {
-    const tokenPayload = jwtDecode(token);
-    await sessionManager.setSessionItem('access_token_payload', tokenPayload);
-  } else if (type === 'id_token') {
-    const tokenPayload = jwtDecode(token);
-    await sessionManager.setSessionItem('id_token_payload', tokenPayload);
+  if (type === 'id_token') {
     await commitUserToMemoryFromToken(sessionManager, token);
   }
 };
