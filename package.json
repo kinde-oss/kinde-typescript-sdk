@@ -22,7 +22,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.cjs.json",
+    "build": "npm run generate && tsc && tsc -p tsconfig.cjs.json",
     "postbuild": "node sdk-version.js clean && ncp ./package-cjs.json ./dist-cjs/package.json && ncp ./package-esm.json ./dist/package.json",
     "prebuild": "node sdk-version.js && rimraf dist dist-cjs",
     "lint": "eslint .",
@@ -32,7 +32,8 @@
     "prettier:fix": "prettier . --write",
     "format": "pnpm run prettier:fix && pnpm run lint:fix",
     "lint-staged": "lint-staged",
-    "husky": "husky install"
+    "husky": "husky install",
+    "generate": "npx @openapitools/openapi-generator-cli generate -i ./kinde-mgmt-api-specs.yaml -c ./generator-config.yaml -g typescript-fetch -o ./lib --additional-properties=importFileExtension=.js"
   },
   "author": {
     "name": "Kinde",
@@ -47,6 +48,7 @@
   "homepage": "https://kinde.com",
   "license": "MIT",
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@tsconfig/node18": "^2.0.1",
     "@types/jest": "^29.5.1",
     "@types/jsdom": "^21.1.1",
