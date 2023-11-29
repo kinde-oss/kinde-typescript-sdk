@@ -6,6 +6,11 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from '../oauth2-flows/index.js';
+import { type SessionManager} from "../session-managers";
+
+export interface BrowserPKCEClientOptions extends AuthorizationCodeOptions {
+  sessionManager?: SessionManager
+}
 
 export interface PKCEClientOptions extends AuthorizationCodeOptions {}
 export interface CCClientOptions extends ClientCredentialsOptions {}

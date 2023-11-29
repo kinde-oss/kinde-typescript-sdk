@@ -13,12 +13,12 @@ import type {
   CreateOrgURLOptions,
   RegisterURLOptions,
   LoginURLOptions,
-  PKCEClientOptions,
+  BrowserPKCEClientOptions,
 } from '../types.js';
 
-const createAuthCodeWithPKCEClient = (options: PKCEClientOptions) => {
+const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const { featureFlags, tokenClaims } = utilities;
-  const sessionManager = new BrowserSessionManager();
+  const sessionManager = options.sessionManager ?? new BrowserSessionManager();
   const client = new AuthCodeWithPKCE(options);
 
   /**
