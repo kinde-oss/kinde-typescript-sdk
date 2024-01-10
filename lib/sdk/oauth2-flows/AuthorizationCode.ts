@@ -38,7 +38,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
   ): Promise<URL> {
     this.state = options.state ?? utilities.generateRandomString();
     await sessionManager.setSessionItem(
-      AuthorizationCode.STATE_KEY,
+      `${AuthorizationCode.STATE_KEY}.${this.state}`,
       this.state
     );
     const authURL = new URL(this.authorizationEndpoint);
@@ -84,10 +84,10 @@ export class AuthorizationCode extends AuthCodeAbstract {
   ): Promise<OAuth2CodeExchangeResponse> {
     const [code, state] = this.getCallbackURLParams(callbackURL);
     const stateKey = AuthorizationCode.STATE_KEY;
-    const storedState = (await sessionManager.getSessionItem(stateKey)) as
+    const storedState = (await sessionManager.getSessionItem(`${stateKey}.${state}`)) as
       | string
       | null;
-    if (!storedState || storedState !== state) {
+    if (!storedState) {
       throw new Error('Authentication flow state not found');
     }
 
@@ -102,7 +102,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     try {
       return await this.fetchTokensFor(sessionManager, body);
     } finally {
-      await sessionManager.removeSessionItem(stateKey);
+      await sessionManager.removeSessionItem(`${stateKey}.${state}`);
     }
   }
 
