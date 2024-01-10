@@ -102,7 +102,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     try {
       return await this.fetchTokensFor(sessionManager, body);
     } finally {
-      // TODO: clean up all cookies with the prefix ${stateKey}
+      /* TODO: clean up all cookies with the prefix ${stateKey} */
       await sessionManager.removeSessionItem(`${stateKey}.${state}`);
     }
   }
