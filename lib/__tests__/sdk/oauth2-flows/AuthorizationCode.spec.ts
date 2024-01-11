@@ -8,6 +8,10 @@ import {
   type SDKHeaderOverrideOptions,
 } from '../../../sdk/oauth2-flows';
 
+import {
+  KindeSDKError, KindeSDKErrorCode
+} from '../../../sdk/exceptions';
+
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
   const clientSecret = 'client-secret' as const;
@@ -377,6 +381,22 @@ describe('AuthorizationCode', () => {
       expect(foundAccessToken).toBe(newAccessToken.token);
       expect(foundRefreshToken).toBe(newRefreshToken);
       expect(foundIdToken).toBe(newIdToken.token);
+    });
+
+    it('throws error if refreshTokens abstract method fails to refresh existing tokens', async () => {
+      mocks.fetchClient.mockRejectedValue(Error('failed-refresh-attempt'));
+      await sessionManager.setSessionItem('refresh_token', 'mines are here');
+      await sessionManager.setSessionItem(
+        'access_token',
+        mocks.getMockAccessToken(clientConfig.authDomain, true).token
+      );
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      const getTokenFn = async () => await client.getToken(sessionManager);
+      await expect(getTokenFn).rejects.toBeInstanceOf(KindeSDKError);
+      await expect(getTokenFn).rejects.toHaveProperty(
+        'errorCode', KindeSDKErrorCode.FAILED_TOKENS_REFRESH_ATTEMPT
+      );
     });
   });
 
