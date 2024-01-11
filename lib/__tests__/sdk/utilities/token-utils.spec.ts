@@ -7,6 +7,11 @@ import {
   isTokenExpired,
 } from '../../../sdk/utilities';
 
+import { 
+  KindeSDKError,
+  KindeSDKErrorCode,
+} from '../../../sdk/exceptions';
+
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
   const { sessionManager } = mocks;
@@ -49,6 +54,17 @@ describe('token-utils', () => {
       );
     });
 
+    it('throws exception if attempting to store invalid token', async () => {
+      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
+      const commitTokenFn = async () => await commitTokenToMemory(
+        sessionManager, mockAccessToken, 'access_token'
+      );
+      await expect(commitTokenFn).rejects.toBeInstanceOf(KindeSDKError);
+      await expect(commitTokenFn).rejects.toHaveProperty(
+        'errorCode', KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT
+      );
+    });
+
     it('stores user information if provide token is an id token', async () => {
       const { token: mockIdToken, payload: idTokenPayload } =
         mocks.getMockIdToken(domain);
@@ -74,6 +90,11 @@ describe('token-utils', () => {
     });
 
     it('returns true if provided token is expired', () => {
+      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
+      expect(isTokenExpired(mockAccessToken)).toBe(true);
+    });
+
+    it('returns true if provided token is missing "exp" claim', () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
       expect(isTokenExpired(mockAccessToken)).toBe(true);
     });

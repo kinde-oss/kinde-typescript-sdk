@@ -11,10 +11,11 @@ export const fetchClient = jest.fn().mockImplementation(
 
 export const getMockAccessToken = (
   domain: string = 'local-testing@kinde.com',
-  isExpired: boolean = false
+  isExpired: boolean = false,
+  isExpClaimMissing: boolean = false,
 ) => {
   const iat = Math.floor(Date.now() / 1000);
-  const exp = isExpired ? iat : iat + 1000000;
+  const exp = isExpClaimMissing ? undefined : isExpired ? iat : iat + 1000000;
   const tokenPayload = {
     aud: [domain],
     azp: '',
