@@ -41,7 +41,7 @@ export const commitTokenToMemory = async (
   if (type !== 'refresh_token' && isTokenExpired(token)) {
     throw new KindeSDKError(
       KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
-      `Attempting to commit invalid ${type} token ${token} to memory`
+      `Attempting to commit invalid ${type} token "${token}" to memory`
     );
   }
 
