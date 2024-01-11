@@ -1,3 +1,4 @@
+import { KindeSDKError, KindeSDKErrorCode } from '../exceptions.js';
 import { type SessionManager } from '../session-managers/index.js';
 import { isNodeEnvironment } from '../environment.js';
 import type { UserType } from '../utilities/index.js';
@@ -118,8 +119,15 @@ export abstract class AuthCodeAbstract {
 			throw Error('Cannot persist session no valid refresh token found');
 		}
 
-		const tokens = await this.refreshTokens(sessionManager);
-		return tokens.access_token;
+		try {
+			const tokens = await this.refreshTokens(sessionManager);
+			return tokens.access_token;
+		} catch (error) {
+			throw new KindeSDKError(
+				KindeSDKErrorCode.FAILED_TOKENS_REFRESH_ATTEMPT,
+				`Failed to refresh tokens owing to: ${(error as Error).message}`
+			);
+		}
 	}
 
 	/**
