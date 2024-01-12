@@ -1,5 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
+import * as apis from './apis/index.js';
+import * as models from './models/index.js';
+
 export * from './runtime.js';
 {{#useSagaAndRecords}}
 export * from './runtimeSagasAndRecords';
@@ -16,3 +19,7 @@ export * from './apis/index.js';
 export * from './models/index.js';
 {{/models.0}}
 export * from './sdk/index.js';
+
+export const managementApi = {
+  apis, models
+};
