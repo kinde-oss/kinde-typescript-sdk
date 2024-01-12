@@ -4,3 +4,8 @@ node_modules
 # sdk builds
 /dist
 /dist-cjs
+lib/models
+lib/apis
+lib/index.ts
+lib/runtime.ts
+lib/.openapi-generator
