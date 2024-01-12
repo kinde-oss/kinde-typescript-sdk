@@ -32,10 +32,7 @@ export interface FeatureFlag<T extends keyof FlagType> {
   v: FlagType[T];
 }
 
-export type FeatureFlags = Record<
-  string,
-  FeatureFlag<'b' | 'i' | 's'> | undefined
->;
+export type FeatureFlags = Record<string, FeatureFlag<'b' | 'i' | 's'> | undefined>;
 
 export interface GetFlagType {
   type?: 'string' | 'boolean' | 'number';

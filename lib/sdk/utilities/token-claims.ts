@@ -16,9 +16,7 @@ export const getClaimValue = async (
   claim: string,
   type: ClaimTokenType = 'access_token'
 ): Promise<unknown | null> => {
-  const token = (await sessionManager.getSessionItem(
-    `${type}`
-  )) as string;
+  const token = (await sessionManager.getSessionItem(`${type}`)) as string;
   const tokenPayload: Record<string, unknown> = jwtDecode(token);
   return tokenPayload[claim] ?? null;
 };
@@ -57,9 +55,7 @@ export const getPermission = async (
   const permissions = ((await getClaimValue(sessionManager, 'permissions')) ??
     []) as string[];
   const isGranted = permissions.some((p) => p === name);
-  const orgCode = (await getClaimValue(sessionManager, 'org_code')) as
-    | string
-    | null;
+  const orgCode = (await getClaimValue(sessionManager, 'org_code')) as string | null;
   return { orgCode, isGranted };
 };
 

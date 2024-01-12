@@ -51,13 +51,10 @@ describe('BrowserSessionManager', () => {
   });
 
   describe('setBrowserSessionItem()', () => {
-    it('stores a value against the provided key in the browser\'s session storage', async () => {
+    it("stores a value against the provided key in the browser's session storage", async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
-      await sessionManager.setSessionItemBrowser(
-        sessionItemKey,
-        sessionItemValue
-      );
+      await sessionManager.setSessionItemBrowser(sessionItemKey, sessionItemValue);
       expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
         sessionItemValue
       );
@@ -65,20 +62,15 @@ describe('BrowserSessionManager', () => {
   });
 
   describe('removeBrowserSessionItem()', () => {
-    it('removes a session item from the browser\'s session storage', async () => {
+    it("removes a session item from the browser's session storage", async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
-      await sessionManager.setSessionItemBrowser(
-        sessionItemKey,
-        sessionItemValue
-      );
+      await sessionManager.setSessionItemBrowser(sessionItemKey, sessionItemValue);
       expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
         sessionItemValue
       );
       await sessionManager.removeSessionItemBrowser(sessionItemKey);
-      expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(
-        null
-      );
+      expect(await sessionManager.getSessionItemBrowser(sessionItemKey)).toBe(null);
     });
   });
 });

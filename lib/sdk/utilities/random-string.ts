@@ -8,7 +8,5 @@ import { getRandomValues } from 'uncrypto';
 export const generateRandomString = (length: number = 28): string => {
   const array = new Uint32Array(length);
   getRandomValues(array);
-  return Array.from(array, (dec) => ('0' + dec.toString(16)).slice(-2)).join(
-    ''
-  );
+  return Array.from(array, (dec) => ('0' + dec.toString(16)).slice(-2)).join('');
 };

@@ -1,4 +1,4 @@
-import { default as withAuthUtilities } from "./with-auth-utilities.js";
+import { default as withAuthUtilities } from './with-auth-utilities.js';
 import { type SessionManager } from '../../session-managers/index.js';
 import { ClientCredentials } from '../../oauth2-flows/index.js';
 import type { CCClientOptions } from '../types.js';

@@ -31,7 +31,7 @@ const createAuthorizationCodeClient = (
     options?: LoginURLOptions
   ): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
-      ...options
+      ...options,
     });
   };
 
@@ -118,9 +118,7 @@ const createAuthorizationCodeClient = (
    */
   const getUser = async (sessionManager: SessionManager): Promise<UserType> => {
     if (!(await isAuthenticated(sessionManager))) {
-      throw new Error(
-        'Cannot get user details, no authentication credential found'
-      );
+      throw new Error('Cannot get user details, no authentication credential found');
     }
     return (await utilities.getUserFromMemory(sessionManager))!;
   };

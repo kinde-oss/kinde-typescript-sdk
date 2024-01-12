@@ -3,7 +3,6 @@ import type { TokenCollection, UserType, TokenType } from './types.js';
 import { type SessionManager } from '../session-managers/index.js';
 import { KindeSDKError, KindeSDKErrorCode } from '../exceptions.js';
 
-
 /**
  * Extracts the payload from the provided idToken and saves the extracted
  * payload to the current session.
@@ -15,7 +14,7 @@ const commitUserToMemoryFromToken = async (
   sessionManager: SessionManager,
   idToken: string
 ): Promise<void> => {
-  const idTokenPayload = jwtDecode<UserType&JwtPayload>(idToken);
+  const idTokenPayload = jwtDecode<UserType & JwtPayload>(idToken);
   const user: UserType = {
     family_name: idTokenPayload.family_name,
     given_name: idTokenPayload.given_name,
@@ -105,9 +104,7 @@ export const getAccessToken = async (
 export const getUserFromMemory = async (
   sessionManager: SessionManager
 ): Promise<UserType | null> => {
-  return await (sessionManager.getSessionItem(
-    'user'
-  ) as Promise<UserType | null>);
+  return await (sessionManager.getSessionItem('user') as Promise<UserType | null>);
 };
 
 /**

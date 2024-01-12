@@ -1,4 +1,4 @@
-import { SessionManager } from "../../session-managers";
+import { SessionManager } from '../../session-managers';
 import * as utilities from '../../utilities/index.js';
 
 import type {
@@ -27,14 +27,10 @@ const withAuthUtilities = (
   ): Promise<number> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return integer flag "${code}", no authentication credential found`,
+        `Cannot return integer flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getIntegerFlag(
-      sessionManager,
-      code,
-      defaultValue
-    );
+    return await featureFlags.getIntegerFlag(sessionManager, code, defaultValue);
   };
 
   /**
@@ -52,7 +48,7 @@ const withAuthUtilities = (
   ): Promise<string> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return string flag "${code}", no authentication credential found`,
+        `Cannot return string flag "${code}", no authentication credential found`
       );
     }
     return await featureFlags.getStringFlag(sessionManager, code, defaultValue);
@@ -73,14 +69,10 @@ const withAuthUtilities = (
   ): Promise<boolean> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return boolean flag "${code}", no authentication credential found`,
+        `Cannot return boolean flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getBooleanFlag(
-      sessionManager,
-      code,
-      defaultValue
-    );
+    return await featureFlags.getBooleanFlag(sessionManager, code, defaultValue);
   };
 
   /**
@@ -98,7 +90,7 @@ const withAuthUtilities = (
   ): Promise<unknown | null> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return claim "${claim}", no authentication credential found`,
+        `Cannot return claim "${claim}", no authentication credential found`
       );
     }
     return tokenClaims.getClaimValue(sessionManager, claim, type);
@@ -119,7 +111,7 @@ const withAuthUtilities = (
   ): Promise<{ name: string; value: unknown | null }> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return claim "${claim}", no authentication credential found`,
+        `Cannot return claim "${claim}", no authentication credential found`
       );
     }
     return await tokenClaims.getClaim(sessionManager, claim, type);
@@ -139,7 +131,7 @@ const withAuthUtilities = (
   ): Promise<{ orgCode: string | null; isGranted: boolean }> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return permission "${name}", no authentication credential found`,
+        `Cannot return permission "${name}", no authentication credential found`
       );
     }
     return await tokenClaims.getPermission(sessionManager, name);
@@ -155,7 +147,7 @@ const withAuthUtilities = (
   ): Promise<{ orgCode: string | null }> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        'Cannot return user organization, no authentication credential found',
+        'Cannot return user organization, no authentication credential found'
       );
     }
     return await tokenClaims.getOrganization(sessionManager);
@@ -172,7 +164,7 @@ const withAuthUtilities = (
   ): Promise<{ orgCodes: string[] }> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        'Cannot return user organizations, no authentication credential found',
+        'Cannot return user organizations, no authentication credential found'
       );
     }
     return await tokenClaims.getUserOrganizations(sessionManager);
@@ -192,7 +184,7 @@ const withAuthUtilities = (
   }> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        'Cannot return user permissions, no authentication credential found',
+        'Cannot return user permissions, no authentication credential found'
       );
     }
     return await tokenClaims.getPermissions(sessionManager);
@@ -215,7 +207,7 @@ const withAuthUtilities = (
   ): Promise<GetFlagType> => {
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error(
-        `Cannot return flag "${code}", no authentication credential found`,
+        `Cannot return flag "${code}", no authentication credential found`
       );
     }
     return await featureFlags.getFlag(sessionManager, code, defaultValue, type);
@@ -233,6 +225,6 @@ const withAuthUtilities = (
     getClaim,
     getFlag,
   };
-}
+};
 
 export default withAuthUtilities;

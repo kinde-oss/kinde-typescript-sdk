@@ -92,9 +92,7 @@ export class ClientCredentials {
    * @param sessionManager
    * @returns {Promise<boolean>}
    */
-  public async isAuthenticated(
-    sessionManager: SessionManager
-  ): Promise<boolean> {
+  public async isAuthenticated(sessionManager: SessionManager): Promise<boolean> {
     try {
       await this.getToken(sessionManager);
       return true;

@@ -8,9 +8,7 @@ import {
   type SDKHeaderOverrideOptions,
 } from '../../../sdk/oauth2-flows';
 
-import {
-  KindeSDKError, KindeSDKErrorCode
-} from '../../../sdk/exceptions';
+import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
@@ -39,9 +37,7 @@ describe('AuthorizationCode', () => {
       const client = new AuthorizationCode(clientConfig, clientSecret);
       const authURL = await client.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
-      expect(searchParams.get('scope')).toBe(
-        AuthorizationCode.DEFAULT_TOKEN_SCOPES
-      );
+      expect(searchParams.get('scope')).toBe(AuthorizationCode.DEFAULT_TOKEN_SCOPES);
     });
 
     it('uses provided scope and audience if given in url options', async () => {
@@ -86,9 +82,7 @@ describe('AuthorizationCode', () => {
       const searchParams = new URLSearchParams(authURL.search);
       const state = searchParams.get('state');
       const stateKey = AuthorizationCode.STATE_KEY;
-      const storedState = (await sessionManager.getSessionItem(
-        stateKey
-      )) as string;
+      const storedState = (await sessionManager.getSessionItem(stateKey)) as string;
       expect(storedState).toBe(state);
     });
 
@@ -173,12 +167,8 @@ describe('AuthorizationCode', () => {
       await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = await sessionManager.getSessionItem(
-        'refresh_token'
-      );
-      const foundAccessToken = await sessionManager.getSessionItem(
-        'access_token'
-      );
+      const foundRefreshToken = await sessionManager.getSessionItem('refresh_token');
+      const foundAccessToken = await sessionManager.getSessionItem('access_token');
       const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(mockAccessToken.token);
@@ -195,10 +185,7 @@ describe('AuthorizationCode', () => {
 
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       const client = new AuthorizationCode(clientConfig, clientSecret);
       const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
@@ -217,10 +204,7 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       await expect(async () => {
         const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.getToken(sessionManager);
@@ -240,10 +224,7 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       await expect(async () => {
@@ -268,10 +249,7 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const body = new URLSearchParams({
@@ -311,10 +289,7 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const headerOverrides: SDKHeaderOverrideOptions = {
@@ -360,22 +335,15 @@ describe('AuthorizationCode', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = await sessionManager.getSessionItem(
-        'refresh_token'
-      );
-      const foundAccessToken = await sessionManager.getSessionItem(
-        'access_token'
-      );
+      const foundRefreshToken = await sessionManager.getSessionItem('refresh_token');
+      const foundAccessToken = await sessionManager.getSessionItem('access_token');
       const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
@@ -395,7 +363,8 @@ describe('AuthorizationCode', () => {
       const getTokenFn = async () => await client.getToken(sessionManager);
       await expect(getTokenFn).rejects.toBeInstanceOf(KindeSDKError);
       await expect(getTokenFn).rejects.toHaveProperty(
-        'errorCode', KindeSDKErrorCode.FAILED_TOKENS_REFRESH_ATTEMPT
+        'errorCode',
+        KindeSDKErrorCode.FAILED_TOKENS_REFRESH_ATTEMPT
       );
     });
   });
@@ -408,10 +377,7 @@ describe('AuthorizationCode', () => {
 
     it('fetches user profile using the available access token', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
 
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${mockAccessToken.token}`);
@@ -437,10 +403,7 @@ describe('AuthorizationCode', () => {
 
     it('commits fetched user details to memory store', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       const userDetails = {
         family_name: 'family_name',
         given_name: 'give_name',
@@ -456,9 +419,7 @@ describe('AuthorizationCode', () => {
       const client = new AuthorizationCode(clientConfig, clientSecret);
       await client.getUserProfile(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
-      expect(await sessionManager.getSessionItem('user')).toStrictEqual(
-        userDetails
-      );
+      expect(await sessionManager.getSessionItem('user')).toStrictEqual(userDetails);
     });
   });
 });

@@ -11,8 +11,20 @@ import type {
   CCClientOptions,
 } from '../types.js';
 
-type Options<T> = T extends GrantType.PKCE ? PKCEClientOptions : T extends GrantType.AUTHORIZATION_CODE ? ACClientOptions : T extends GrantType.CLIENT_CREDENTIALS ? CCClientOptions : never;
-type Client<T> = T extends PKCEClientOptions ? ACClient : T extends ACClientOptions ? ACClient : T extends  CCClientOptions ? CCClient : never; 
+type Options<T> = T extends GrantType.PKCE
+  ? PKCEClientOptions
+  : T extends GrantType.AUTHORIZATION_CODE
+  ? ACClientOptions
+  : T extends GrantType.CLIENT_CREDENTIALS
+  ? CCClientOptions
+  : never;
+type Client<T> = T extends PKCEClientOptions
+  ? ACClient
+  : T extends ACClientOptions
+  ? ACClient
+  : T extends CCClientOptions
+  ? CCClient
+  : never;
 
 export const createKindeServerClient = <G extends GrantType>(
   grantType: G,

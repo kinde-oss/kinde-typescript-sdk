@@ -61,11 +61,7 @@ describe('ClientCredentials', () => {
     it('return access token if an unexpired token is available in memory', async () => {
       const { authDomain } = clientConfig;
       const { token: mockAccessToken } = mocks.getMockAccessToken(authDomain);
-      await commitTokenToMemory(
-        sessionManager,
-        mockAccessToken,
-        'access_token'
-      );
+      await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
 
       const client = new ClientCredentials(clientConfig);
       const accessToken = await client.getToken(sessionManager);
@@ -94,7 +90,7 @@ describe('ClientCredentials', () => {
       );
       await sessionManager.setSessionItem('access_token', expiredMockAccessToken);
       const { token: mockAccessToken } = mocks.getMockAccessToken(
-        clientConfig.authDomain,
+        clientConfig.authDomain
       );
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken }),

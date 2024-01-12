@@ -11,9 +11,7 @@ export class BrowserSessionManager implements SessionManager {
 
   constructor() {
     if (!isBrowserEnvironment()) {
-      throw new Error(
-        'BrowserSessionStore must be instantiated on the browser'
-      );
+      throw new Error('BrowserSessionStore must be instantiated on the browser');
     }
   }
 
@@ -51,10 +49,7 @@ export class BrowserSessionManager implements SessionManager {
    * @param {string} itemKey
    * @param {unknown} itemValue
    */
-  async setSessionItemBrowser(
-    itemKey: string,
-    itemValue: unknown
-  ): Promise<void> {
+  async setSessionItemBrowser(itemKey: string, itemValue: unknown): Promise<void> {
     const key = this.generateItemKey(itemKey);
     const isString = typeof itemValue === 'string';
     const value = !isString ? JSON.stringify(itemValue) : itemValue;

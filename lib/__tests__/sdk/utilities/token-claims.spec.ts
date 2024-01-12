@@ -71,12 +71,10 @@ describe('token-claims', () => {
     it('return isGranted = false is permission is not given', async () => {
       const orgCode = mockAccessToken.payload.org_code;
       const permissionName = 'non-existant-permission';
-      expect(await getPermission(sessionManager, permissionName)).toStrictEqual(
-        {
-          orgCode,
-          isGranted: false,
-        }
-      );
+      expect(await getPermission(sessionManager, permissionName)).toStrictEqual({
+        orgCode,
+        isGranted: false,
+      });
     });
   });
   describe('getUserOrganizations', () => {

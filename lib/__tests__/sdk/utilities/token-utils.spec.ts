@@ -7,10 +7,7 @@ import {
   isTokenExpired,
 } from '../../../sdk/utilities';
 
-import { 
-  KindeSDKError,
-  KindeSDKErrorCode,
-} from '../../../sdk/exceptions';
+import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
@@ -44,11 +41,7 @@ describe('token-utils', () => {
 
     it('stores provided token to memory', async () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      await commitTokenToMemory(
-        sessionManager,
-        mockAccessToken,
-        'access_token'
-      );
+      await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
       expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
       );
@@ -56,12 +49,12 @@ describe('token-utils', () => {
 
     it('throws exception if attempting to store invalid token', async () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
-      const commitTokenFn = async () => await commitTokenToMemory(
-        sessionManager, mockAccessToken, 'access_token'
-      );
+      const commitTokenFn = async () =>
+        await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
       await expect(commitTokenFn).rejects.toBeInstanceOf(KindeSDKError);
       await expect(commitTokenFn).rejects.toHaveProperty(
-        'errorCode', KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT
+        'errorCode',
+        KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT
       );
     });
 

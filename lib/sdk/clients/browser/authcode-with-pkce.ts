@@ -29,7 +29,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
    */
   const login = async (options?: LoginURLOptions): Promise<URL> => {
     return await client.createAuthorizationURL(sessionManager, {
-      ...options
+      ...options,
     });
   };
 
@@ -97,9 +97,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
    */
   const getUser = async (): Promise<UserType> => {
     if (!(await isAuthenticated())) {
-      throw new Error(
-        'Cannot get user details, no authentication credential found'
-      );
+      throw new Error('Cannot get user details, no authentication credential found');
     }
     return (await utilities.getUserFromMemory(sessionManager))!;
   };
@@ -117,14 +115,10 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<number> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return integer flag "${code}", no authentication credential found`,
+        `Cannot return integer flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getIntegerFlag(
-      sessionManager,
-      code,
-      defaultValue
-    );
+    return await featureFlags.getIntegerFlag(sessionManager, code, defaultValue);
   };
 
   /**
@@ -140,7 +134,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<string> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return string flag "${code}", no authentication credential found`,
+        `Cannot return string flag "${code}", no authentication credential found`
       );
     }
     return await featureFlags.getStringFlag(sessionManager, code, defaultValue);
@@ -159,14 +153,10 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<boolean> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return boolean flag "${code}", no authentication credential found`,
+        `Cannot return boolean flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getBooleanFlag(
-      sessionManager,
-      code,
-      defaultValue
-    );
+    return await featureFlags.getBooleanFlag(sessionManager, code, defaultValue);
   };
 
   /**
@@ -182,7 +172,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<unknown | null> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return claim "${claim}", no authentication credential found`,
+        `Cannot return claim "${claim}", no authentication credential found`
       );
     }
     return tokenClaims.getClaimValue(sessionManager, claim, type);
@@ -201,7 +191,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<{ name: string; value: unknown | null }> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return claim "${claim}", no authentication credential found`,
+        `Cannot return claim "${claim}", no authentication credential found`
       );
     }
     return await tokenClaims.getClaim(sessionManager, claim, type);
@@ -219,7 +209,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<{ orgCode: string | null; isGranted: boolean }> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return permission "${name}", no authentication credential found`,
+        `Cannot return permission "${name}", no authentication credential found`
       );
     }
     return await tokenClaims.getPermission(sessionManager, name);
@@ -232,7 +222,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const getOrganization = async (): Promise<{ orgCode: string | null }> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        'Cannot return user organization, no authentication credential found',
+        'Cannot return user organization, no authentication credential found'
       );
     }
     return await tokenClaims.getOrganization(sessionManager);
@@ -246,7 +236,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const getUserOrganizations = async (): Promise<{ orgCodes: string[] }> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        'Cannot return user organizations, no authentication credential found',
+        'Cannot return user organizations, no authentication credential found'
       );
     }
     return await tokenClaims.getUserOrganizations(sessionManager);
@@ -263,7 +253,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   }> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        'Cannot return user permissions, no authentication credential found',
+        'Cannot return user permissions, no authentication credential found'
       );
     }
     return await tokenClaims.getPermissions(sessionManager);
@@ -293,7 +283,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   ): Promise<GetFlagType> => {
     if (!(await isAuthenticated())) {
       throw new Error(
-        `Cannot return flag "${code}", no authentication credential found`,
+        `Cannot return flag "${code}", no authentication credential found`
       );
     }
     return await featureFlags.getFlag(sessionManager, code, defaultValue, type);

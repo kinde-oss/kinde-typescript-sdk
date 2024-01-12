@@ -24,8 +24,7 @@ export const getFlag = async (
   type?: keyof FlagType
 ): Promise<GetFlagType> => {
   const featureFlags =
-    ((await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags) ??
-    {};
+    ((await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
   if (!flag && defaultValue === undefined) {
@@ -68,8 +67,7 @@ export const getIntegerFlag = async (
   code: string,
   defaultValue?: number
 ): Promise<number> => {
-  return (await getFlag(sessionManager, code, defaultValue, 'i'))
-    .value as number;
+  return (await getFlag(sessionManager, code, defaultValue, 'i')).value as number;
 };
 
 /**
@@ -85,8 +83,7 @@ export const getStringFlag = async (
   code: string,
   defaultValue?: string
 ): Promise<string> => {
-  return (await getFlag(sessionManager, code, defaultValue, 's'))
-    .value as string;
+  return (await getFlag(sessionManager, code, defaultValue, 's')).value as string;
 };
 
 /**
@@ -102,6 +99,5 @@ export const getBooleanFlag = async (
   code: string,
   defaultValue?: boolean
 ): Promise<boolean> => {
-  return (await getFlag(sessionManager, code, defaultValue, 'b'))
-    .value as boolean;
+  return (await getFlag(sessionManager, code, defaultValue, 'b')).value as boolean;
 };

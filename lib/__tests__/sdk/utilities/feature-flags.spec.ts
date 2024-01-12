@@ -1,10 +1,6 @@
 import * as mocks from '../../mocks';
 
-import {
-  type FeatureFlags,
-  FlagDataType,
-  getFlag,
-} from '../../../sdk/utilities';
+import { type FeatureFlags, FlagDataType, getFlag } from '../../../sdk/utilities';
 
 describe('feature-flags', () => {
   let mockAccessToken: ReturnType<typeof mocks.getMockAccessToken>;
@@ -32,8 +28,7 @@ describe('feature-flags', () => {
     });
 
     it('throw error if provided type is different from typeof of found flag', async () => {
-      const featureFlags = mockAccessToken.payload
-        .feature_flags as FeatureFlags;
+      const featureFlags = mockAccessToken.payload.feature_flags as FeatureFlags;
       const code = 'is_dark_mode';
       const flag = featureFlags[code];
       await expect(
@@ -71,8 +66,7 @@ describe('feature-flags', () => {
     });
 
     it('retrieves flag data for a defined feature flag', async () => {
-      const featureFlags = mockAccessToken.payload
-        .feature_flags as FeatureFlags;
+      const featureFlags = mockAccessToken.payload.feature_flags as FeatureFlags;
       for (const code in featureFlags) {
         const flag = featureFlags[code];
         expect(await getFlag(sessionManager, code)).toStrictEqual({

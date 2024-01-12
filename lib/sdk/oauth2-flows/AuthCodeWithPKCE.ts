@@ -49,8 +49,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
 
     this.state = options.state ?? utilities.generateRandomString();
     const setItem = isBrowserEnvironment()
-      ? (sessionManager as unknown as BrowserSessionManager)
-          .setSessionItemBrowser
+      ? (sessionManager as unknown as BrowserSessionManager).setSessionItemBrowser
       : sessionManager.setSessionItem;
 
     await setItem.call(
@@ -106,8 +105,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     }
 
     const getItem = isBrowserEnvironment()
-      ? (sessionManager as unknown as BrowserSessionManager)
-          .getSessionItemBrowser
+      ? (sessionManager as unknown as BrowserSessionManager).getSessionItemBrowser
       : sessionManager.getSessionItem;
 
     const storedState = (await getItem.call(sessionManager, storedStateKey)) as
@@ -129,8 +127,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     });
 
     const removeItem = isBrowserEnvironment()
-      ? (sessionManager as unknown as BrowserSessionManager)
-          .removeSessionItemBrowser
+      ? (sessionManager as unknown as BrowserSessionManager).removeSessionItemBrowser
       : sessionManager.removeSessionItem;
 
     try {

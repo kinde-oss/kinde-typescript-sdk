@@ -142,12 +142,8 @@ describe('AuthCodeWitPKCE', () => {
       await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = await sessionManager.getSessionItem(
-        'refresh_token'
-      );
-      const foundAccessToken = await sessionManager.getSessionItem(
-        'access_token'
-      );
+      const foundRefreshToken = await sessionManager.getSessionItem('refresh_token');
+      const foundAccessToken = await sessionManager.getSessionItem('access_token');
       const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(mockAccessToken.token);
@@ -164,10 +160,7 @@ describe('AuthCodeWitPKCE', () => {
 
     it('return an existing token if an unexpired token is available', async () => {
       const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       const client = new AuthCodeWithPKCE(clientConfig);
       const token = await client.getToken(sessionManager);
       expect(token).toBe(mockAccessToken.token);
@@ -179,10 +172,7 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        mockAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       await expect(async () => {
         const client = new AuthCodeWithPKCE(clientConfig);
         await client.getToken(sessionManager);
@@ -204,10 +194,7 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const body = new URLSearchParams({
@@ -246,10 +233,7 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const headerOverrides: SDKHeaderOverrideOptions = {
@@ -292,22 +276,15 @@ describe('AuthCodeWitPKCE', () => {
         clientConfig.authDomain,
         true
       );
-      await sessionManager.setSessionItem(
-        'access_token',
-        expiredAccessToken.token
-      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
       const client = new AuthCodeWithPKCE(clientConfig);
       await client.getToken(sessionManager);
       expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = await sessionManager.getSessionItem(
-        'refresh_token'
-      );
-      const foundAccessToken = await sessionManager.getSessionItem(
-        'access_token'
-      );
+      const foundRefreshToken = await sessionManager.getSessionItem('refresh_token');
+      const foundAccessToken = await sessionManager.getSessionItem('access_token');
       const foundIdToken = await sessionManager.getSessionItem('id_token');
 
       expect(foundAccessToken).toBe(newAccessToken.token);
