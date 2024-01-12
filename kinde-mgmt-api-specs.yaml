@@ -151,13 +151,6 @@ paths:
         string parameter.
       summary: List Users
       parameters:
-        - name: sort
-          in: query
-          description: Field and order to sort the result by.
-          schema:
-            type: string
-            nullable: true
-            enum: [name_asc, name_desc, email_asc, email_desc]
         - name: page_size
           in: query
           description: Number of results per page. Defaults to 10 if parameter not sent.
@@ -372,6 +365,7 @@ paths:
         - name: id
           in: query
           description: The user's id.
+          required: true
           schema:
             type: string
             nullable: false
@@ -688,11 +682,13 @@ paths:
       summary: Create Organization
       requestBody:
         description: Organization details.
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - name
               properties:
                 name:
                   description: The organization's name.
@@ -2274,6 +2270,60 @@ paths:
                 $ref: '#/components/schemas/error_response'
         '429':
           description: Request was throttled.
+    post:
+      tags:
+        - Roles
+      operationId: CreateRole
+      description: Create role.
+      summary: Create Role
+      requestBody:
+        description: Role details.
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The role's name.
+                  type: string
+                description:
+                  description: The role's description.
+                  type: string
+                key:
+                  description: The role identifier to use in code.
+                  type: string
+                is_default_role:
+                  description: Set role as default for new users.
+                  type: boolean
+      responses:
+        '201':
+          description: Role successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/success_response'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/error_response'
   /api/v1/roles/{role_id}/permissions:
     get:
       tags:
@@ -2431,52 +2481,6 @@ paths:
           description: Invalid credentials.
         '429':
           description: Request was throttled.
-  /api/v1/role:
-    post:
-      tags:
-        - Roles
-      operationId: CreateRole
-      description: Create role.
-      summary: Create Role
-      requestBody:
-        description: Role details.
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  description: The role's name.
-                  type: string
-                description:
-                  description: The role's description.
-                  type: string
-                key:
-                  description: The role identifier to use in code.
-                  type: string
-                is_default_role:
-                  description: Set role as default for new users.
-                  type: boolean
-      responses:
-        '201':
-          description: Role successfully created
-          content:
-            application/json; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/success_response'
-        '400':
-          description: Invalid request.
-          content:
-            application/json; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/error_response'
-        '403':
-          description: Invalid credentials.
-          content:
-            application/json; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/error_response'
   /api/v1/roles/{role_id}:
     patch:
       tags:
@@ -4371,6 +4375,9 @@ components:
       type: object
       properties:
         id:
+          type: string
+          description: The permission's id.
+        key:
           type: string
           description: The permission identifier to use in code.
         name:
