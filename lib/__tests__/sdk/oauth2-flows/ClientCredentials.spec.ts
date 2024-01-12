@@ -88,9 +88,13 @@ describe('ClientCredentials', () => {
     });
 
     it('fetches an access token if available access token is expired', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
+      const { token: expiredMockAccessToken } = mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
+      );
+      await sessionManager.setSessionItem('access_token', expiredMockAccessToken);
+      const { token: mockAccessToken } = mocks.getMockAccessToken(
+        clientConfig.authDomain,
       );
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken }),

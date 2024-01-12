@@ -1,6 +1,7 @@
 import { type JwtPayload, jwtDecode } from 'jwt-decode';
 import type { TokenCollection, UserType, TokenType } from './types.js';
 import { type SessionManager } from '../session-managers/index.js';
+import { KindeSDKError, KindeSDKErrorCode } from '../exceptions.js';
 
 
 /**
@@ -37,6 +38,13 @@ export const commitTokenToMemory = async (
   token: string,
   type: TokenType
 ): Promise<void> => {
+  if (type !== 'refresh_token' && isTokenExpired(token)) {
+    throw new KindeSDKError(
+      KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
+      `Attempting to commit invalid ${type} token "${token}" to memory`
+    );
+  }
+
   await sessionManager.setSessionItem(type, token);
   if (type === 'id_token') {
     await commitUserToMemoryFromToken(sessionManager, token);
@@ -123,5 +131,6 @@ export const isTokenExpired = (token: string | null): boolean => {
   if (!token) return true;
   const currentUnixTime = Math.floor(Date.now() / 1000);
   const tokenPayload = jwtDecode(token);
+  if (!tokenPayload.exp) return true;
   return currentUnixTime >= tokenPayload.exp!;
 };
