@@ -96,6 +96,19 @@ describe('AuthorizationCode', () => {
       const state = searchParams.get('state');
       expect(state).toBe(expectedState);
     });
+
+    it('uses same state to generate authorization URL if existing in session', async () => {
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      const authURL = await client.createAuthorizationURL(sessionManager);
+      const searchParams = new URLSearchParams(authURL.search);
+      const firstState = searchParams.get('state');
+
+      const authURL2 = await client.createAuthorizationURL(sessionManager);
+      const searchParams2 = new URLSearchParams(authURL2.search);
+      const secondState = searchParams2.get('state');
+
+      expect(firstState).toBe(secondState);
+    });
   });
 
   describe('handleRedirectFromAuthDomain()', () => {

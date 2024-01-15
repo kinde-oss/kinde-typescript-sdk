@@ -36,7 +36,12 @@ export class AuthorizationCode extends AuthCodeAbstract {
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
   ): Promise<URL> {
-    this.state = options.state ?? utilities.generateRandomString();
+    this.state =
+      options.state ??
+      ((await sessionManager.getSessionItem(
+        AuthorizationCode.STATE_KEY
+      )) as string) ??
+      utilities.generateRandomString();
     await sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, this.state);
     const authURL = new URL(this.authorizationEndpoint);
     const authParams = this.generateAuthURLParams(options);
