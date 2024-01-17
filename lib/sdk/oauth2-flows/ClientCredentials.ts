@@ -115,7 +115,12 @@ export class ClientCredentials {
     });
 
     if (this.config.audience) {
-      searchParams.append('audience', this.config.audience);
+      this.config.audience
+      .trim()
+      .split(/\s+/)
+      .forEach((aud) => {
+        urlSearchParams.append('audience', aud);
+      });
     }
 
     return new URLSearchParams(searchParams);
