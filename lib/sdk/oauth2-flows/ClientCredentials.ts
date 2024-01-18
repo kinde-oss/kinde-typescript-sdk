@@ -119,7 +119,7 @@ export class ClientCredentials {
       .trim()
       .split(/\s+/)
       .forEach((aud) => {
-        urlSearchParams.append('audience', aud);
+        searchParams.append('audience', aud);
       });
     }
 
