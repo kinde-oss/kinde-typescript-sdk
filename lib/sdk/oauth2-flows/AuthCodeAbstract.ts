@@ -276,10 +276,9 @@ export abstract class AuthCodeAbstract {
       .trim()
       .split(/\s+/)
       .forEach((aud) => {
-        urlSearchParams.append('audience', aud);
+        searchParams.append('audience', aud);
       });
     }
-  
 
     return searchParams;
   }
