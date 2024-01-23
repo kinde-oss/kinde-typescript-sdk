@@ -32,7 +32,7 @@ export interface OAuth2FlowOptions {
   clientId: string;
   logoutRedirectURL: string;
   authDomain: string;
-  audience?: string;
+  audience?: string | string[];
   scope?: string;
 }
 

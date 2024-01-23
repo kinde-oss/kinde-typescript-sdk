@@ -247,10 +247,6 @@ export abstract class AuthCodeAbstract {
       scope: this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES,
     };
 
-    if (this.config.audience) {
-      searchParamsObject.audience = this.config.audience;
-    }
-
     if (options.start_page) {
       searchParamsObject.start_page = options.start_page;
     }
@@ -274,6 +270,15 @@ export abstract class AuthCodeAbstract {
 
     for (const key in searchParamsObject)
       searchParams.append(key, searchParamsObject[key]);
+
+    if (this.config.audience) {
+      const audienceArray = Array.isArray(this.config.audience) ? this.config.audience : [this.config.audience];
+
+      audienceArray
+        .forEach((aud) => {
+          searchParams.append('audience', aud);
+        });
+    }
 
     return searchParams;
   }
