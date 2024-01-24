@@ -136,7 +136,7 @@ describe('AuthorizationCode', () => {
       await expect(async () => {
         const client = new AuthorizationCode(clientConfig, clientSecret);
         await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
-      }).rejects.toThrow('Authentication flow state not found');
+      }).rejects.toThrow('Authentication flow: State not found');
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
 
