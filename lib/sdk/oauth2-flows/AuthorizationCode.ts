@@ -90,7 +90,9 @@ export class AuthorizationCode extends AuthCodeAbstract {
       | string
       | null;
     if (!storedState) {
-      throw new Error('Authentication flow: State not found');
+      throw new Error(
+        `Authentication flow: Received: ${state} | Expected: State not found`
+      );
     }
 
     if (storedState !== state) {
