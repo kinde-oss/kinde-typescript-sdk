@@ -89,8 +89,14 @@ export class AuthorizationCode extends AuthCodeAbstract {
     const storedState = (await sessionManager.getSessionItem(stateKey)) as
       | string
       | null;
-    if (!storedState || storedState !== state) {
-      throw new Error('Authentication flow state not found');
+    if (!storedState) {
+      throw new Error('Authentication flow: State not found');
+    }
+
+    if (storedState !== state) {
+      throw new Error(
+        `Authentication flow: State mismatch. Received: ${state} | Expected: ${storedState}`
+      );
     }
 
     const body = new URLSearchParams({
