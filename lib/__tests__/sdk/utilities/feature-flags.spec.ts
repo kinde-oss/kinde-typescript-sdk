@@ -8,7 +8,7 @@ describe('feature-flags', () => {
   const { sessionManager } = mocks;
 
   beforeEach(async () => {
-    mockAccessToken = mocks.getMockAccessToken();
+    mockAccessToken = mocks.getMockAccessToken({});
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
   });
 

@@ -12,11 +12,10 @@ import {
 describe('token-claims', () => {
   let mockAccessToken: ReturnType<typeof mocks.getMockAccessToken>;
   let mockIdToken: ReturnType<typeof mocks.getMockIdToken>;
-  const authDomain = 'https://local-testing@kinde.com';
   const { sessionManager } = mocks;
 
   beforeEach(async () => {
-    mockAccessToken = mocks.getMockAccessToken();
+    mockAccessToken = mocks.getMockAccessToken({});
     mockIdToken = mocks.getMockIdToken();
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
     await sessionManager.setSessionItem('id_token', mockIdToken.token);
@@ -61,7 +60,7 @@ describe('token-claims', () => {
   describe('getPermission', () => {
     it('return orgCode and isGranted = true if permission is given', () => {
       const { permissions } = mockAccessToken.payload;
-      permissions.forEach(async (permission) => {
+      permissions?.forEach(async (permission) => {
         expect(await getPermission(sessionManager, permission)).toStrictEqual({
           orgCode: mockAccessToken.payload.org_code,
           isGranted: true,
@@ -77,7 +76,23 @@ describe('token-claims', () => {
         isGranted: false,
       });
     });
+
+    it('When no permissions in token', async () => {
+      const orgCode = mockAccessToken.payload.org_code;
+
+      mockAccessToken = mocks.getMockAccessToken({});
+      mockIdToken = mocks.getMockIdToken();
+
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      const permissionName = 'non-existant-permission';
+      
+      expect(await getPermission(sessionManager, permissionName)).toStrictEqual({
+        orgCode,
+        isGranted: false,
+      });
+    });
   });
+
   describe('getUserOrganizations', () => {
     it('lists all user organizations using id token', async () => {
       const orgCodes = mockIdToken.payload.org_codes;

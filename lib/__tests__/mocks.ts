@@ -10,11 +10,17 @@ export const fetchClient = vi.fn().mockImplementation(
     })
 );
 
-export const getMockAccessToken = (
-  domain: string = 'local-testing@kinde.com',
-  isExpired: boolean = false,
-  isExpClaimMissing: boolean = false
-) => {
+export const getMockAccessToken = ({
+  domain = 'local-testing@kinde.com',
+  isExpired = false,
+  isExpClaimMissing = false,
+  noPermissions = false
+}: {
+  domain?: string,
+  isExpired?: boolean,
+  isExpClaimMissing?: boolean,
+  noPermissions?: boolean
+}) => {
   const iat = Math.floor(Date.now() / 1000);
   const exp = isExpClaimMissing ? undefined : isExpired ? iat : iat + 1000000;
   const tokenPayload = {
@@ -26,7 +32,7 @@ export const getMockAccessToken = (
     iss: domain,
     org_code: 'org_123456789',
     scp: ['openid', 'profile', 'email', 'offline'],
-    permissions: ['perm1', 'perm2', 'perm3'],
+    permissions: !noPermissions ? ['perm1', 'perm2', 'perm3'] : undefined,
     jti: '8a567995-ace9-4e82-8724-94651a5ca50c',
     sub: 'kp_0c3ff3d085flo6396as29d4ffee750be7',
     feature_flags: {

@@ -61,7 +61,9 @@ describe('ClientCredentials', () => {
 
     it('return access token if an unexpired token is available in memory', async () => {
       const { authDomain } = clientConfig;
-      const { token: mockAccessToken } = mocks.getMockAccessToken(authDomain);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({
+        domain: authDomain
+      });
       await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
 
       const client = new ClientCredentials(clientConfig);
@@ -71,9 +73,9 @@ describe('ClientCredentials', () => {
     });
 
     it('fetches an access token if no access token is available in memory', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
-        clientConfig.authDomain
-      );
+      const { token: mockAccessToken } = mocks.getMockAccessToken({
+        domain: clientConfig.authDomain
+      });
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken }),
       });
@@ -85,14 +87,14 @@ describe('ClientCredentials', () => {
     });
 
     it('fetches an access token if available access token is expired', async () => {
-      const { token: expiredMockAccessToken } = mocks.getMockAccessToken(
-        clientConfig.authDomain,
-        true
-      );
+      const { token: expiredMockAccessToken } = mocks.getMockAccessToken({
+        domain: clientConfig.authDomain,
+        isExpired: true
+      });
       await sessionManager.setSessionItem('access_token', expiredMockAccessToken);
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
-        clientConfig.authDomain
-      );
+      const { token: mockAccessToken } = mocks.getMockAccessToken({
+        domain: clientConfig.authDomain
+      });
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken }),
       });
@@ -109,9 +111,9 @@ describe('ClientCredentials', () => {
     });
 
     it('overrides scope and audience in token request body is provided', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
-        clientConfig.authDomain
-      );
+      const { token: mockAccessToken } = mocks.getMockAccessToken({
+        domain: clientConfig.authDomain
+      });
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken }),
       });
@@ -141,7 +143,9 @@ describe('ClientCredentials', () => {
     });
 
     it('commits access token to memory, when a new one is fetched', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const mockAccessToken = mocks.getMockAccessToken({
+        domain: clientConfig.authDomain
+      });
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken.token }),
       });

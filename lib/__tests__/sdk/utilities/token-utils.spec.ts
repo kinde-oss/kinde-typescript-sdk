@@ -17,8 +17,8 @@ describe('token-utils', () => {
 
   describe('commitTokensToMemory', () => {
     it('stores all provided tokens to memory', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      const { token: mockIdToken } = mocks.getMockAccessToken(domain);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({domain});
+      const { token: mockIdToken } = mocks.getMockAccessToken({domain});
       const tokenCollection: TokenCollection = {
         refresh_token: 'refresh_token',
         access_token: mockAccessToken,
@@ -36,13 +36,13 @@ describe('token-utils', () => {
     });
   });
 
-  describe('commitTokenToMemory()', () => {
+  describe('commitTokenToMemory', () => {
     afterEach(async () => {
       await sessionManager.destroySession();
     });
 
     it('stores provided token to memory', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({domain});
       await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
       expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
@@ -50,7 +50,7 @@ describe('token-utils', () => {
     });
 
     it('throws exception if attempting to store invalid token', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({domain, isExpired: true});
       const commitTokenFn = async () =>
         await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
       await expect(commitTokenFn).rejects.toBeInstanceOf(KindeSDKError);
@@ -79,26 +79,28 @@ describe('token-utils', () => {
     });
   });
 
-  describe('isTokenExpired()', () => {
+  describe('isTokenExpired', () => {
     it('returns true if null is provided as argument', () => {
       expect(isTokenExpired(null)).toBe(true);
     });
 
     it('returns true if provided token is expired', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({ domain, isExpired: true });
       expect(isTokenExpired(mockAccessToken)).toBe(true);
     });
 
     it('returns true if provided token is missing "exp" claim', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, false, true);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({domain, isExpired: false, isExpClaimMissing: true });
       expect(isTokenExpired(mockAccessToken)).toBe(true);
     });
 
     it('returns false if provided token is not expired', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
+      const { token: mockAccessToken } = mocks.getMockAccessToken({ domain });
       expect(isTokenExpired(mockAccessToken)).toBe(false);
     });
+  });
 
+  describe('getUserFromMemory', () => {
     it('getUserFromMemory when no user is set', async () => {
       expect(await getUserFromMemory(sessionManager)).toBe(null);
     });
