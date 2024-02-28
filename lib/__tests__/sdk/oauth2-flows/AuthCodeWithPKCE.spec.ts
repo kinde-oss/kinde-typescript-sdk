@@ -6,6 +6,8 @@ import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
 import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
+import { describe, it, afterEach, expect  } from 'vitest';
+
 
 describe('AuthCodeWitPKCE', () => {
   const { sessionManager } = mocks;

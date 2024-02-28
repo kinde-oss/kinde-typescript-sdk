@@ -3,6 +3,7 @@ import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import { commitTokenToMemory } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
+import { describe, it, expect, afterEach } from 'vitest';
 
 describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {

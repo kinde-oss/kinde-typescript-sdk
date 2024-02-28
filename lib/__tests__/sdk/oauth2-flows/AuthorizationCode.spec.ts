@@ -1,6 +1,6 @@
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
-
+import { describe, it, expect, afterEach } from 'vitest';
 import {
   type AuthURLOptions,
   AuthorizationCode,

@@ -1,6 +1,7 @@
 import { type SessionManager } from '../sdk/session-managers';
+import { vi } from 'vitest'
 
-export const fetchClient = jest.fn().mockImplementation(
+export const fetchClient = vi.fn().mockImplementation(
   async () =>
     await Promise.resolve({
       json: async () => {

@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import { BrowserSessionManager } from '../../../sdk/session-managers';
+import { describe, it, afterEach, expect } from 'vitest';
 
 describe('BrowserSessionManager', () => {
   const sessionManager = new BrowserSessionManager();
@@ -51,7 +52,7 @@ describe('BrowserSessionManager', () => {
   });
 
   describe('setBrowserSessionItem()', () => {
-    it("stores a value against the provided key in the browser's session storage", async () => {
+    it('stores a value against the provided key in the browser\'s session storage', async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
       await sessionManager.setSessionItemBrowser(sessionItemKey, sessionItemValue);
@@ -62,7 +63,7 @@ describe('BrowserSessionManager', () => {
   });
 
   describe('removeBrowserSessionItem()', () => {
-    it("removes a session item from the browser's session storage", async () => {
+    it('removes a session item from the browser\'s session storage', async () => {
       const sessionItemKey = 'session-item-key';
       const sessionItemValue = 'session-item-value';
       await sessionManager.setSessionItemBrowser(sessionItemKey, sessionItemValue);

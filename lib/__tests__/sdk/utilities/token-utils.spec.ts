@@ -1,10 +1,12 @@
 import * as mocks from '../../mocks';
+import { describe, it, afterEach, expect } from 'vitest';
 
 import {
   type TokenCollection,
   commitTokensToMemory,
   commitTokenToMemory,
   isTokenExpired,
+  getUserFromMemory,
 } from '../../../sdk/utilities';
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
@@ -88,13 +90,17 @@ describe('token-utils', () => {
     });
 
     it('returns true if provided token is missing "exp" claim', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
+      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, false, true);
       expect(isTokenExpired(mockAccessToken)).toBe(true);
     });
 
     it('returns false if provided token is not expired', () => {
       const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
       expect(isTokenExpired(mockAccessToken)).toBe(false);
+    });
+
+    it('getUserFromMemory when no user is set', async () => {
+      expect(await getUserFromMemory(sessionManager)).toBe(null);
     });
   });
 });

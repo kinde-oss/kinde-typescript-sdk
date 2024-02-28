@@ -30,9 +30,7 @@ const createAuthorizationCodeClient = (
     sessionManager: SessionManager,
     options?: LoginURLOptions
   ): Promise<URL> => {
-    return await client.createAuthorizationURL(sessionManager, {
-      ...options,
-    });
+    return await client.createAuthorizationURL(sessionManager, options);
   };
 
   /**
