@@ -80,8 +80,8 @@ export const getPermissions = async (
   sessionManager: SessionManager
 ): Promise<{ permissions: string[]; orgCode: string | null }> => {
   const [permissions, orgCode] = await Promise.all([
-    (getClaimValue(sessionManager, 'permissions') ?? []) as Promise<string[]>,
-    getClaimValue(sessionManager, 'org_code') as Promise<string | null>,
+    (await getClaimValue(sessionManager, 'permissions') ?? []) as Promise<string[]>,
+    await getClaimValue(sessionManager, 'org_code') as Promise<string | null>,
   ]);
   return {
     permissions,
