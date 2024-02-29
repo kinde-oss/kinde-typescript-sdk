@@ -1,4 +1,4 @@
-import { createRemoteJWKSet, createLocalJWKSet, importJWK } from 'jose';
+import { createLocalJWKSet } from 'jose';
 import { type SessionManager } from '../session-managers/index.js';
 import * as utilities from '../utilities/index.js';
 import { getSDKHeader } from '../version.js';
@@ -8,6 +8,7 @@ import type {
   ClientCredentialsOptions,
   OAuth2CCTokenResponse,
 } from './types.js';
+import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
 
 /**
  * Class provides implementation for the client credentials OAuth2.0 flow.
@@ -25,17 +26,15 @@ export class ClientCredentials {
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
     this.config = config;
     const keyProvider = async () => {
-      const func = config.jwks
-        ? createLocalJWKSet(config.jwks)
-        : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {
-            cacheMaxAge: 1000 * 60 * 60 * 24,
-          });
+      const func =
+        config.jwks !== undefined
+          ? createLocalJWKSet(config.jwks)
+          : await getRemoteJwks(authDomain);
       return await func({ alg: 'RS256' });
     };
     this.tokenValidationDetails = {
       issuer: config.authDomain,
       audience: config.audience,
-      // keyProvider: config.jwk ? (async () => await importJWK(config.jwk!)) : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {cacheMaxAge: 1000*60*60*24})
       keyProvider,
     };
   }

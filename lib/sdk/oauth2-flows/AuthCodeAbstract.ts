@@ -11,7 +11,8 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
-import { createLocalJWKSet, createRemoteJWKSet } from 'jose';
+import { createLocalJWKSet } from 'jose';
+import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows
@@ -36,17 +37,15 @@ export abstract class AuthCodeAbstract {
     this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
     const keyProvider = async () => {
-      const func = config.jwks
-        ? createLocalJWKSet(config.jwks)
-        : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {
-            cacheMaxAge: 1000 * 60 * 60 * 24,
-          });
+      const func =
+        config.jwks !== undefined
+          ? createLocalJWKSet(config.jwks)
+          : await getRemoteJwks(authDomain);
       return await func({ alg: 'RS256' });
     };
     this.tokenValidationDetails = {
       issuer: config.authDomain,
       audience: config.audience,
-      // keyProvider: config.jwk ? (async () => await importJWK(config.jwk!)) : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {cacheMaxAge: 1000*60*60*24})
       keyProvider,
     };
   }
