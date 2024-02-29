@@ -99,7 +99,10 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
     if (!(await isAuthenticated())) {
       throw new Error('Cannot get user details, no authentication credential found');
     }
-    return (await utilities.getUserFromMemory(sessionManager))!;
+    return (await utilities.getUserFromSession(
+      sessionManager,
+      client.tokenValidationDetails
+    ))!;
   };
 
   /**
@@ -118,7 +121,12 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return integer flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getIntegerFlag(sessionManager, code, defaultValue);
+    return await featureFlags.getIntegerFlag(
+      sessionManager,
+      code,
+      client.tokenValidationDetails,
+      defaultValue
+    );
   };
 
   /**
@@ -137,7 +145,12 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return string flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getStringFlag(sessionManager, code, defaultValue);
+    return await featureFlags.getStringFlag(
+      sessionManager,
+      code,
+      client.tokenValidationDetails,
+      defaultValue
+    );
   };
 
   /**
@@ -156,7 +169,12 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return boolean flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getBooleanFlag(sessionManager, code, defaultValue);
+    return await featureFlags.getBooleanFlag(
+      sessionManager,
+      code,
+      client.tokenValidationDetails,
+      defaultValue
+    );
   };
 
   /**
@@ -175,7 +193,12 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return tokenClaims.getClaimValue(sessionManager, claim, type);
+    return await tokenClaims.getClaimValue(
+      sessionManager,
+      claim,
+      type,
+      client.tokenValidationDetails
+    );
   };
 
   /**
@@ -194,7 +217,12 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return await tokenClaims.getClaim(sessionManager, claim, type);
+    return await tokenClaims.getClaim(
+      sessionManager,
+      claim,
+      type,
+      client.tokenValidationDetails
+    );
   };
 
   /**
@@ -212,7 +240,11 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return permission "${name}", no authentication credential found`
       );
     }
-    return await tokenClaims.getPermission(sessionManager, name);
+    return await tokenClaims.getPermission(
+      sessionManager,
+      name,
+      client.tokenValidationDetails
+    );
   };
 
   /**
@@ -225,7 +257,10 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         'Cannot return user organization, no authentication credential found'
       );
     }
-    return await tokenClaims.getOrganization(sessionManager);
+    return await tokenClaims.getOrganization(
+      sessionManager,
+      client.tokenValidationDetails
+    );
   };
 
   /**
@@ -239,7 +274,10 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         'Cannot return user organizations, no authentication credential found'
       );
     }
-    return await tokenClaims.getUserOrganizations(sessionManager);
+    return await tokenClaims.getUserOrganizations(
+      sessionManager,
+      client.tokenValidationDetails
+    );
   };
 
   /**
@@ -256,7 +294,10 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         'Cannot return user permissions, no authentication credential found'
       );
     }
-    return await tokenClaims.getPermissions(sessionManager);
+    return await tokenClaims.getPermissions(
+      sessionManager,
+      client.tokenValidationDetails
+    );
   };
 
   /**
@@ -286,7 +327,13 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getFlag(sessionManager, code, defaultValue, type);
+    return await featureFlags.getFlag(
+      sessionManager,
+      code,
+      client.tokenValidationDetails,
+      defaultValue,
+      type
+    );
   };
 
   /**

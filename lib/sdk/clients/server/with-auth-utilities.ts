@@ -1,4 +1,4 @@
-import { SessionManager } from '../../session-managers';
+import { type SessionManager } from '../../session-managers';
 import * as utilities from '../../utilities/index.js';
 
 import type {
@@ -8,7 +8,8 @@ import type {
 } from '../../utilities/index.js';
 
 const withAuthUtilities = (
-  isAuthenticated: (session: SessionManager) => Promise<boolean>
+  isAuthenticated: (session: SessionManager) => Promise<boolean>,
+  validationDetails: utilities.TokenValidationDetailsType
 ) => {
   const { featureFlags, tokenClaims } = utilities;
 
@@ -30,7 +31,12 @@ const withAuthUtilities = (
         `Cannot return integer flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getIntegerFlag(sessionManager, code, defaultValue);
+    return await featureFlags.getIntegerFlag(
+      sessionManager,
+      code,
+      validationDetails,
+      defaultValue
+    );
   };
 
   /**
@@ -51,7 +57,12 @@ const withAuthUtilities = (
         `Cannot return string flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getStringFlag(sessionManager, code, defaultValue);
+    return await featureFlags.getStringFlag(
+      sessionManager,
+      code,
+      validationDetails,
+      defaultValue
+    );
   };
 
   /**
@@ -72,7 +83,12 @@ const withAuthUtilities = (
         `Cannot return boolean flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getBooleanFlag(sessionManager, code, defaultValue);
+    return await featureFlags.getBooleanFlag(
+      sessionManager,
+      code,
+      validationDetails,
+      defaultValue
+    );
   };
 
   /**
@@ -93,7 +109,12 @@ const withAuthUtilities = (
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return tokenClaims.getClaimValue(sessionManager, claim, type);
+    return await tokenClaims.getClaimValue(
+      sessionManager,
+      claim,
+      type,
+      validationDetails
+    );
   };
 
   /**
@@ -114,7 +135,12 @@ const withAuthUtilities = (
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return await tokenClaims.getClaim(sessionManager, claim, type);
+    return await tokenClaims.getClaim(
+      sessionManager,
+      claim,
+      type,
+      validationDetails
+    );
   };
 
   /**
@@ -134,7 +160,7 @@ const withAuthUtilities = (
         `Cannot return permission "${name}", no authentication credential found`
       );
     }
-    return await tokenClaims.getPermission(sessionManager, name);
+    return await tokenClaims.getPermission(sessionManager, name, validationDetails);
   };
 
   /**
@@ -150,7 +176,7 @@ const withAuthUtilities = (
         'Cannot return user organization, no authentication credential found'
       );
     }
-    return await tokenClaims.getOrganization(sessionManager);
+    return await tokenClaims.getOrganization(sessionManager, validationDetails);
   };
 
   /**
@@ -167,7 +193,7 @@ const withAuthUtilities = (
         'Cannot return user organizations, no authentication credential found'
       );
     }
-    return await tokenClaims.getUserOrganizations(sessionManager);
+    return await tokenClaims.getUserOrganizations(sessionManager, validationDetails);
   };
 
   /**
@@ -187,7 +213,7 @@ const withAuthUtilities = (
         'Cannot return user permissions, no authentication credential found'
       );
     }
-    return await tokenClaims.getPermissions(sessionManager);
+    return await tokenClaims.getPermissions(sessionManager, validationDetails);
   };
 
   /**
@@ -210,7 +236,13 @@ const withAuthUtilities = (
         `Cannot return flag "${code}", no authentication credential found`
       );
     }
-    return await featureFlags.getFlag(sessionManager, code, defaultValue, type);
+    return await featureFlags.getFlag(
+      sessionManager,
+      code,
+      validationDetails,
+      defaultValue,
+      type
+    );
   };
 
   return {

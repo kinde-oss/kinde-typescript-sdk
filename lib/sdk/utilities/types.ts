@@ -1,3 +1,5 @@
+import { type KeyLike } from 'jose';
+
 export interface TokenCollection {
   refresh_token: string;
   access_token: string;
@@ -39,4 +41,10 @@ export interface GetFlagType {
   value: FlagType[keyof FlagType];
   is_default: boolean;
   code: string;
+}
+
+export interface TokenValidationDetailsType {
+  issuer: string;
+  audience?: string | string[];
+  keyProvider: () => Promise<KeyLike | Uint8Array>;
 }

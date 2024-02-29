@@ -68,7 +68,11 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(sessionManager, body);
-    await utilities.commitTokensToMemory(sessionManager, tokens);
+    await utilities.commitTokensToSession(
+      sessionManager,
+      tokens,
+      this.tokenValidationDetails
+    );
     return tokens;
   }
 

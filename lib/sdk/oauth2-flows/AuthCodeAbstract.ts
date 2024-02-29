@@ -11,6 +11,7 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
+import { createLocalJWKSet, createRemoteJWKSet } from 'jose';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows
@@ -26,6 +27,7 @@ export abstract class AuthCodeAbstract {
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
   protected state?: string;
+  public readonly tokenValidationDetails: utilities.TokenValidationDetailsType;
 
   constructor(protected readonly config: AuthorizationCodeOptions) {
     const { authDomain, logoutRedirectURL } = config;
@@ -33,6 +35,20 @@ export abstract class AuthCodeAbstract {
     this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
     this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
+    const keyProvider = async () => {
+      const func = config.jwks
+        ? createLocalJWKSet(config.jwks)
+        : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {
+            cacheMaxAge: 1000 * 60 * 60 * 24,
+          });
+      return await func({ alg: 'RS256' });
+    };
+    this.tokenValidationDetails = {
+      issuer: config.authDomain,
+      audience: config.audience,
+      // keyProvider: config.jwk ? (async () => await importJWK(config.jwk!)) : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {cacheMaxAge: 1000*60*60*24})
+      keyProvider,
+    };
   }
 
   /**
@@ -92,7 +108,11 @@ export abstract class AuthCodeAbstract {
     callbackURL: URL
   ): Promise<void> {
     const tokens = await this.exchangeAuthCodeForTokens(sessionManager, callbackURL);
-    await utilities.commitTokensToMemory(sessionManager, tokens);
+    await utilities.commitTokensToSession(
+      sessionManager,
+      tokens,
+      this.tokenValidationDetails
+    );
   }
 
   /**
@@ -109,7 +129,10 @@ export abstract class AuthCodeAbstract {
       throw new Error('No authentication credential found');
     }
 
-    const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
+    const isAccessTokenExpired = await utilities.isTokenExpired(
+      accessToken,
+      this.tokenValidationDetails
+    );
     if (!isAccessTokenExpired) {
       return accessToken;
     }
@@ -162,7 +185,7 @@ export abstract class AuthCodeAbstract {
     const config: RequestInit = { method: 'GET', headers };
     const response = await fetch(targetURL, config);
     const payload = (await response.json()) as UserType;
-    await utilities.commitUserToMemory(sessionManager, payload);
+
     return payload;
   }
 
@@ -272,12 +295,13 @@ export abstract class AuthCodeAbstract {
       searchParams.append(key, searchParamsObject[key]);
 
     if (this.config.audience) {
-      const audienceArray = Array.isArray(this.config.audience) ? this.config.audience : [this.config.audience];
+      const audienceArray = Array.isArray(this.config.audience)
+        ? this.config.audience
+        : [this.config.audience];
 
-      audienceArray
-        .forEach((aud) => {
-          searchParams.append('audience', aud);
-        });
+      audienceArray.forEach((aud) => {
+        searchParams.append('audience', aud);
+      });
     }
 
     return searchParams;

@@ -1,3 +1,4 @@
+import { createRemoteJWKSet, createLocalJWKSet, importJWK } from 'jose';
 import { type SessionManager } from '../session-managers/index.js';
 import * as utilities from '../utilities/index.js';
 import { getSDKHeader } from '../version.js';
@@ -16,12 +17,27 @@ export class ClientCredentials {
   public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
+  public readonly tokenValidationDetails: utilities.TokenValidationDetailsType;
 
   constructor(private readonly config: ClientCredentialsOptions) {
     const { authDomain, logoutRedirectURL } = config;
     this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
     this.config = config;
+    const keyProvider = async () => {
+      const func = config.jwks
+        ? createLocalJWKSet(config.jwks)
+        : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {
+            cacheMaxAge: 1000 * 60 * 60 * 24,
+          });
+      return await func({ alg: 'RS256' });
+    };
+    this.tokenValidationDetails = {
+      issuer: config.authDomain,
+      audience: config.audience,
+      // keyProvider: config.jwk ? (async () => await importJWK(config.jwk!)) : createRemoteJWKSet(new URL(`${authDomain}/.well-known/jwks.json`), {cacheMaxAge: 1000*60*60*24})
+      keyProvider,
+    };
   }
 
   /**
@@ -33,16 +49,20 @@ export class ClientCredentials {
    */
   async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = await utilities.getAccessToken(sessionManager);
-    const isTokenExpired = utilities.isTokenExpired(accessToken);
+    const isTokenExpired = await utilities.isTokenExpired(
+      accessToken,
+      this.tokenValidationDetails
+    );
     if (accessToken && !isTokenExpired) {
       return accessToken;
     }
 
     const payload = await this.fetchAccessTokenFor(sessionManager);
-    await utilities.commitTokenToMemory(
+    await utilities.commitTokenToSession(
       sessionManager,
       payload.access_token,
-      'access_token'
+      'access_token',
+      this.tokenValidationDetails
     );
     return payload.access_token;
   }
@@ -115,12 +135,13 @@ export class ClientCredentials {
     });
 
     if (this.config.audience) {
-      const audienceArray = Array.isArray(this.config.audience) ? this.config.audience : [this.config.audience];
+      const audienceArray = Array.isArray(this.config.audience)
+        ? this.config.audience
+        : [this.config.audience];
 
-      audienceArray
-        .forEach((aud) => {
-          searchParams.append('audience', aud);
-        });
+      audienceArray.forEach((aud) => {
+        searchParams.append('audience', aud);
+      });
     }
 
     return new URLSearchParams(searchParams);

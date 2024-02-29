@@ -6,6 +6,7 @@ import {
   type GetFlagType,
   type FlagType,
   FlagDataType,
+  type TokenValidationDetailsType,
 } from './types.js';
 
 /**
@@ -20,11 +21,17 @@ import {
 export const getFlag = async (
   sessionManager: SessionManager,
   code: string,
+  validationDetails: TokenValidationDetailsType,
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): Promise<GetFlagType> => {
   const featureFlags =
-    ((await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags) ?? {};
+    ((await getClaimValue(
+      sessionManager,
+      'feature_flags',
+      'access_token',
+      validationDetails
+    )) as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 
   if (!flag && defaultValue === undefined) {
@@ -65,9 +72,11 @@ export const getFlag = async (
 export const getIntegerFlag = async (
   sessionManager: SessionManager,
   code: string,
+  validationDetails: TokenValidationDetailsType,
   defaultValue?: number
 ): Promise<number> => {
-  return (await getFlag(sessionManager, code, defaultValue, 'i')).value as number;
+  return (await getFlag(sessionManager, code, validationDetails, defaultValue, 'i'))
+    .value as number;
 };
 
 /**
@@ -81,9 +90,11 @@ export const getIntegerFlag = async (
 export const getStringFlag = async (
   sessionManager: SessionManager,
   code: string,
+  validationDetails: TokenValidationDetailsType,
   defaultValue?: string
 ): Promise<string> => {
-  return (await getFlag(sessionManager, code, defaultValue, 's')).value as string;
+  return (await getFlag(sessionManager, code, validationDetails, defaultValue, 's'))
+    .value as string;
 };
 
 /**
@@ -97,7 +108,9 @@ export const getStringFlag = async (
 export const getBooleanFlag = async (
   sessionManager: SessionManager,
   code: string,
+  validationDetails: TokenValidationDetailsType,
   defaultValue?: boolean
 ): Promise<boolean> => {
-  return (await getFlag(sessionManager, code, defaultValue, 'b')).value as boolean;
+  return (await getFlag(sessionManager, code, validationDetails, defaultValue, 'b'))
+    .value as boolean;
 };

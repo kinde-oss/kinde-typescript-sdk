@@ -1,6 +1,10 @@
+import { createLocalJWKSet, importJWK } from 'jose';
 import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
-import { commitTokenToMemory } from '../../../sdk/utilities';
+import {
+  type TokenValidationDetailsType,
+  commitTokenToSession,
+} from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
@@ -22,6 +26,19 @@ describe('ClientCredentials', () => {
 
   describe('getToken()', () => {
     const tokenEndpoint = `${clientConfig.authDomain}/oauth2/token`;
+
+    let validationDetails: TokenValidationDetailsType;
+
+    beforeAll(async () => {
+      const { publicKey } = await mocks.getKeys();
+
+      validationDetails = {
+        issuer: clientConfig.authDomain,
+        keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
+      };
+
+      clientConfig.jwks = { keys: [publicKey] };
+    });
 
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
@@ -60,8 +77,13 @@ describe('ClientCredentials', () => {
 
     it('return access token if an unexpired token is available in memory', async () => {
       const { authDomain } = clientConfig;
-      const { token: mockAccessToken } = mocks.getMockAccessToken(authDomain);
-      await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(authDomain);
+      await commitTokenToSession(
+        sessionManager,
+        mockAccessToken,
+        'access_token',
+        validationDetails
+      );
 
       const client = new ClientCredentials(clientConfig);
       const accessToken = await client.getToken(sessionManager);
@@ -70,7 +92,7 @@ describe('ClientCredentials', () => {
     });
 
     it('fetches an access token if no access token is available in memory', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(
         clientConfig.authDomain
       );
       mocks.fetchClient.mockResolvedValue({
@@ -84,12 +106,12 @@ describe('ClientCredentials', () => {
     });
 
     it('fetches an access token if available access token is expired', async () => {
-      const { token: expiredMockAccessToken } = mocks.getMockAccessToken(
+      const { token: expiredMockAccessToken } = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
       await sessionManager.setSessionItem('access_token', expiredMockAccessToken);
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(
         clientConfig.authDomain
       );
       mocks.fetchClient.mockResolvedValue({
@@ -108,7 +130,7 @@ describe('ClientCredentials', () => {
     });
 
     it('overrides scope and audience in token request body is provided', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(
         clientConfig.authDomain
       );
       mocks.fetchClient.mockResolvedValue({
@@ -140,7 +162,9 @@ describe('ClientCredentials', () => {
     });
 
     it('commits access token to memory, when a new one is fetched', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const mockAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
       mocks.fetchClient.mockResolvedValue({
         json: () => ({ access_token: mockAccessToken.token }),
       });

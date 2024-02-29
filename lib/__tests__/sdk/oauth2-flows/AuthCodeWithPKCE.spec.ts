@@ -16,6 +16,11 @@ describe('AuthCodeWitPKCE', () => {
     clientId: 'client-id',
   };
 
+  beforeAll(async () => {
+    const { publicKey } = await mocks.getKeys();
+    clientConfig.jwks = { keys: [publicKey] };
+  });
+
   describe('new AuthCodeWithPKCE', () => {
     it('can construct AuthCodeWithPKCE instance', () => {
       expect(() => new AuthCodeWithPKCE(clientConfig)).not.toThrowError();
@@ -119,8 +124,10 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('saves tokens to memory store after exchanging auth code for tokens', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const mockIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const mockAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
+      const mockIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: mockAccessToken.token,
@@ -159,7 +166,9 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('return an existing token if an unexpired token is available', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const mockAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
       await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       const client = new AuthCodeWithPKCE(clientConfig);
       const token = await client.getToken(sessionManager);
@@ -168,7 +177,7 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('throws an error if no refresh token is found in memory', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(
+      const mockAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -180,8 +189,8 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('fetches new tokens if access token is expired and refresh token is available', async () => {
-      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: newAccessToken.token,
@@ -190,7 +199,7 @@ describe('AuthCodeWitPKCE', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -219,8 +228,8 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('overrides SDK version header if options are provided to client constructor', async () => {
-      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: newAccessToken.token,
@@ -229,7 +238,7 @@ describe('AuthCodeWitPKCE', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -260,8 +269,8 @@ describe('AuthCodeWitPKCE', () => {
     });
 
     it('commits new tokens to memory if new tokens are fetched', async () => {
-      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       const newRefreshToken = 'new_refresh_token';
 
       mocks.fetchClient.mockResolvedValue({
@@ -272,7 +281,7 @@ describe('AuthCodeWitPKCE', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
