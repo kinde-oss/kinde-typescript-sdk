@@ -15,7 +15,8 @@ export const getMockAccessToken = ({
   isExpired = false,
   isExpClaimMissing = false,
   permissions = ['perm1', 'perm2', 'perm3'],
-  noPermissions = false
+  noPermissions = false,
+  noFeatureFlags = false
 }: {
   domain?: string,
   isExpired?: boolean,
@@ -23,7 +24,6 @@ export const getMockAccessToken = ({
   permissions?: string[] | undefined | null,
   noPermissions?: boolean
 }) => {
-  console.log('build token', noPermissions)
   const iat = Math.floor(Date.now() / 1000);
   const exp = isExpClaimMissing ? undefined : isExpired ? iat : iat + 1000000;
   const tokenPayload = {
@@ -38,10 +38,11 @@ export const getMockAccessToken = ({
     permissions: noPermissions ? undefined : permissions,
     jti: '8a567995-ace9-4e82-8724-94651a5ca50c',
     sub: 'kp_0c3ff3d085flo6396as29d4ffee750be7',
-    feature_flags: {
+    feature_flags: noFeatureFlags ? undefined : {
       is_dark_mode: { t: 'b', v: false },
       competitions_limit: { t: 'i', v: 5 },
       theme: { t: 's', v: 'pink' },
+      noValue: { t: 's' },
     },
   };
 
