@@ -18,7 +18,6 @@ export const getClaimValue = async (
 ): Promise<unknown | null> => {
   const token = (await sessionManager.getSessionItem(`${type}`)) as string;
   const key = await validationDetails.keyProvider();
-  console.log('key', key);
   const decodedToken = await jwtVerify(token, key);
   const tokenPayload: Record<string, unknown> = decodedToken.payload;
   return tokenPayload[claim] ?? null;
