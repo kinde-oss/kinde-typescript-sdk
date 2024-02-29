@@ -1,5 +1,5 @@
 import * as mocks from '../../mocks';
-import { describe, it, beforeEach, afterEach, expect } from 'vitest';
+import { describe, beforeEach, afterEach, expect, test } from 'vitest';
 
 import {
   getUserOrganizations,
@@ -7,6 +7,7 @@ import {
   getClaimValue,
   getPermission,
   getClaim,
+  getPermissions
 } from '../../../sdk/utilities';
 
 describe('token-claims', () => {
@@ -16,7 +17,7 @@ describe('token-claims', () => {
 
   beforeEach(async () => {
     mockAccessToken = mocks.getMockAccessToken({});
-    mockIdToken = mocks.getMockIdToken();
+    mockIdToken = mocks.getMockIdToken({});
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
     await sessionManager.setSessionItem('id_token', mockIdToken.token);
   });
@@ -26,7 +27,7 @@ describe('token-claims', () => {
   });
 
   describe('getClaimValue', () => {
-    it('returns value for a token claim if claim exists', () => {
+    test('returns value for a token claim if claim exists', () => {
       Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
         const claimValue = await getClaimValue(sessionManager, name);
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
@@ -34,7 +35,7 @@ describe('token-claims', () => {
       });
     });
 
-    it('return null if claim does not exist', async () => {
+    test('return null if claim does not exist', async () => {
       const claimName = 'non-existant-claim';
       const claimValue = await getClaimValue(sessionManager, claimName);
       expect(claimValue).toBe(null);
@@ -42,7 +43,7 @@ describe('token-claims', () => {
   });
 
   describe('getClaim', () => {
-    it('returns value for a token claim if claim exists', () => {
+    test('returns value for a token claim if claim exists', () => {
       Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
         const claim = await getClaim(sessionManager, name);
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
@@ -50,7 +51,7 @@ describe('token-claims', () => {
       });
     });
 
-    it('return null if claim does not exist', async () => {
+    test('return null if claim does not exist', async () => {
       const claimName = 'non-existant-claim';
       const claim = await getClaim(sessionManager, claimName);
       expect(claim).toStrictEqual({ name: claimName, value: null });
@@ -58,7 +59,7 @@ describe('token-claims', () => {
   });
 
   describe('getPermission', () => {
-    it('return orgCode and isGranted = true if permission is given', () => {
+    test('return orgCode and isGranted = true if permission is given', () => {
       const { permissions } = mockAccessToken.payload;
       permissions?.forEach(async (permission) => {
         expect(await getPermission(sessionManager, permission)).toStrictEqual({
@@ -68,7 +69,7 @@ describe('token-claims', () => {
       });
     });
 
-    it('return isGranted = false is permission is not given', async () => {
+    test('return isGranted = false is permission is not given', async () => {
       const orgCode = mockAccessToken.payload.org_code;
       const permissionName = 'non-existant-permission';
       expect(await getPermission(sessionManager, permissionName)).toStrictEqual({
@@ -77,11 +78,13 @@ describe('token-claims', () => {
       });
     });
 
-    it('When no permissions in token', async () => {
+    test('When no permissions in token', async () => {
       const orgCode = mockAccessToken.payload.org_code;
 
-      mockAccessToken = mocks.getMockAccessToken({});
-      mockIdToken = mocks.getMockIdToken();
+      mockAccessToken = mocks.getMockAccessToken({
+        noPermissions: true
+      });
+      mockIdToken = mocks.getMockIdToken({});
 
       await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       const permissionName = 'non-existant-permission';
@@ -91,21 +94,58 @@ describe('token-claims', () => {
         isGranted: false,
       });
     });
+
+    
   });
 
   describe('getUserOrganizations', () => {
-    it('lists all user organizations using id token', async () => {
+    test('lists all user organizations using id token', async () => {
       const orgCodes = mockIdToken.payload.org_codes;
       expect(await getUserOrganizations(sessionManager)).toStrictEqual({
         orgCodes,
       });
     });
+
+    test('lists all user organizations using id token', async () => {
+      mockIdToken = mocks.getMockIdToken({
+        noOrgCodes: true
+      });
+      await sessionManager.setSessionItem('id_token', mockIdToken.token);
+
+      expect(await getUserOrganizations(sessionManager)).toStrictEqual({
+        orgCodes: [],
+      });
+    });
   });
 
   describe('getOrganization', () => {
-    it('returns organization code using accesss token', async () => {
+    test('returns organization code using accesss token', async () => {
       const orgCode = mockAccessToken.payload.org_code;
       expect(await getOrganization(sessionManager)).toStrictEqual({ orgCode });
+    });
+  });
+
+  describe('getPermissions', () => {
+    test('returns permissions and organization code using access token', async () => {
+      const { permissions, org_code } = mockAccessToken.payload;
+      
+      expect(await getPermissions(sessionManager)).toStrictEqual({
+        permissions,
+        orgCode: org_code,
+      });
+    });
+
+    test('returns permissions and organization code using access token and no permissions exist in token', async () => {
+      const { org_code } = mockAccessToken.payload;
+      mockAccessToken = mocks.getMockAccessToken({
+        noPermissions: true
+      });
+
+      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
+      expect(await getPermissions(sessionManager)).toStrictEqual({
+        permissions: [],
+        orgCode: org_code,
+      });
     });
   });
 });

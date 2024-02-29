@@ -14,13 +14,16 @@ export const getMockAccessToken = ({
   domain = 'local-testing@kinde.com',
   isExpired = false,
   isExpClaimMissing = false,
+  permissions = ['perm1', 'perm2', 'perm3'],
   noPermissions = false
 }: {
   domain?: string,
   isExpired?: boolean,
   isExpClaimMissing?: boolean,
+  permissions?: string[] | undefined | null,
   noPermissions?: boolean
 }) => {
+  console.log('build token', noPermissions)
   const iat = Math.floor(Date.now() / 1000);
   const exp = isExpClaimMissing ? undefined : isExpired ? iat : iat + 1000000;
   const tokenPayload = {
@@ -32,7 +35,7 @@ export const getMockAccessToken = ({
     iss: domain,
     org_code: 'org_123456789',
     scp: ['openid', 'profile', 'email', 'offline'],
-    permissions: !noPermissions ? ['perm1', 'perm2', 'perm3'] : undefined,
+    permissions: noPermissions ? undefined : permissions,
     jti: '8a567995-ace9-4e82-8724-94651a5ca50c',
     sub: 'kp_0c3ff3d085flo6396as29d4ffee750be7',
     feature_flags: {
@@ -48,10 +51,15 @@ export const getMockAccessToken = ({
   };
 };
 
-export const getMockIdToken = (
-  domain: string = 'local-testing@kinde.com',
-  isExpired: boolean = false
-) => {
+export const getMockIdToken = ({
+  domain = 'local-testing@kinde.com',
+  isExpired = false,
+  noOrgCodes = false
+}: {
+  domain?: string,
+  isExpired?: boolean,
+  noOrgCodes?: boolean
+}) => {
   const iat = Math.floor(Date.now() / 1000);
   const exp = isExpired ? iat : iat + 1000000;
   const tokenPayload = {
@@ -67,7 +75,7 @@ export const getMockIdToken = (
     iss: domain,
     jti: '687ddac5-bac4-48cf-b5ba-2db3ca5107c1',
     name: 'test-first',
-    org_codes: ['org_12345678'],
+    org_codes: !noOrgCodes ? ['org_12345678'] : undefined,
     sub: 'kp_0c3ff3d085flo6396as29d4ffee750be7',
     updated_at: iat,
   };
