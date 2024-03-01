@@ -109,7 +109,8 @@ export const getUserFromSession = async (
   const idTokenString = (await sessionManager.getSessionItem('id_token')) as string;
   const idToken = await jwtVerify(
     idTokenString,
-    await validationDetails.keyProvider()
+    await validationDetails.keyProvider(),
+    { currentDate: new Date(0) }
   );
 
   const user: UserType = {
