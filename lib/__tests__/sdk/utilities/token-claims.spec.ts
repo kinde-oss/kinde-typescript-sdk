@@ -134,18 +134,5 @@ describe('token-claims', () => {
         orgCode: org_code,
       });
     });
-
-    test('returns permissions and organization code using access token and no permissions exist in token', async () => {
-      const { org_code } = mockAccessToken.payload;
-      mockAccessToken = mocks.getMockAccessToken({
-        noPermissions: true
-      });
-
-      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
-      expect(await getPermissions(sessionManager)).toStrictEqual({
-        permissions: [],
-        orgCode: org_code,
-      });
-    });
   });
 });

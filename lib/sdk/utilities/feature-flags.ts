@@ -23,6 +23,7 @@ export const getFlag = async (
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): Promise<GetFlagType> => {
+  console.log('getFlag', (await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags);
   const featureFlags =
     ((await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags) ?? {};
   const flag = featureFlags[code];
@@ -46,6 +47,12 @@ export const getFlag = async (
     value: flag?.v ?? defaultValue!,
     code,
   };
+
+  console.log({
+    is_default: flag?.v === undefined,
+    value: flag?.v ?? defaultValue!,
+    code,
+  })
 
   if (!response.is_default) {
     response.type = FlagDataType[flag?.t ?? type!];
