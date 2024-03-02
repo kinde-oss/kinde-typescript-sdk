@@ -37,6 +37,10 @@ export const commitTokenToMemory = async (
   token: string,
   type: TokenType
 ): Promise<void> => {
+  if (!token) {
+    await sessionManager.removeSessionItem(type);
+    return;
+  }
   if (type !== 'refresh_token' && isTokenExpired(token)) {
     throw new KindeSDKError(
       KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
