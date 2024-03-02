@@ -34,6 +34,23 @@ describe('token-utils', () => {
       );
       expect(await sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
     });
+
+    it('stores all provided tokens to memory no id_token', async () => {
+      const { token: mockAccessToken } = mocks.getMockAccessToken({domain});
+      const tokenCollection: TokenCollection = {
+        refresh_token: 'refresh_token',
+        access_token: mockAccessToken,
+      };
+      await commitTokensToMemory(sessionManager, tokenCollection);
+
+      expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+        tokenCollection.refresh_token
+      );
+      expect(await sessionManager.getSessionItem('access_token')).toBe(
+        mockAccessToken
+      );
+      expect(await sessionManager.getSessionItem('id_token')).toBe(null);
+    });
   });
 
   describe('commitTokenToMemory', () => {
