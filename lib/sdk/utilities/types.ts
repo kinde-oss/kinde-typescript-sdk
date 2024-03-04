@@ -1,7 +1,7 @@
 export interface TokenCollection {
   refresh_token: string;
   access_token: string;
-  id_token?: string;
+  id_token: string;
 }
 
 export interface UserType {

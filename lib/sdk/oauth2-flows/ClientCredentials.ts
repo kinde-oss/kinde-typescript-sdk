@@ -107,9 +107,12 @@ export class ClientCredentials {
    * @returns {URLSearchParams}
    */
   private generateTokenURLParams(): URLSearchParams {
+    let scope = this.config.scope ?? ClientCredentials.DEFAULT_TOKEN_SCOPES
+    scope = scope.split(' ').includes('openid') ? scope : `${scope} openid`;
+
     const searchParams = new URLSearchParams({
       grant_type: 'client_credentials',
-      scope: this.config.scope ?? ClientCredentials.DEFAULT_TOKEN_SCOPES,
+      scope,
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
     });
