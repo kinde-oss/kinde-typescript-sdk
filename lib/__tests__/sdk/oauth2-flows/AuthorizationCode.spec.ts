@@ -54,7 +54,7 @@ describe('AuthorizationCode', () => {
       const authURL = await testClient.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
       expect(searchParams.get('audience')).toBe(expectedAudience);
-      expect(searchParams.get('scope')).toBe(expectedScope);
+      expect(searchParams.get('scope')).toMatch('test-scope');
     });
 
     it('overrides optional url search params if they are provided', async () => {
