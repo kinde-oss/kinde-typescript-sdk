@@ -115,7 +115,7 @@ describe('ClientCredentials', () => {
         json: () => ({ access_token: mockAccessToken }),
       });
 
-      const expectedScope = 'test-scope';
+      const expectedScope = 'test-scope openid';
       const expectedAudience = 'test-audience';
       const client = new ClientCredentials({
         ...clientConfig,
