@@ -110,6 +110,10 @@ export class ClientCredentials {
     let scope = this.config.scope ?? ClientCredentials.DEFAULT_TOKEN_SCOPES
     scope = scope.split(' ').includes('openid') ? scope : `${scope} openid`;
 
+    if (!utilities.validateClientSecret(this.config.clientSecret)) {
+      throw new Error(`Invalid client secret ${this.config.clientSecret}`);
+    }
+
     const searchParams = new URLSearchParams({
       grant_type: 'client_credentials',
       scope,

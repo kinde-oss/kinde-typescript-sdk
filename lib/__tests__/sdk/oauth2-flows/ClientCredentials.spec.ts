@@ -1,6 +1,6 @@
 import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
-import { commitTokenToMemory } from '../../../sdk/utilities';
+import { commitTokenToMemory, generateRandomString } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
@@ -8,7 +8,7 @@ describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {
     authDomain: 'https://local-testing@kinde.com',
     logoutRedirectURL: 'http://app-domain.com',
-    clientSecret: 'client-secret',
+    clientSecret: generateRandomString(50),
     clientId: 'client-id',
   };
 
