@@ -13,7 +13,7 @@ import { generateRandomString } from '../../../sdk/utilities';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
-  const clientSecret = generateRandomString(25);
+  const clientSecret = generateRandomString(50);
   const clientConfig: AuthorizationCodeOptions = {
     authDomain: 'https://local-testing@kinde.com',
     redirectURL: 'https://app-domain.com',
