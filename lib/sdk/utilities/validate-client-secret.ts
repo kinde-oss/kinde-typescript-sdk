@@ -4,5 +4,5 @@
  * @returns {boolean} 
  */
 export const validateClientSecret = (secret: string): boolean => {
-  return !!secret.match('^[a-zA-Z0-9]{40,50}$')?.length
+  return !!secret.match('^[a-zA-Z0-9]{40,60}$')?.length
 };

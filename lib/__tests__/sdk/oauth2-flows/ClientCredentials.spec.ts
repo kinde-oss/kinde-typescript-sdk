@@ -8,7 +8,7 @@ describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {
     authDomain: 'https://local-testing@kinde.com',
     logoutRedirectURL: 'http://app-domain.com',
-    clientSecret: generateRandomString(50),
+    clientSecret: generateRandomString(25),
     clientId: 'client-id',
   };
 
