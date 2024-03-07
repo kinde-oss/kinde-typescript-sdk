@@ -23,7 +23,6 @@ export const getFlag = async (
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): Promise<GetFlagType> => {
-  console.log('getFlag', (await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags);
   const featureFlags =
     ((await getClaimValue(sessionManager, 'feature_flags')) as FeatureFlags) ?? {};
   const flag = featureFlags[code];
