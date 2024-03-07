@@ -133,5 +133,5 @@ export const isTokenExpired = (token: string | null): boolean => {
   const currentUnixTime = Math.floor(Date.now() / 1000);
   const tokenPayload = jwtDecode(token);
   if (!tokenPayload.exp) return true;
-  return currentUnixTime >= tokenPayload.exp!;
+  return currentUnixTime >= tokenPayload.exp;
 };

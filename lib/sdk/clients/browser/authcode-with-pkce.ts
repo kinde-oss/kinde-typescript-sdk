@@ -175,7 +175,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return tokenClaims.getClaimValue(sessionManager, claim, type);
+    return await tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
   /**

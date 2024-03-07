@@ -1,5 +1,5 @@
 import { AuthorizationCode, AuthCodeWithPKCE } from '../../oauth2-flows/index.js';
-import { default as withAuthUtilities } from './with-auth-utilities.js';
+import withAuthUtilities from './with-auth-utilities.js';
 import { type SessionManager } from '../../session-managers/index.js';
 import type { UserType } from '../../utilities/index.js';
 import * as utilities from '../../utilities/index.js';
