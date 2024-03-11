@@ -1,5 +1,4 @@
 import { type SessionManager } from '../session-managers/index.js';
-import { isTokenExpired } from './token-utils.js';
 import { type ClaimTokenType } from './types.js';
 import { jwtDecode } from 'jwt-decode';
 

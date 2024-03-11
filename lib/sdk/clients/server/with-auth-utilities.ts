@@ -1,4 +1,4 @@
-import { SessionManager } from '../../session-managers';
+import { type SessionManager } from '../../session-managers';
 import * as utilities from '../../utilities/index.js';
 
 import type {
@@ -93,7 +93,7 @@ const withAuthUtilities = (
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return tokenClaims.getClaimValue(sessionManager, claim, type);
+    return await tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
   /**
