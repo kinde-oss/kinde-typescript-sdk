@@ -124,9 +124,9 @@ describe('ClientCredentials', () => {
 
       const expectedBody = new URLSearchParams({
         grant_type: 'client_credentials',
-        scope: expectedScope,
         client_id: clientConfig.clientId,
         client_secret: clientConfig.clientSecret,
+        scope: expectedScope,
         audience: expectedAudience,
       });
 
