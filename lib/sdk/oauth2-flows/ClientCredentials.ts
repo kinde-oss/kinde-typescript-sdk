@@ -13,7 +13,6 @@ import type {
  * @class ClientCredentials
  */
 export class ClientCredentials {
-  public static DEFAULT_TOKEN_SCOPES: string = 'openid profile email offline';
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
 
@@ -107,19 +106,19 @@ export class ClientCredentials {
    * @returns {URLSearchParams}
    */
   private generateTokenURLParams(): URLSearchParams {
-    let scope = this.config.scope ?? ClientCredentials.DEFAULT_TOKEN_SCOPES
-    scope = scope.split(' ').includes('openid') ? scope : `${scope} openid`;
-
     if (!utilities.validateClientSecret(this.config.clientSecret)) {
       throw new Error(`Invalid client secret ${this.config.clientSecret}`);
     }
 
     const searchParams = new URLSearchParams({
       grant_type: 'client_credentials',
-      scope,
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
     });
+
+    if (this.config.scope !== undefined) {
+      searchParams.append('scope', this.config.scope);
+    }
 
     if (this.config.audience) {
       const audienceArray = Array.isArray(this.config.audience) ? this.config.audience : [this.config.audience];
