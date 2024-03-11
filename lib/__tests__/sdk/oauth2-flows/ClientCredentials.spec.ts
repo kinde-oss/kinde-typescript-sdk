@@ -25,7 +25,6 @@ describe('ClientCredentials', () => {
 
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
-      scope: ClientCredentials.DEFAULT_TOKEN_SCOPES,
       client_id: clientConfig.clientId,
       client_secret: clientConfig.clientSecret,
     });
@@ -115,7 +114,7 @@ describe('ClientCredentials', () => {
         json: () => ({ access_token: mockAccessToken }),
       });
 
-      const expectedScope = 'test-scope openid';
+      const expectedScope = 'test-scope';
       const expectedAudience = 'test-audience';
       const client = new ClientCredentials({
         ...clientConfig,
