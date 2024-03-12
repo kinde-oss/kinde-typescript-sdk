@@ -1,4 +1,4 @@
-import { JSONWebKeySet, JWK } from 'jose';
+import { type JSONWebKeySet } from 'jose';
 
 export enum GrantType {
   AUTHORIZATION_CODE = 'AUTHORIZATION_CODE',
