@@ -109,6 +109,7 @@ const withAuthUtilities = (
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
+
     return await tokenClaims.getClaimValue(
       sessionManager,
       claim,

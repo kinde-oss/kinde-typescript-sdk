@@ -4,6 +4,7 @@ import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import {
   type TokenValidationDetailsType,
   commitTokenToSession,
+  generateRandomString,
 } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
@@ -12,7 +13,7 @@ describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {
     authDomain: 'https://local-testing@kinde.com',
     logoutRedirectURL: 'http://app-domain.com',
-    clientSecret: 'client-secret',
+    clientSecret: generateRandomString(50),
     clientId: 'client-id',
   };
 
@@ -42,7 +43,6 @@ describe('ClientCredentials', () => {
 
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
-      scope: ClientCredentials.DEFAULT_TOKEN_SCOPES,
       client_id: clientConfig.clientId,
       client_secret: clientConfig.clientSecret,
     });
@@ -147,9 +147,9 @@ describe('ClientCredentials', () => {
 
       const expectedBody = new URLSearchParams({
         grant_type: 'client_credentials',
-        scope: expectedScope,
         client_id: clientConfig.clientId,
         client_secret: clientConfig.clientSecret,
+        scope: expectedScope,
         audience: expectedAudience,
       });
 

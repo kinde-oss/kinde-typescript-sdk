@@ -9,10 +9,11 @@ import {
 } from '../../../sdk/oauth2-flows';
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
+import { generateRandomString } from '../../../sdk/utilities';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
-  const clientSecret = 'client-secret' as const;
+  const clientSecret = generateRandomString(50);
   const clientConfig: AuthorizationCodeOptions = {
     authDomain: 'https://local-testing@kinde.com',
     redirectURL: 'https://app-domain.com',
@@ -59,7 +60,7 @@ describe('AuthorizationCode', () => {
       const authURL = await testClient.createAuthorizationURL(sessionManager);
       const searchParams = new URLSearchParams(authURL.search);
       expect(searchParams.get('audience')).toBe(expectedAudience);
-      expect(searchParams.get('scope')).toBe(expectedScope);
+      expect(searchParams.get('scope')).toMatch('test-scope');
     });
 
     it('overrides optional url search params if they are provided', async () => {

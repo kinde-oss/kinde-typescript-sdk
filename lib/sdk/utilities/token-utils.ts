@@ -20,6 +20,11 @@ export const commitTokenToSession = async (
   type: TokenType,
   validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
+  if (!token) {
+    await sessionManager.removeSessionItem(type);
+    return;
+  }
+
   if (type === 'access_token' || type === 'id_token') {
     try {
       const key = await validationDetails.keyProvider();

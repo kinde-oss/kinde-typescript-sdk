@@ -10,7 +10,7 @@ For details on integrating this SDK into your project, head over to the [Kinde d
 
 ## Publishing
 
-The core team handles publishing.
+The Kinde core team handles publishing.
 
 ## Contributing
 

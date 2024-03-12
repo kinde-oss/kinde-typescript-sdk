@@ -60,6 +60,11 @@ export class AuthorizationCode extends AuthCodeAbstract {
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = await utilities.getRefreshToken(sessionManager);
+
+    if (!utilities.validateClientSecret(this.clientSecret)) {
+      throw new Error(`Invalid client secret ${this.clientSecret}`);
+    }
+
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       client_id: this.config.clientId,
@@ -103,6 +108,10 @@ export class AuthorizationCode extends AuthCodeAbstract {
       throw new Error(
         `Authentication flow: State mismatch. Received: ${state} | Expected: ${storedState}`
       );
+    }
+
+    if (!utilities.validateClientSecret(this.clientSecret)) {
+      throw new Error(`Invalid client secret ${this.clientSecret}`);
     }
 
     const body = new URLSearchParams({

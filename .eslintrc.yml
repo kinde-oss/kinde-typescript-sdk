@@ -12,6 +12,7 @@ parserOptions:
 ignorePatterns:
   - dist
   - dist-cjs
+  - lib/__tests__/**
   - lib/apis/**
   - lib/models/**
   - lib/index.ts

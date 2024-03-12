@@ -265,8 +265,11 @@ export abstract class AuthCodeAbstract {
   protected generateAuthURLParams(options: AuthURLOptions = {}): URLSearchParams {
     const searchParams = this.getBaseAuthURLParams();
 
+    let scope = this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES
+    scope = scope.split(' ').includes('openid') ? scope : `${scope} openid`;
+
     let searchParamsObject: Record<string, string> = {
-      scope: this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES,
+      scope,
     };
 
     if (options.start_page) {
