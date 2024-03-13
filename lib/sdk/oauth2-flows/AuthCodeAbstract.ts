@@ -281,7 +281,12 @@ export abstract class AuthCodeAbstract {
     }
 
     for (const key in searchParamsObject) {
-      searchParams.append(key, String(searchParamsObject[key]!));
+      const value = searchParamsObject[key];
+      if (typeof value === 'object' && value !== null) {
+        searchParams.append(key, JSON.stringify(value));
+      } else {
+        searchParams.append(key, String(value));
+      }
     }
 
     if (this.config.audience) {
