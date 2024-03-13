@@ -53,6 +53,13 @@ export interface ClientCredentialsOptions
   clientSecret: string;
 }
 
+export interface AuthURLParams {
+  lang?: string;
+  login_hint?: string;
+  connection_id?: string;
+  [key: string]: string | undefined;
+}
+
 export interface AuthURLOptions {
   start_page?: 'registration' | 'login';
   is_create_org?: boolean;
@@ -60,5 +67,5 @@ export interface AuthURLOptions {
   org_code?: string;
   state?: string;
   post_login_redirect_url?: string;
-  authUrlParams?: Record<string, string>;
+  authUrlParams?: AuthURLParams;
 }
