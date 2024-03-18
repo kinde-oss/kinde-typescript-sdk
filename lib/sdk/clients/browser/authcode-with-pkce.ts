@@ -14,6 +14,7 @@ import type {
   RegisterURLOptions,
   LoginURLOptions,
   BrowserPKCEClientOptions,
+  OAuth2CodeExchangeResponse,
 } from '../types.js';
 
 const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
@@ -271,10 +272,9 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   /**
    * Method makes user of the `refreshTokens` method of the `AuthCodeWithPKCE` client
    * to use the refresh token to get new tokens
-   * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-    const refreshTokens = async (sessionManager: SessionManager): Promise<string> => {
+    const refreshTokens = async (): Promise<OAuth2CodeExchangeResponse> => {
       return await client.refreshTokens(sessionManager);
     };  
 

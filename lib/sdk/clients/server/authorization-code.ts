@@ -9,6 +9,7 @@ import type {
   RegisterURLOptions,
   LoginURLOptions,
   ACClientOptions,
+  OAuth2CodeExchangeResponse,
 } from '../types.js';
 
 const createAuthorizationCodeClient = (
@@ -139,7 +140,7 @@ const createAuthorizationCodeClient = (
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  const refreshTokens = async (sessionManager: SessionManager): Promise<string> => {
+  const refreshTokens = async (sessionManager: SessionManager): Promise<OAuth2CodeExchangeResponse> => {
     return await client.refreshTokens(sessionManager);
   };
 
