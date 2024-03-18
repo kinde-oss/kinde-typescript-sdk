@@ -75,7 +75,7 @@ export abstract class AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected abstract refreshTokens(
+  public abstract refreshTokens(
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse>;
 
