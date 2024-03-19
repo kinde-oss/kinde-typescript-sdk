@@ -11,6 +11,10 @@ import type {
   ACClientOptions,
 } from '../types.js';
 
+import type {
+  OAuth2CodeExchangeResponse,
+} from '../../oauth2-flows/types.js';
+
 const createAuthorizationCodeClient = (
   options: ACClientOptions,
   isPKCE: boolean
@@ -134,6 +138,16 @@ const createAuthorizationCodeClient = (
   };
 
   /**
+   * Method makes user of the `refreshTokens` method of the `AuthCodeAbstract` client
+   * to use the refresh token to get new tokens
+   * @param {SessionManager} sessionManager
+   * @returns {Promise<OAuth2CodeExchangeResponse>}
+   */
+  const refreshTokens = async (sessionManager: SessionManager): Promise<OAuth2CodeExchangeResponse> => {
+    return await client.refreshTokens(sessionManager);
+  };
+
+  /**
    * Method clears the current session and returns the logout URL, redirecting
    * to which will clear the user's session on the authorization server.
    * @param {SessionManager} sessionManager
@@ -151,6 +165,7 @@ const createAuthorizationCodeClient = (
     getUserProfile,
     createOrg,
     getToken,
+    refreshTokens,
     register,
     getUser,
     logout,
