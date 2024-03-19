@@ -9,8 +9,11 @@ import type {
   RegisterURLOptions,
   LoginURLOptions,
   ACClientOptions,
-  OAuth2CodeExchangeResponse,
 } from '../types.js';
+
+import type {
+  OAuth2CodeExchangeResponse,
+} from '../../oauth2-flows/types.js';
 
 const createAuthorizationCodeClient = (
   options: ACClientOptions,

@@ -14,8 +14,11 @@ import type {
   RegisterURLOptions,
   LoginURLOptions,
   BrowserPKCEClientOptions,
-  OAuth2CodeExchangeResponse,
 } from '../types.js';
+
+import type {
+  OAuth2CodeExchangeResponse,
+} from '../../oauth2-flows/types.js';
 
 const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const { featureFlags, tokenClaims } = utilities;
