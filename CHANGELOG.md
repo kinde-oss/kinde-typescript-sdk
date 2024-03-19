@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## b6bda8a4ff4564a6ae8fd8e180f3b57d2eaa5eb6...main
 
 [compare changes](https://github.com/kinde-oss/kinde-typescript-sdk/compare/b6bda8a4ff4564a6ae8fd8e180f3b57d2eaa5eb6...main)
@@ -39,4 +38,3 @@
 ## 2.7.0...2.7.0
 
 [compare changes](https://github.com/kinde-oss/kinde-typescript-sdk/compare/2.7.0...2.7.0)
-

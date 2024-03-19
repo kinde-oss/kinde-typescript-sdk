@@ -16,9 +16,7 @@ import type {
   BrowserPKCEClientOptions,
 } from '../types.js';
 
-import type {
-  OAuth2CodeExchangeResponse,
-} from '../../oauth2-flows/types.js';
+import type { OAuth2CodeExchangeResponse } from '../../oauth2-flows/types.js';
 
 const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const { featureFlags, tokenClaims } = utilities;
@@ -271,15 +269,15 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const getToken = async (): Promise<string> => {
     return await client.getToken(sessionManager);
   };
-  
+
   /**
    * Method makes user of the `refreshTokens` method of the `AuthCodeWithPKCE` client
    * to use the refresh token to get new tokens
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-    const refreshTokens = async (): Promise<OAuth2CodeExchangeResponse> => {
-      return await client.refreshTokens(sessionManager);
-    };  
+  const refreshTokens = async (): Promise<OAuth2CodeExchangeResponse> => {
+    return await client.refreshTokens(sessionManager);
+  };
 
   /**
    * Method extracts the provided feature flag from the access token in the

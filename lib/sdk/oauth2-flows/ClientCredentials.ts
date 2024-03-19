@@ -121,12 +121,13 @@ export class ClientCredentials {
     }
 
     if (this.config.audience) {
-      const audienceArray = Array.isArray(this.config.audience) ? this.config.audience : [this.config.audience];
+      const audienceArray = Array.isArray(this.config.audience)
+        ? this.config.audience
+        : [this.config.audience];
 
-      audienceArray
-        .forEach((aud) => {
-          searchParams.append('audience', aud);
-        });
+      audienceArray.forEach((aud) => {
+        searchParams.append('audience', aud);
+      });
     }
 
     return new URLSearchParams(searchParams);

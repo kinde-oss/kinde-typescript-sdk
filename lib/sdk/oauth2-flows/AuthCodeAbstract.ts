@@ -243,7 +243,7 @@ export abstract class AuthCodeAbstract {
   protected generateAuthURLParams(options: AuthURLOptions = {}): URLSearchParams {
     const searchParams = this.getBaseAuthURLParams();
 
-    let scope = this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES
+    let scope = this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES;
     scope = scope.split(' ').includes('openid') ? scope : `${scope} openid`;
 
     let searchParamsObject: Record<string, unknown> = {
@@ -264,17 +264,22 @@ export abstract class AuthCodeAbstract {
     }
 
     if (options.authUrlParams) {
-      const { lang, login_hint: loginHint, connection_id: connectionId, ...rest } = options.authUrlParams;
+      const {
+        lang,
+        login_hint: loginHint,
+        connection_id: connectionId,
+        ...rest
+      } = options.authUrlParams;
       searchParamsObject = { ...rest, ...searchParamsObject };
-      
+
       if (lang) {
         searchParamsObject.lang = lang;
       }
-      
+
       if (loginHint) {
         searchParamsObject.login_hint = loginHint;
       }
-      
+
       if (connectionId) {
         searchParamsObject.connection_id = connectionId;
       }
@@ -290,12 +295,13 @@ export abstract class AuthCodeAbstract {
     }
 
     if (this.config.audience) {
-      const audienceArray = Array.isArray(this.config.audience) ? this.config.audience : [this.config.audience];
+      const audienceArray = Array.isArray(this.config.audience)
+        ? this.config.audience
+        : [this.config.audience];
 
-      audienceArray
-        .forEach((aud) => {
-          searchParams.append('audience', aud);
-        });
+      audienceArray.forEach((aud) => {
+        searchParams.append('audience', aud);
+      });
     }
 
     return searchParams;

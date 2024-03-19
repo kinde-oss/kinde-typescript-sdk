@@ -11,9 +11,7 @@ import type {
   ACClientOptions,
 } from '../types.js';
 
-import type {
-  OAuth2CodeExchangeResponse,
-} from '../../oauth2-flows/types.js';
+import type { OAuth2CodeExchangeResponse } from '../../oauth2-flows/types.js';
 
 const createAuthorizationCodeClient = (
   options: ACClientOptions,
@@ -143,7 +141,9 @@ const createAuthorizationCodeClient = (
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  const refreshTokens = async (sessionManager: SessionManager): Promise<OAuth2CodeExchangeResponse> => {
+  const refreshTokens = async (
+    sessionManager: SessionManager
+  ): Promise<OAuth2CodeExchangeResponse> => {
     return await client.refreshTokens(sessionManager);
   };
 

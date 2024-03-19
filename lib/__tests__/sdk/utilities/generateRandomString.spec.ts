@@ -6,7 +6,6 @@ describe('validateClientSecret', () => {
     expect(result.length).toBe(25);
   });
 
-
   it('should return false for invalid secrets - odd length', () => {
     const result = generateRandomString(47);
     expect(result.length).toBe(47);
