@@ -90,7 +90,7 @@ export abstract class AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected abstract refreshTokens(
+  public abstract refreshTokens(
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse>;
 
@@ -265,10 +265,10 @@ export abstract class AuthCodeAbstract {
   protected generateAuthURLParams(options: AuthURLOptions = {}): URLSearchParams {
     const searchParams = this.getBaseAuthURLParams();
 
-    let scope = this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES
+    let scope = this.config.scope ?? AuthCodeAbstract.DEFAULT_TOKEN_SCOPES;
     scope = scope.split(' ').includes('openid') ? scope : `${scope} openid`;
 
-    let searchParamsObject: Record<string, string> = {
+    let searchParamsObject: Record<string, unknown> = {
       scope,
     };
 
@@ -285,16 +285,36 @@ export abstract class AuthCodeAbstract {
       searchParamsObject.is_create_org = 'true';
     }
 
-    if (options.post_login_redirect_url) {
-      searchParamsObject.post_login_redirect_url = options.post_login_redirect_url;
-    }
-
     if (options.authUrlParams) {
-      searchParamsObject = { ...options.authUrlParams, ...searchParamsObject };
+      const {
+        lang,
+        login_hint: loginHint,
+        connection_id: connectionId,
+        ...rest
+      } = options.authUrlParams;
+      searchParamsObject = { ...rest, ...searchParamsObject };
+
+      if (lang) {
+        searchParamsObject.lang = lang;
+      }
+
+      if (loginHint) {
+        searchParamsObject.login_hint = loginHint;
+      }
+
+      if (connectionId) {
+        searchParamsObject.connection_id = connectionId;
+      }
     }
 
-    for (const key in searchParamsObject)
-      searchParams.append(key, searchParamsObject[key]);
+    for (const key in searchParamsObject) {
+      const value = searchParamsObject[key];
+      if (typeof value === 'object' && value !== null) {
+        searchParams.append(key, JSON.stringify(value));
+      } else {
+        searchParams.append(key, String(value));
+      }
+    }
 
     if (this.config.audience) {
       const audienceArray = Array.isArray(this.config.audience)

@@ -71,7 +71,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
    * @param {SessionManager} sessionManager
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
-  protected async refreshTokens(
+  public async refreshTokens(
     sessionManager: SessionManager
   ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = await utilities.getRefreshToken(sessionManager);
