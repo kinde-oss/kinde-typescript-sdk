@@ -1,57 +1,43 @@
-import { type JwtPayload, jwtDecode } from 'jwt-decode';
-import type { TokenCollection, UserType, TokenType } from './types.js';
+import type {
+  TokenCollection,
+  UserType,
+  TokenType,
+  TokenValidationDetailsType,
+} from './types.js';
 import { type SessionManager } from '../session-managers/index.js';
 import { KindeSDKError, KindeSDKErrorCode } from '../exceptions.js';
+import { jwtVerify } from 'jose';
 
 /**
- * Extracts the payload from the provided idToken and saves the extracted
- * payload to the current session.
- * @param {SessionManager} sessionManager
- * @param {string} idToken
- * @returns {void}
- */
-const commitUserToMemoryFromToken = async (
-  sessionManager: SessionManager,
-  idToken: string
-): Promise<void> => {
-  const idTokenPayload = jwtDecode<UserType & JwtPayload>(idToken);
-  const user: UserType = {
-    family_name: idTokenPayload.family_name,
-    given_name: idTokenPayload.given_name,
-    picture: idTokenPayload.picture ?? null,
-    email: idTokenPayload.email,
-    id: idTokenPayload.sub!,
-  };
-
-  await sessionManager.setSessionItem('user', user);
-};
-
-/**
- * Saves the provided token and its extracted payload to the current session.
+ * Saves the provided token to the current session.
  * @param {SessionManager} sessionManager
  * @param {string} token
  * @param {TokenType} type
  */
-export const commitTokenToMemory = async (
+export const commitTokenToSession = async (
   sessionManager: SessionManager,
   token: string,
-  type: TokenType
+  type: TokenType,
+  validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
   if (!token) {
     await sessionManager.removeSessionItem(type);
     return;
   }
-  if (type !== 'refresh_token' && isTokenExpired(token)) {
-    throw new KindeSDKError(
-      KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
-      `Attempting to commit invalid ${type} token "${token}" to memory`
-    );
+
+  if (type === 'access_token' || type === 'id_token') {
+    try {
+      const key = await validationDetails.keyProvider();
+      await jwtVerify(token, key);
+    } catch (e) {
+      throw new KindeSDKError(
+        KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
+        `Attempting to commit invalid ${type} token "${token}" to memory`
+      );
+    }
   }
 
   await sessionManager.setSessionItem(type, token);
-  if (type === 'id_token') {
-    await commitUserToMemoryFromToken(sessionManager, token);
-  }
 };
 
 /**
@@ -60,14 +46,30 @@ export const commitTokenToMemory = async (
  * @param {SessionManager} sessionManager
  * @param tokens
  */
-export const commitTokensToMemory = async (
+export const commitTokensToSession = async (
   sessionManager: SessionManager,
-  tokens: TokenCollection
+  tokens: TokenCollection,
+  validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
   await Promise.all([
-    commitTokenToMemory(sessionManager, tokens.refresh_token, 'refresh_token'),
-    commitTokenToMemory(sessionManager, tokens.access_token, 'access_token'),
-    commitTokenToMemory(sessionManager, tokens.id_token, 'id_token'),
+    commitTokenToSession(
+      sessionManager,
+      tokens.refresh_token,
+      'refresh_token',
+      validationDetails
+    ),
+    commitTokenToSession(
+      sessionManager,
+      tokens.access_token,
+      'access_token',
+      validationDetails
+    ),
+    commitTokenToSession(
+      sessionManager,
+      tokens.id_token,
+      'id_token',
+      validationDetails
+    ),
   ]);
 };
 
@@ -105,22 +107,26 @@ export const getAccessToken = async (
  * @param {SessionManager} sessionManager
  * @returns {string | null}
  */
-export const getUserFromMemory = async (
-  sessionManager: SessionManager
-): Promise<UserType | null> => {
-  return await (sessionManager.getSessionItem('user') as Promise<UserType | null>);
-};
-
-/**
- * Saves the provided user details as `UserType` to the current session.
- * @param {SessionManager} sessionManager
- * @param {UserType} user
- */
-export const commitUserToMemory = async (
+export const getUserFromSession = async (
   sessionManager: SessionManager,
-  user: UserType
-) => {
-  await sessionManager.setSessionItem('user', user);
+  validationDetails: TokenValidationDetailsType
+): Promise<UserType | null> => {
+  const idTokenString = (await sessionManager.getSessionItem('id_token')) as string;
+  const idToken = await jwtVerify(
+    idTokenString,
+    await validationDetails.keyProvider(),
+    { currentDate: new Date(0) }
+  );
+
+  const user: UserType = {
+    family_name: idToken.payload.family_name as string,
+    given_name: idToken.payload.given_name as string,
+    picture: (idToken.payload.picture as string) ?? null,
+    email: idToken.payload.email as string,
+    id: idToken.payload.sub!,
+  };
+
+  return user;
 };
 
 /**
@@ -128,10 +134,20 @@ export const commitUserToMemory = async (
  * @param {string | null} token
  * @returns {boolean} is expired or not
  */
-export const isTokenExpired = (token: string | null): boolean => {
+export const isTokenExpired = async (
+  token: string | null,
+  validationDetails: TokenValidationDetailsType
+): Promise<boolean> => {
   if (!token) return true;
-  const currentUnixTime = Math.floor(Date.now() / 1000);
-  const tokenPayload = jwtDecode(token);
-  if (!tokenPayload.exp) return true;
-  return currentUnixTime >= tokenPayload.exp;
+  try {
+    const currentUnixTime = Math.floor(Date.now() / 1000);
+    const tokenPayload = await jwtVerify(
+      token,
+      await validationDetails.keyProvider()
+    );
+    if (tokenPayload.payload.exp === undefined) return true;
+    return currentUnixTime >= tokenPayload.payload.exp;
+  } catch (e) {
+    return true;
+  }
 };

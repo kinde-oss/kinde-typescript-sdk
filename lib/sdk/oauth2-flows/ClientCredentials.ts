@@ -1,3 +1,4 @@
+import { createLocalJWKSet } from 'jose';
 import { type SessionManager } from '../session-managers/index.js';
 import * as utilities from '../utilities/index.js';
 import { getSDKHeader } from '../version.js';
@@ -7,6 +8,7 @@ import type {
   ClientCredentialsOptions,
   OAuth2CCTokenResponse,
 } from './types.js';
+import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
 
 /**
  * Class provides implementation for the client credentials OAuth2.0 flow.
@@ -15,12 +17,25 @@ import type {
 export class ClientCredentials {
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
+  public readonly tokenValidationDetails: utilities.TokenValidationDetailsType;
 
   constructor(private readonly config: ClientCredentialsOptions) {
     const { authDomain, logoutRedirectURL } = config;
     this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
     this.config = config;
+    const keyProvider = async () => {
+      const func =
+        config.jwks !== undefined
+          ? createLocalJWKSet(config.jwks)
+          : await getRemoteJwks(authDomain);
+      return await func({ alg: 'RS256' });
+    };
+    this.tokenValidationDetails = {
+      issuer: config.authDomain,
+      audience: config.audience,
+      keyProvider,
+    };
   }
 
   /**
@@ -32,16 +47,20 @@ export class ClientCredentials {
    */
   async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = await utilities.getAccessToken(sessionManager);
-    const isTokenExpired = utilities.isTokenExpired(accessToken);
+    const isTokenExpired = await utilities.isTokenExpired(
+      accessToken,
+      this.tokenValidationDetails
+    );
     if (accessToken && !isTokenExpired) {
       return accessToken;
     }
 
     const payload = await this.fetchAccessTokenFor(sessionManager);
-    await utilities.commitTokenToMemory(
+    await utilities.commitTokenToSession(
       sessionManager,
       payload.access_token,
-      'access_token'
+      'access_token',
+      this.tokenValidationDetails
     );
     return payload.access_token;
   }

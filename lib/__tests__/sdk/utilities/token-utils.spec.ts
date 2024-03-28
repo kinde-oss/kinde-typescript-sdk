@@ -2,27 +2,44 @@ import * as mocks from '../../mocks';
 
 import {
   type TokenCollection,
-  commitTokensToMemory,
-  commitTokenToMemory,
+  commitTokensToSession,
+  commitTokenToSession,
   isTokenExpired,
+  type TokenValidationDetailsType,
+  getUserFromSession,
 } from '../../../sdk/utilities';
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
+import { importJWK } from 'jose';
 
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
   const { sessionManager } = mocks;
+  let validationDetails: TokenValidationDetailsType;
+
+  beforeAll(async () => {
+    const { publicKey } = await mocks.getKeys();
+
+    validationDetails = {
+      issuer: domain,
+      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
+    };
+  });
 
   describe('commitTokensToMemory', () => {
     it('stores all provided tokens to memory', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      const { token: mockIdToken } = mocks.getMockAccessToken(domain);
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(domain);
+      const { token: mockIdToken } = await mocks.getMockAccessToken(domain);
       const tokenCollection: TokenCollection = {
         refresh_token: 'refresh_token',
         access_token: mockAccessToken,
         id_token: mockIdToken,
       };
-      await commitTokensToMemory(sessionManager, tokenCollection);
+      await commitTokensToSession(
+        sessionManager,
+        tokenCollection,
+        validationDetails
+      );
 
       expect(await sessionManager.getSessionItem('refresh_token')).toBe(
         tokenCollection.refresh_token
@@ -40,17 +57,31 @@ describe('token-utils', () => {
     });
 
     it('stores provided token to memory', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(domain);
+      await commitTokenToSession(
+        sessionManager,
+        mockAccessToken,
+        'access_token',
+        validationDetails
+      );
       expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
       );
     });
 
     it('throws exception if attempting to store invalid token', async () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
-      const commitTokenFn = async () =>
-        await commitTokenToMemory(sessionManager, mockAccessToken, 'access_token');
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(
+        domain,
+        true
+      );
+      const commitTokenFn = async () => {
+        await commitTokenToSession(
+          sessionManager,
+          mockAccessToken,
+          'access_token',
+          validationDetails
+        );
+      };
       await expect(commitTokenFn).rejects.toBeInstanceOf(KindeSDKError);
       await expect(commitTokenFn).rejects.toHaveProperty(
         'errorCode',
@@ -60,10 +91,15 @@ describe('token-utils', () => {
 
     it('stores user information if provide token is an id token', async () => {
       const { token: mockIdToken, payload: idTokenPayload } =
-        mocks.getMockIdToken(domain);
-      await commitTokenToMemory(sessionManager, mockIdToken, 'id_token');
+        await mocks.getMockIdToken(domain);
+      await commitTokenToSession(
+        sessionManager,
+        mockIdToken,
+        'id_token',
+        validationDetails
+      );
 
-      const storedUser = await sessionManager.getSessionItem('user');
+      const storedUser = await getUserFromSession(sessionManager, validationDetails);
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
@@ -78,23 +114,29 @@ describe('token-utils', () => {
   });
 
   describe('isTokenExpired()', () => {
-    it('returns true if null is provided as argument', () => {
-      expect(isTokenExpired(null)).toBe(true);
+    it('returns true if null is provided as argument', async () => {
+      expect(await isTokenExpired(null, validationDetails)).toBe(true);
     });
 
-    it('returns true if provided token is expired', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
-      expect(isTokenExpired(mockAccessToken)).toBe(true);
+    it('returns true if provided token is expired', async () => {
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(
+        domain,
+        true
+      );
+      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
     });
 
-    it('returns true if provided token is missing "exp" claim', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain, true);
-      expect(isTokenExpired(mockAccessToken)).toBe(true);
+    it('returns true if provided token is missing "exp" claim', async () => {
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(
+        domain,
+        true
+      );
+      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
     });
 
-    it('returns false if provided token is not expired', () => {
-      const { token: mockAccessToken } = mocks.getMockAccessToken(domain);
-      expect(isTokenExpired(mockAccessToken)).toBe(false);
+    it('returns false if provided token is not expired', async () => {
+      const { token: mockAccessToken } = await mocks.getMockAccessToken(domain);
+      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(false);
     });
   });
 });

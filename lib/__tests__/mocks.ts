@@ -1,4 +1,26 @@
+import { type JWK, SignJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
 import { type SessionManager } from '../sdk/session-managers';
+
+let mockPrivateKey: JWK | undefined;
+let mockPublicKey: JWK | undefined;
+
+export const mockJwtAlg = 'RS256';
+
+export const getKeys = async (): Promise<{ privateKey: JWK; publicKey: JWK }> => {
+  if (mockPrivateKey !== undefined && mockPublicKey !== undefined) {
+    return { privateKey: mockPrivateKey, publicKey: mockPublicKey };
+  }
+  const { publicKey: generatedPublicKey, privateKey: generatedPrivateKey } =
+    await generateKeyPair(mockJwtAlg);
+
+  const generatedPrivateJwk = await exportJWK(generatedPrivateKey);
+  const generatedPublicJwk = await exportJWK(generatedPublicKey);
+
+  mockPrivateKey = generatedPrivateJwk;
+  mockPublicKey = generatedPublicJwk;
+
+  return { privateKey: mockPrivateKey, publicKey: mockPublicKey };
+};
 
 export const fetchClient = jest.fn().mockImplementation(
   async () =>
@@ -9,7 +31,7 @@ export const fetchClient = jest.fn().mockImplementation(
     })
 );
 
-export const getMockAccessToken = (
+export const getMockAccessToken = async (
   domain: string = 'local-testing@kinde.com',
   isExpired: boolean = false,
   isExpClaimMissing: boolean = false
@@ -35,13 +57,19 @@ export const getMockAccessToken = (
     },
   };
 
+  const { privateKey } = await getKeys();
+  const key = await importJWK(privateKey, mockJwtAlg);
+  const jwt = await new SignJWT(tokenPayload)
+    .setProtectedHeader({ alg: mockJwtAlg })
+    .sign(key);
+
   return {
-    token: `.${btoa(JSON.stringify(tokenPayload))}.`,
+    token: jwt,
     payload: tokenPayload,
   };
 };
 
-export const getMockIdToken = (
+export const getMockIdToken = async (
   domain: string = 'local-testing@kinde.com',
   isExpired: boolean = false
 ) => {
@@ -65,8 +93,14 @@ export const getMockIdToken = (
     updated_at: iat,
   };
 
+  const { privateKey } = await getKeys();
+  const key = await importJWK(privateKey, mockJwtAlg);
+  const jwt = await new SignJWT(tokenPayload)
+    .setProtectedHeader({ alg: mockJwtAlg })
+    .sign(key);
+
   return {
-    token: `.${btoa(JSON.stringify(tokenPayload))}.`,
+    token: jwt,
     payload: tokenPayload,
   };
 };

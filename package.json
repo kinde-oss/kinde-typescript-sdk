@@ -72,7 +72,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "jwt-decode": "^4.0.0",
+    "jose": "^5.2.2",
     "uncrypto": "^0.1.3"
   }
 }

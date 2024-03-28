@@ -1,13 +1,30 @@
 import * as mocks from '../../mocks';
 
-import { type FeatureFlags, FlagDataType, getFlag } from '../../../sdk/utilities';
+import {
+  type FeatureFlags,
+  FlagDataType,
+  getFlag,
+  type TokenValidationDetailsType,
+} from '../../../sdk/utilities';
+import { importJWK } from 'jose';
 
 describe('feature-flags', () => {
-  let mockAccessToken: ReturnType<typeof mocks.getMockAccessToken>;
+  let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;
   const { sessionManager } = mocks;
 
+  let validationDetails: TokenValidationDetailsType;
+
+  beforeAll(async () => {
+    const { publicKey } = await mocks.getKeys();
+
+    validationDetails = {
+      issuer: '',
+      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
+    };
+  });
+
   beforeEach(async () => {
-    mockAccessToken = mocks.getMockAccessToken();
+    mockAccessToken = await mocks.getMockAccessToken();
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
   });
 
@@ -19,7 +36,7 @@ describe('feature-flags', () => {
     it('throws error if no flag is found no defaultValue is given', async () => {
       const code = 'non-existant-code';
       await expect(
-        async () => await getFlag(sessionManager, code)
+        async () => await getFlag(sessionManager, code, validationDetails)
       ).rejects.toThrowError(
         new Error(
           `Flag ${code} was not found, and no default value has been provided`
@@ -32,7 +49,7 @@ describe('feature-flags', () => {
       const code = 'is_dark_mode';
       const flag = featureFlags[code];
       await expect(
-        async () => await getFlag(sessionManager, code, true, 's')
+        async () => await getFlag(sessionManager, code, validationDetails, true, 's')
       ).rejects.toThrowError(
         new Error(
           `Flag ${code} is of type ${FlagDataType[flag!.t]}, expected type is ${
@@ -45,9 +62,10 @@ describe('feature-flags', () => {
     it('should not throw error for falsy default value which is not `undefined`', () => {
       const code = 'non-existant-code';
       const getFlagFnArray = [
-        async () => await getFlag(sessionManager, code, false, 'b'),
-        async () => await getFlag(sessionManager, code, '', 's'),
-        async () => await getFlag(sessionManager, code, 0, 'i'),
+        async () =>
+          await getFlag(sessionManager, code, validationDetails, false, 'b'),
+        async () => await getFlag(sessionManager, code, validationDetails, '', 's'),
+        async () => await getFlag(sessionManager, code, validationDetails, 0, 'i'),
       ];
 
       getFlagFnArray.forEach((getFlagFn) => {
@@ -58,7 +76,9 @@ describe('feature-flags', () => {
     it('provide result contains no type if default-value is used', async () => {
       const defaultValue = 'default-value';
       const code = 'non-existant-code';
-      expect(await getFlag(sessionManager, code, defaultValue)).toStrictEqual({
+      expect(
+        await getFlag(sessionManager, code, validationDetails, defaultValue)
+      ).toStrictEqual({
         value: defaultValue,
         is_default: true,
         code,
@@ -69,12 +89,14 @@ describe('feature-flags', () => {
       const featureFlags = mockAccessToken.payload.feature_flags as FeatureFlags;
       for (const code in featureFlags) {
         const flag = featureFlags[code];
-        expect(await getFlag(sessionManager, code)).toStrictEqual({
-          is_default: false,
-          value: flag!.v,
-          type: FlagDataType[flag!.t],
-          code,
-        });
+        expect(await getFlag(sessionManager, code, validationDetails)).toStrictEqual(
+          {
+            is_default: false,
+            value: flag!.v,
+            type: FlagDataType[flag!.t],
+            code,
+          }
+        );
       }
     });
   });
