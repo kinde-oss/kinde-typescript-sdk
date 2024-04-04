@@ -68,14 +68,14 @@ export interface UserUpdatedWebhookEvent {
       is_password_reset_requested: boolean;
       is_suspended: boolean;
       last_name: string;
-      organizations: {
+      organizations: Array<{
+        roles: string[] | null;
         code: string;
-        permissions: {
+        permissions: Array<{
           id: string;
           key: string;
-        }[] | null;
-        roles: any[] | null;
-      }[];
+        }> | null;
+      }>;
       phone: string | null;
     };
   };
@@ -133,7 +133,7 @@ export interface AccessRequestCreatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "access_request.created";
+  type: 'access_request.created';
 }
 
 export interface OrganizationCreatedWebhookEvent {
@@ -148,7 +148,7 @@ export interface OrganizationCreatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "organization.created";
+  type: 'organization.created';
 }
 
 export interface OrganizationUpdatedWebhookEvent {
@@ -164,7 +164,7 @@ export interface OrganizationUpdatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "organization.updated";
+  type: 'organization.updated';
 }
 
 export interface OrganizationDeletedWebhookEvent {
@@ -176,7 +176,7 @@ export interface OrganizationDeletedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "organization.deleted";
+  type: 'organization.deleted';
 }
 
 export interface PermissionCreatedWebhookEvent {
@@ -191,7 +191,7 @@ export interface PermissionCreatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "permission.created";
+  type: 'permission.created';
 }
 
 export interface PermissionUpdatedWebhookEvent {
@@ -206,7 +206,7 @@ export interface PermissionUpdatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "permission.updated";
+  type: 'permission.updated';
 }
 
 export interface PermissionDeletedWebhookEvent {
@@ -218,7 +218,7 @@ export interface PermissionDeletedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "permission.deleted";
+  type: 'permission.deleted';
 }
 
 export interface RoleCreatedWebhookEvent {
@@ -234,7 +234,7 @@ export interface RoleCreatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "role.created";
+  type: 'role.created';
 }
 
 export interface RoleUpdatedWebhookEvent {
@@ -250,7 +250,7 @@ export interface RoleUpdatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "role.updated";
+  type: 'role.updated';
 }
 
 export interface RoleDeletedWebhookEvent {
@@ -262,7 +262,7 @@ export interface RoleDeletedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "role.deleted";
+  type: 'role.deleted';
 }
 
 export interface SubscriberCreatedWebhookEvent {
@@ -278,5 +278,5 @@ export interface SubscriberCreatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "subscriber.created";
+  type: 'subscriber.created';
 }
