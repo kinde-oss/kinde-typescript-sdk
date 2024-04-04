@@ -41,7 +41,7 @@ export interface GetFlagType {
   code: string;
 }
 
-export type WebhookSource = "admin" | "api" | "user";
+export type WebhookSource = 'admin' | 'api' | 'user';
 
 export interface UserCreatedWebhookEvent {
   data: {
@@ -56,7 +56,7 @@ export interface UserCreatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "user.created";
+  type: 'user.created';
 }
 
 export interface UserUpdatedWebhookEvent {
@@ -82,7 +82,7 @@ export interface UserUpdatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "user.updated";
+  type: 'user.updated';
 }
 
 export interface UserDeletedWebhookEvent {
@@ -94,7 +94,7 @@ export interface UserDeletedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "user.deleted";
+  type: 'user.deleted';
 }
 
 export interface UserAuthenticatedWebhookEvent {
@@ -106,7 +106,7 @@ export interface UserAuthenticatedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "user.authenticated";
+  type: 'user.authenticated';
 }
 
 export interface UserAuthenticationFailedWebhookEvent {
@@ -118,7 +118,7 @@ export interface UserAuthenticationFailedWebhookEvent {
   event_id: string;
   source: WebhookSource;
   timestamp: string;
-  type: "user.authentication_failed";
+  type: 'user.authentication_failed';
 }
 
 export interface AccessRequestCreatedWebhookEvent {
