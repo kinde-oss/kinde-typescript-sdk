@@ -216,7 +216,7 @@ export abstract class AuthCodeAbstract {
       method: 'POST',
       headers,
       body,
-      credentials: useCookies ? 'include' : undefined,
+      credentials: useCookies ? 'same-origin' : undefined,
     };
     const response = await fetch(this.tokenEndpoint, config);
     const payload = (await response.json()) as
