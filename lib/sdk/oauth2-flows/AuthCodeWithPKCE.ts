@@ -131,7 +131,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       : sessionManager.removeSessionItem;
 
     try {
-      return await this.fetchTokensFor(sessionManager, body);
+      return await this.fetchTokensFor(sessionManager, body, true);
     } finally {
       await removeItem.call(sessionManager, this.getCodeVerifierKey(state));
     }
