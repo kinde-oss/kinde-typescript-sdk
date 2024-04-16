@@ -2844,12 +2844,12 @@ paths:
       security:
         - kindeBearerAuth: []
   /api/v1/organizations/{org_code}/properties/{property_key}:
-    patch:
+    put:
       tags:
         - Organizations
       operationId: UpdateOrganizationProperty
-      description: Update property value.
-      summary: Update Property value
+      description: Update organization property value.
+      summary: Update Organization Property value
       parameters:
         - name: org_code
           in: path
@@ -2901,7 +2901,7 @@ paths:
       operationId: GetOrganizationPropertyValues
       description: |
         Gets properties for an organization by org code.
-      summary: Get property values
+      summary: Get Organization Property Values
       parameters:
         - name: org_code
           in: path
@@ -2935,12 +2935,12 @@ paths:
           description: Request was throttled.
       security:
         - kindeBearerAuth: []
-    put:
+    patch:
       tags:
         - Organizations
       operationId: UpdateOrganizationProperties
-      description: Update property values.
-      summary: Update Property values
+      description: Update organization property values.
+      summary: Update Organization Property values
       parameters:
         - name: org_code
           in: path
@@ -2974,6 +2974,47 @@ paths:
                 $ref: '#/components/schemas/success_response'
         '400':
           description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Invalid credentials.
+        '429':
+          description: Request was throttled.
+      security:
+        - kindeBearerAuth: []
+  /api/v1/organization/{org_code}/handle:
+    delete:
+      tags:
+        - Organizations
+      operationId: DeleteOrganizationHandle
+      description: |
+        Delete organization handle
+      summary: Delete organization handle
+      parameters:
+        - name: org_code
+          in: path
+          description: The organization's code.
+          required: true
+          schema:
+            type: string
+            nullable: false
+      responses:
+        '200':
+          description: Handle successfully deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/success_response'
+        '400':
+          description: Bad request.
           content:
             application/json:
               schema:
@@ -3367,6 +3408,14 @@ paths:
                   description: >-
                     Whether the property can be included in id and access
                     tokens.
+                category_id:
+                  description: Which category the property belongs to.
+                  type: string
+                  nullable: false
+              required:
+                - name
+                - is_private
+                - category_id
       responses:
         '200':
           description: Property successfully updated.
@@ -4292,6 +4341,7 @@ paths:
                         description: The type of identity to create, for e.g. email.
                         enum:
                           - email
+                          - username
                       details:
                         type: object
                         description: Additional details required to create the user.
@@ -4299,6 +4349,12 @@ paths:
                           email:
                             type: string
                             description: The email address of the user.
+                          phone:
+                            type: string
+                            description: The phone number of the user.
+                          username:
+                            type: string
+                            description: The username of the user.
       responses:
         '200':
           description: User successfully created.
@@ -4484,7 +4540,7 @@ paths:
       security:
         - kindeBearerAuth: []
   /api/v1/users/{user_id}/properties/{property_key}:
-    patch:
+    put:
       tags:
         - Users
       operationId: UpdateUserProperty
@@ -4575,7 +4631,7 @@ paths:
           description: Request was throttled.
       security:
         - kindeBearerAuth: []
-    put:
+    patch:
       tags:
         - Users
       operationId: UpdateUserProperties
@@ -4627,6 +4683,86 @@ paths:
           description: Request was throttled.
       security:
         - kindeBearerAuth: []
+  /api/v1/users/{user_id}/password:
+    put:
+      tags:
+        - Users
+      operationId: SetUserPassword
+      description: Set user password.
+      summary: Set User password
+      parameters:
+        - name: user_id
+          in: path
+          description: The identifier for the user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Password details.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hashed_password:
+                  description: The hashed password.
+                  type: string
+                hashing_method:
+                  description: >-
+                    The hashing method or algorithm used to encrypt the user’s
+                    password. Default is bcrypt.
+                  type: string
+                  enum:
+                    - bcrypt
+                    - crypt
+                    - md5
+                    - wordpress
+                salt:
+                  type: string
+                  description: >-
+                    Extra characters added to passwords to make them stronger.
+                    Not required for bcrypt.
+                salt_position:
+                  type: string
+                  description: >-
+                    Position of salt in password string. Not required for
+                    bcrypt.
+                  enum:
+                    - prefix
+                    - suffix
+                is_temporary_password:
+                  type: boolean
+                  description: >-
+                    The user will be prompted to set a new password after
+                    entering this one.
+              required:
+                - hashed_password
+      responses:
+        '200':
+          description: User successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/success_response'
+        '400':
+          description: Error creating user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Invalid credentials.
+        '429':
+          description: Request was throttled.
+      security:
+        - kindeBearerAuth: []
 components:
   schemas:
     success_response:
@@ -4664,6 +4800,9 @@ components:
         preferred_email:
           type: string
           description: Default email address of the user in Kinde.
+        username:
+          type: string
+          description: Primary username of the user in Kinde.
         last_name:
           type: string
           description: User's last name.
@@ -4759,6 +4898,9 @@ components:
               email:
                 type: string
                 description: Default email address of the user in Kinde.
+              username:
+                type: string
+                description: Primary username of the user in Kinde.
               last_name:
                 type: string
                 description: User's last name.
@@ -4853,6 +4995,9 @@ components:
         preferred_email:
           type: string
           description: Default email address of the user in Kinde.
+        username:
+          type: string
+          description: Primary username of the user in Kinde.
         provided_id:
           type: string
           description: >-
