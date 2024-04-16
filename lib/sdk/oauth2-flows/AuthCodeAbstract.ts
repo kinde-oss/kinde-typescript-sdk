@@ -11,6 +11,8 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
+import { createLocalJWKSet } from 'jose';
+import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows
@@ -26,6 +28,7 @@ export abstract class AuthCodeAbstract {
   public readonly logoutEndpoint: string;
   public readonly tokenEndpoint: string;
   protected state?: string;
+  public readonly tokenValidationDetails: utilities.TokenValidationDetailsType;
 
   constructor(protected readonly config: AuthorizationCodeOptions) {
     const { authDomain, logoutRedirectURL } = config;
@@ -33,6 +36,18 @@ export abstract class AuthCodeAbstract {
     this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
     this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
+    const keyProvider = async () => {
+      const func =
+        config.jwks !== undefined
+          ? createLocalJWKSet(config.jwks)
+          : await getRemoteJwks(authDomain);
+      return await func({ alg: 'RS256' });
+    };
+    this.tokenValidationDetails = {
+      issuer: config.authDomain,
+      audience: config.audience,
+      keyProvider,
+    };
   }
 
   /**
@@ -92,7 +107,11 @@ export abstract class AuthCodeAbstract {
     callbackURL: URL
   ): Promise<void> {
     const tokens = await this.exchangeAuthCodeForTokens(sessionManager, callbackURL);
-    await utilities.commitTokensToMemory(sessionManager, tokens);
+    await utilities.commitTokensToSession(
+      sessionManager,
+      tokens,
+      this.tokenValidationDetails
+    );
   }
 
   /**
@@ -109,7 +128,10 @@ export abstract class AuthCodeAbstract {
       throw new Error('No authentication credential found');
     }
 
-    const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
+    const isAccessTokenExpired = await utilities.isTokenExpired(
+      accessToken,
+      this.tokenValidationDetails
+    );
     if (!isAccessTokenExpired) {
       return accessToken;
     }
@@ -162,7 +184,7 @@ export abstract class AuthCodeAbstract {
     const config: RequestInit = { method: 'GET', headers };
     const response = await fetch(targetURL, config);
     const payload = (await response.json()) as UserType;
-    await utilities.commitUserToMemory(sessionManager, payload);
+
     return payload;
   }
 

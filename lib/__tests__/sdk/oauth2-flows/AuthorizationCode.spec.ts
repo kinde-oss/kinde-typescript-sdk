@@ -21,6 +21,11 @@ describe('AuthorizationCode', () => {
     clientId: 'client-id',
   };
 
+  beforeAll(async () => {
+    const { publicKey } = await mocks.getKeys();
+    clientConfig.jwks = { keys: [publicKey] };
+  });
+
   describe('new AuthorizationCode', () => {
     it('can construct AuthorizationCode instance', () => {
       expect(
@@ -164,8 +169,10 @@ describe('AuthorizationCode', () => {
     });
 
     it('saves tokens to memory store after exchanging auth code for tokens', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const mockIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const mockAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
+      const mockIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: mockAccessToken.token,
@@ -200,7 +207,9 @@ describe('AuthorizationCode', () => {
     });
 
     it('return an existing token if an unexpired token is available', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const mockAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
       await sessionManager.setSessionItem('access_token', mockAccessToken.token);
       const client = new AuthorizationCode(clientConfig, clientSecret);
       const token = await client.getToken(sessionManager);
@@ -216,7 +225,7 @@ describe('AuthorizationCode', () => {
     });
 
     it('throws an error if no refresh token is found in memory', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(
+      const mockAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -236,7 +245,7 @@ describe('AuthorizationCode', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -251,8 +260,8 @@ describe('AuthorizationCode', () => {
     });
 
     it('fetches new tokens if access token is expired and refresh token is available', async () => {
-      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: newAccessToken.token,
@@ -261,7 +270,7 @@ describe('AuthorizationCode', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -291,8 +300,8 @@ describe('AuthorizationCode', () => {
     });
 
     it('overrides SDK version header if options are provided to client constructor', async () => {
-      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: newAccessToken.token,
@@ -301,7 +310,7 @@ describe('AuthorizationCode', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -335,8 +344,8 @@ describe('AuthorizationCode', () => {
     });
 
     it('commits new tokens to memory if new tokens are fetched', async () => {
-      const newAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      const newIdToken = mocks.getMockIdToken(clientConfig.authDomain);
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
       const newRefreshToken = 'new_refresh_token';
 
       mocks.fetchClient.mockResolvedValue({
@@ -347,7 +356,7 @@ describe('AuthorizationCode', () => {
         }),
       });
 
-      const expiredAccessToken = mocks.getMockAccessToken(
+      const expiredAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain,
         true
       );
@@ -372,7 +381,9 @@ describe('AuthorizationCode', () => {
       await sessionManager.setSessionItem('refresh_token', 'mines are here');
       await sessionManager.setSessionItem(
         'access_token',
-        mocks.getMockAccessToken(clientConfig.authDomain, true).token
+        (
+          await mocks.getMockAccessToken(clientConfig.authDomain, true)
+        ).token
       );
 
       const client = new AuthorizationCode(clientConfig, clientSecret);
@@ -392,7 +403,9 @@ describe('AuthorizationCode', () => {
     });
 
     it('fetches user profile using the available access token', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
+      const mockAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain
+      );
       await sessionManager.setSessionItem('access_token', mockAccessToken.token);
 
       const headers = new Headers();
@@ -415,27 +428,6 @@ describe('AuthorizationCode', () => {
         `${clientConfig.authDomain}/oauth2/v2/user_profile`,
         { method: 'GET', headers }
       );
-    });
-
-    it('commits fetched user details to memory store', async () => {
-      const mockAccessToken = mocks.getMockAccessToken(clientConfig.authDomain);
-      await sessionManager.setSessionItem('access_token', mockAccessToken.token);
-      const userDetails = {
-        family_name: 'family_name',
-        given_name: 'give_name',
-        email: 'test@test.com',
-        picture: null,
-        id: 'id',
-      };
-
-      mocks.fetchClient.mockResolvedValue({
-        json: () => userDetails,
-      });
-
-      const client = new AuthorizationCode(clientConfig, clientSecret);
-      await client.getUserProfile(sessionManager);
-      expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
-      expect(await sessionManager.getSessionItem('user')).toStrictEqual(userDetails);
     });
   });
 });

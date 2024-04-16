@@ -40,7 +40,7 @@ const createCCClient = (options: CCClientOptions) => {
   };
 
   return {
-    ...withAuthUtilities(isAuthenticated),
+    ...withAuthUtilities(isAuthenticated, client.tokenValidationDetails),
     isAuthenticated,
     getToken,
     logout,
