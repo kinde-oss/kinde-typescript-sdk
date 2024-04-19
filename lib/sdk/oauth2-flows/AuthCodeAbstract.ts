@@ -32,7 +32,7 @@ export abstract class AuthCodeAbstract {
 
   constructor(protected readonly config: AuthorizationCodeOptions) {
     const { authDomain, logoutRedirectURL } = config;
-    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
+    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL ?? ''}`;
     this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
     this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;

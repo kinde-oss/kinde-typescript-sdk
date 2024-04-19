@@ -21,7 +21,7 @@ export class ClientCredentials {
 
   constructor(private readonly config: ClientCredentialsOptions) {
     const { authDomain, logoutRedirectURL } = config;
-    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL}`;
+    this.logoutEndpoint = `${authDomain}/logout?redirect=${logoutRedirectURL ?? ''}`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
     this.config = config;
     const keyProvider = async () => {

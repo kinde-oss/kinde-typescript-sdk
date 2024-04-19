@@ -32,7 +32,7 @@ export interface OAuth2CCTokenResponse {
 
 export interface OAuth2FlowOptions {
   clientId: string;
-  logoutRedirectURL: string;
+  logoutRedirectURL?: string;
   authDomain: string;
   audience?: string | string[];
   scope?: string;
