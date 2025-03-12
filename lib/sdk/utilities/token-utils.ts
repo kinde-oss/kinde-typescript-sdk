@@ -13,6 +13,9 @@ import { jwtVerify } from 'jose';
  * @param {SessionManager} sessionManager
  * @param {string} token
  * @param {TokenType} type
+ * @param {TokenValidationDetailsType} validationDetails
+ * @param {string} sessionType - Determines if the token should be stored as 'session' or 'persistent'
+
  */
 export const commitTokenToSession = async (
   sessionManager: SessionManager,
