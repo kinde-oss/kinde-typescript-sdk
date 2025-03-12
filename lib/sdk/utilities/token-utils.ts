@@ -123,6 +123,7 @@ export const getUserFromSession = async (
     given_name: idToken.payload.given_name as string,
     picture: (idToken.payload.picture as string) ?? null,
     email: idToken.payload.email as string,
+    phone: idToken.payload.phone as string,
     id: idToken.payload.sub!,
   };
 
