@@ -26,7 +26,7 @@
     "postbuild": "node sdk-version.js clean && ncp ./package-cjs.json ./dist-cjs/package.json && ncp ./package-esm.json ./dist/package.json",
     "prebuild": "node sdk-version.js && rimraf dist dist-cjs lib/models lib/apis",
     "lint": "eslint . && prettier . --check",
-    "lint:fix": "eslint --fix . && prettier . --check",
+    "lint:fix": "eslint --fix . && prettier . --write",
     "test": "jest --passWithNoTests",
     "lint-staged": "lint-staged",
     "husky": "husky install",

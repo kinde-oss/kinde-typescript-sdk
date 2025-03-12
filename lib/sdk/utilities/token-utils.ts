@@ -18,7 +18,8 @@ export const commitTokenToSession = async (
   sessionManager: SessionManager,
   token: string,
   type: TokenType,
-  validationDetails: TokenValidationDetailsType
+  validationDetails: TokenValidationDetailsType,
+  sessionType: string
 ): Promise<void> => {
   if (!token) {
     await sessionManager.removeSessionItem(type);
@@ -37,7 +38,7 @@ export const commitTokenToSession = async (
     }
   }
 
-  await sessionManager.setSessionItem(type, token);
+  await sessionManager.setSessionItem(type, token, sessionType);
 };
 
 /**
@@ -51,24 +52,33 @@ export const commitTokensToSession = async (
   tokens: TokenCollection,
   validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
+  const key = await validationDetails.keyProvider();
+  const result = await jwtVerify(tokens.access_token, key);
+
+  const sessionType =
+    result.payload.ksp === 'non_persistent' ? 'session' : 'persistent';
+
   await Promise.all([
     commitTokenToSession(
       sessionManager,
       tokens.refresh_token,
       'refresh_token',
-      validationDetails
+      validationDetails,
+      sessionType
     ),
     commitTokenToSession(
       sessionManager,
       tokens.access_token,
       'access_token',
-      validationDetails
+      validationDetails,
+      sessionType
     ),
     commitTokenToSession(
       sessionManager,
       tokens.id_token,
       'id_token',
-      validationDetails
+      validationDetails,
+      sessionType
     ),
   ]);
 };
