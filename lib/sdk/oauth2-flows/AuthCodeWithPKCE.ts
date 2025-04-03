@@ -69,10 +69,12 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
    * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
    * further explanation.
    * @param {SessionManager} sessionManager
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   public async refreshTokens(
-    sessionManager: SessionManager
+    sessionManager: SessionManager,
+    commitToSession: boolean = true
   ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = await utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
@@ -82,11 +84,13 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(sessionManager, body, true);
-    await utilities.commitTokensToSession(
-      sessionManager,
-      tokens,
-      this.tokenValidationDetails
-    );
+    if (commitToSession) {
+      await utilities.commitTokensToSession(
+        sessionManager,
+        tokens,
+        this.tokenValidationDetails
+      );
+    }
     return tokens;
   }
 
