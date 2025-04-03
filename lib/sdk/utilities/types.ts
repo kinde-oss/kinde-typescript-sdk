@@ -12,6 +12,7 @@ export interface UserType {
   given_name: string;
   email: string;
   id: string;
+  phone: string;
 }
 
 export type TokenType = 'refresh_token' | 'access_token' | 'id_token';

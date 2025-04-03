@@ -106,6 +106,7 @@ describe('token-utils', () => {
         email: idTokenPayload.email,
         id: idTokenPayload.sub,
         picture: null,
+        phone: undefined,
       };
 
       expect(await sessionManager.getSessionItem('id_token')).toBe(mockIdToken);
