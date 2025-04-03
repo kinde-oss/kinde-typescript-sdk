@@ -69,7 +69,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
    * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
    * further explanation.
    * @param {SessionManager} sessionManager
-   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refresh tokens to the session. Defaults to true.
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   public async refreshTokens(

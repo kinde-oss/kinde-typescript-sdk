@@ -88,7 +88,7 @@ export abstract class AuthCodeAbstract {
    * Abstract method will implement logic in child classes for refreshing access token
    * using refresh token available in current session.
    * @param {SessionManager} sessionManager
-   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refresh tokens to the session. Defaults to true.
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   public abstract refreshTokens(
