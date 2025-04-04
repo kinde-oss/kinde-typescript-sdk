@@ -142,12 +142,14 @@ const createAuthorizationCodeClient = (
    * Method makes user of the `refreshTokens` method of the `AuthCodeAbstract` client
    * to use the refresh token to get new tokens
    * @param {SessionManager} sessionManager
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   const refreshTokens = async (
-    sessionManager: SessionManager
+    sessionManager: SessionManager,
+    commitToSession: boolean = true
   ): Promise<OAuth2CodeExchangeResponse> => {
-    return await client.refreshTokens(sessionManager);
+    return await client.refreshTokens(sessionManager, commitToSession);
   };
 
   /**
