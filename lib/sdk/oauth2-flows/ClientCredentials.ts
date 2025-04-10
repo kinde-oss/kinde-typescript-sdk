@@ -1,4 +1,4 @@
-import { createLocalJWKSet } from 'jose';
+import { createLocalJWKSet, jwtVerify } from 'jose';
 import { type SessionManager } from '../session-managers/index.js';
 import * as utilities from '../utilities/index.js';
 import { getSDKHeader } from '../version.js';
@@ -54,13 +54,20 @@ export class ClientCredentials {
     if (accessToken && !isTokenExpired) {
       return accessToken;
     }
-
     const payload = await this.fetchAccessTokenFor(sessionManager);
+
+    const key = await this.tokenValidationDetails.keyProvider();
+    const result = await jwtVerify(payload.access_token, key);
+
+    const sessionType =
+      result.payload.ksp === 'non_persistent' ? 'session' : 'persistent';
+
     await utilities.commitTokenToSession(
       sessionManager,
       payload.access_token,
       'access_token',
-      this.tokenValidationDetails
+      this.tokenValidationDetails,
+      sessionType
     );
     return payload.access_token;
   }
