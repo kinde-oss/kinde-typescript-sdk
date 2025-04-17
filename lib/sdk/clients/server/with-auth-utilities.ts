@@ -3,8 +3,8 @@ import * as utilities from '../../utilities/index.js';
 
 import type {
   ClaimTokenType,
-  GetFlagType,
   FlagType,
+  GetFlagType,
 } from '../../utilities/index.js';
 
 const withAuthUtilities = (
