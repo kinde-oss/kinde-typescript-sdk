@@ -1,4 +1,4 @@
-import { createLocalJWKSet, importJWK } from 'jose';
+import { importJWK } from 'jose';
 import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import {
