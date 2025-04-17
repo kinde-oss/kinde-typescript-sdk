@@ -1,5 +1,4 @@
-import { type KeyLike } from 'jose';
-
+import { CryptoKey } from 'jose';
 export interface TokenCollection {
   refresh_token: string;
   access_token: string;
@@ -47,5 +46,5 @@ export interface GetFlagType {
 export interface TokenValidationDetailsType {
   issuer: string;
   audience?: string | string[];
-  keyProvider: () => Promise<KeyLike | Uint8Array>;
+  keyProvider: () => Promise<CryptoKey | Uint8Array>;
 }

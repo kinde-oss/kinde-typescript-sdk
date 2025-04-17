@@ -381,9 +381,7 @@ describe('AuthorizationCode', () => {
       await sessionManager.setSessionItem('refresh_token', 'mines are here');
       await sessionManager.setSessionItem(
         'access_token',
-        (
-          await mocks.getMockAccessToken(clientConfig.authDomain, true)
-        ).token
+        (await mocks.getMockAccessToken(clientConfig.authDomain, true)).token
       );
 
       const client = new AuthorizationCode(clientConfig, clientSecret);

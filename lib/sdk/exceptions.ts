@@ -4,7 +4,10 @@ export enum KindeSDKErrorCode {
 }
 
 export class KindeSDKError extends Error {
-  constructor(public errorCode: KindeSDKErrorCode, message: string) {
+  constructor(
+    public errorCode: KindeSDKErrorCode,
+    message: string
+  ) {
     super(message);
     this.name = 'KindeSDKError';
     Object.setPrototypeOf(this, KindeSDKError.prototype);

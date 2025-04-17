@@ -14,17 +14,17 @@ import type {
 type Options<T> = T extends GrantType.PKCE
   ? PKCEClientOptions
   : T extends GrantType.AUTHORIZATION_CODE
-  ? ACClientOptions
-  : T extends GrantType.CLIENT_CREDENTIALS
-  ? CCClientOptions
-  : never;
+    ? ACClientOptions
+    : T extends GrantType.CLIENT_CREDENTIALS
+      ? CCClientOptions
+      : never;
 type Client<T> = T extends PKCEClientOptions
   ? ACClient
   : T extends ACClientOptions
-  ? ACClient
-  : T extends CCClientOptions
-  ? CCClient
-  : never;
+    ? ACClient
+    : T extends CCClientOptions
+      ? CCClient
+      : never;
 
 export const createKindeServerClient = <G extends GrantType>(
   grantType: G,
