@@ -292,8 +292,10 @@ export abstract class AuthCodeAbstract {
         lang,
         login_hint: loginHint,
         connection_id: connectionId,
+        state,
         ...rest
       } = options.authUrlParams;
+      
       searchParamsObject = { ...rest, ...searchParamsObject };
 
       if (lang) {
