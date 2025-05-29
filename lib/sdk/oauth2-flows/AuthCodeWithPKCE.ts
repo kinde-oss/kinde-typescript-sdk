@@ -47,8 +47,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     this.codeChallenge = challenge;
     this.codeVerifier = verifier;
 
-    // Check if state is provided in authUrlParams
-    const providedState = options.state || options.authUrlParams?.state;
+    const providedState = options.state ?? options.authUrlParams?.state;
     
     this.state = providedState ?? utilities.generateRandomString();
     
