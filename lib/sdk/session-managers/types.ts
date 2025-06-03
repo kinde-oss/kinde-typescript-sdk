@@ -7,7 +7,11 @@ type Awaitable<T> = Promise<T>;
 
 export interface SessionManager {
   getSessionItem: <T = unknown>(itemKey: string) => Awaitable<T | unknown | null>;
-  setSessionItem: <T = unknown>(itemKey: string, itemValue: T) => Awaitable<void>;
+  setSessionItem: <T = unknown>(
+    itemKey: string,
+    itemValue: T,
+    sessionType?: string
+  ) => Awaitable<void>;
   removeSessionItem: (itemKey: string) => Awaitable<void>;
   destroySession: () => Awaitable<void>;
 }
