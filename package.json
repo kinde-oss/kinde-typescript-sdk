@@ -28,6 +28,7 @@
     "lint": "eslint . && prettier . --check",
     "lint:fix": "eslint --fix . && prettier . --write",
     "test": "vitest",
+    "test:coverage": "vitest --coverage",
     "lint-staged": "lint-staged",
     "husky": "husky install",
     "generate": "npx @openapitools/openapi-generator-cli generate -i ./kinde-mgmt-api-specs.yaml -c ./generator-config.yaml -g typescript-fetch -o ./lib --additional-properties=importFileExtension=.js"
