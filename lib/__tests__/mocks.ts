@@ -1,5 +1,6 @@
 import { type JWK, SignJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
 import { type SessionManager } from '../sdk/session-managers';
+import { vi } from 'vitest';
 
 let mockPrivateKey: JWK | undefined;
 let mockPublicKey: JWK | undefined;
@@ -11,7 +12,7 @@ export const getKeys = async (): Promise<{ privateKey: JWK; publicKey: JWK }> =>
     return { privateKey: mockPrivateKey, publicKey: mockPublicKey };
   }
   const { publicKey: generatedPublicKey, privateKey: generatedPrivateKey } =
-    await generateKeyPair(mockJwtAlg);
+    await generateKeyPair(mockJwtAlg, { extractable: true });
 
   const generatedPrivateJwk = await exportJWK(generatedPrivateKey);
   const generatedPublicJwk = await exportJWK(generatedPublicKey);
@@ -22,7 +23,7 @@ export const getKeys = async (): Promise<{ privateKey: JWK; publicKey: JWK }> =>
   return { privateKey: mockPrivateKey, publicKey: mockPublicKey };
 };
 
-export const fetchClient = jest.fn().mockImplementation(
+export const fetchClient = vi.fn().mockImplementation(
   async () =>
     await Promise.resolve({
       json: async () => {
