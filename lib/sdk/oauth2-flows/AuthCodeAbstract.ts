@@ -295,7 +295,7 @@ export abstract class AuthCodeAbstract {
         state,
         ...rest
       } = options.authUrlParams;
-      
+
       searchParamsObject = { ...rest, ...searchParamsObject };
 
       if (lang) {
