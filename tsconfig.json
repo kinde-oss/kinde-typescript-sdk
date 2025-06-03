@@ -12,6 +12,6 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["lib"],
+  "include": ["lib", "*.ts"],
   "exclude": ["node_modules", "tsconfig.cjs.json"]
 }

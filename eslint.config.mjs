@@ -32,7 +32,7 @@ export default defineConfig([
     languageOptions: {
       parser: typescript,
       parserOptions: {
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './tsconfig.config.json'],
       },
     },
     rules: {
