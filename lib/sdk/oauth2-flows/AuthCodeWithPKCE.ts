@@ -47,7 +47,10 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     this.codeChallenge = challenge;
     this.codeVerifier = verifier;
 
-    this.state = options.state ?? utilities.generateRandomString();
+    const providedState = options.state ?? options.authUrlParams?.state;
+
+    this.state = providedState ?? utilities.generateRandomString();
+
     const setItem = isBrowserEnvironment()
       ? (sessionManager as unknown as BrowserSessionManager).setSessionItemBrowser
       : sessionManager.setSessionItem;
