@@ -6,7 +6,7 @@ export default defineConfig({
     include: ['lib/**/*.{test,spec}.ts'],
     exclude: [
       'lib/__tests__/mocks.ts',
-      'lib/**/*.browser.{test,spec}.ts', // Exclude browser-specific tests
+      'lib/**/*.browser.{test,spec}.ts', // Exclude browser-specific test
     ],
     globals: true,
     coverage: {
@@ -22,6 +22,7 @@ export default defineConfig({
     deps: {
       inline: [/node:.*/],
     },
+    setupFiles: ['./vitest.setup.ts'],
   },
   resolve: {
     alias: {
