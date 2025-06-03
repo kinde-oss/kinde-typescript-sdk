@@ -1,6 +1,7 @@
 import { BrowserSessionManager } from '../../session-managers/index.js';
 import { AuthCodeWithPKCE } from '../../oauth2-flows/index.js';
 import * as utilities from '../../utilities/index.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
 import type {
   UserType,
@@ -60,6 +61,18 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
       ...options,
       start_page: 'registration',
       is_create_org: true,
+    });
+  };
+
+  /**
+   * Method makes use of the `createPortalUrl` method of the AuthCodeWithPKCE
+   * client above to return portal url.
+   * @param {GeneratePortalUrlParams} options
+   * @returns {Promise<{url: URL}>} portal URL
+   */
+  const portal = async (options: GeneratePortalUrlParams): Promise<{ url: URL }> => {
+    return await client.createPortalUrl(sessionManager, {
+      ...options,
     });
   };
 
@@ -379,6 +392,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
     getFlag,
     logout,
     login,
+    portal,
   };
 };
 

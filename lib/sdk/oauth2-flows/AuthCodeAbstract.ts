@@ -13,6 +13,7 @@ import type {
 } from './types.js';
 import { createLocalJWKSet } from 'jose';
 import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows
@@ -70,6 +71,17 @@ export abstract class AuthCodeAbstract {
     sessionManager: SessionManager,
     options: AuthURLOptions
   ): Promise<URL>;
+
+  /**
+   * Abstract method mandates implementation of logic required for creating portal URL
+   * for accessing Kinde's portal interface, utilizing session data for authentication.
+   * @param {GeneratePortalUrlParams} options
+   * @returns {Promise<{url: URL}>} object containing the portal URL
+   */
+  public abstract createPortalUrl(
+    sessionManager: SessionManager,
+    options: GeneratePortalUrlParams
+  ): Promise<{ url: URL }>;
 
   /**
    * Abstract method will implement logic required for exchanging received auth code

@@ -6,6 +6,7 @@
     "lib": ["esnext", "dom"],
     "declaration": true,
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "declarationDir": "dist/types",
     "outDir": "./dist",
     "strict": true,
