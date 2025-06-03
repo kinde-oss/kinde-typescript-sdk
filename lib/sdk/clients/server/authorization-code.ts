@@ -12,6 +12,7 @@ import type {
 } from '../types.js';
 
 import type { OAuth2CodeExchangeResponse } from '../../oauth2-flows/types.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
 const createAuthorizationCodeClient = (
   options: ACClientOptions,
@@ -70,6 +71,22 @@ const createAuthorizationCodeClient = (
       ...options,
       start_page: 'registration',
       is_create_org: true,
+    });
+  };
+
+  /**
+   * Method makes use of the `createPortalUrl` method of the AuthCodeAbstract
+   * client above to return login url.
+   * @param {SessionManager} sessionManager
+   * @param {GeneratePortalUrlParams} options
+   * @returns {Promise<{ url: URL }>} required authorization URL
+   */
+  const portal = async (
+    sessionManager: SessionManager,
+    options: GeneratePortalUrlParams
+  ): Promise<{ url: URL }> => {
+    return await client.createPortalUrl(sessionManager, {
+      ...options,
     });
   };
 
@@ -175,6 +192,7 @@ const createAuthorizationCodeClient = (
     getUser,
     logout,
     login,
+    portal,
   };
 };
 

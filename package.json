@@ -69,6 +69,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@kinde/js-utils": "^0.18.1",
     "jose": "^5.2.2",
     "uncrypto": "^0.1.3"
   },

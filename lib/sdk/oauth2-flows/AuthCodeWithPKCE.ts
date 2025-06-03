@@ -12,6 +12,8 @@ import type {
   AuthURLOptions,
   AuthorizationCodeOptions,
 } from './types.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import { createPortalUrl } from '../utilities/createPortalUrl.js';
 
 /**
  * Class provides implementation for the authorization code with PKCE extension
@@ -65,6 +67,24 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     const authParams = this.generateAuthURLParams(options);
     authURL.search = authParams.toString();
     return authURL;
+  }
+
+  /**
+   * Method provides implementation for `createPortalUrl` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {Omit<GeneratePortalUrlParams, 'domain'>} options
+   * @returns {Promise<{url: URL}>} required authorization URL
+   */
+  async createPortalUrl(
+    sessionManager: SessionManager,
+    options: Omit<GeneratePortalUrlParams, 'domain'>
+  ): Promise<{ url: URL }> {
+    return await createPortalUrl(sessionManager, {
+      domain: this.config.authDomain,
+      ...options,
+    });
   }
 
   /**
