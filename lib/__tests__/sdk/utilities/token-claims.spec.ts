@@ -9,6 +9,7 @@ import {
   type TokenValidationDetailsType,
 } from '../../../sdk/utilities';
 import { importJWK } from 'jose';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 describe('token-claims', () => {
   let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;

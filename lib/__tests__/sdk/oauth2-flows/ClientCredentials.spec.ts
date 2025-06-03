@@ -8,6 +8,7 @@ import {
 } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 
 describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {

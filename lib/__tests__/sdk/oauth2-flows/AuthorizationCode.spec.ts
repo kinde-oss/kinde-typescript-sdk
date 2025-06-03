@@ -10,6 +10,7 @@ import {
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 import { generateRandomString } from '../../../sdk/utilities';
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
