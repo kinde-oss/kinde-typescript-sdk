@@ -10,6 +10,7 @@ import {
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 import { generateRandomString } from '../../../sdk/utilities';
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
@@ -381,9 +382,7 @@ describe('AuthorizationCode', () => {
       await sessionManager.setSessionItem('refresh_token', 'mines are here');
       await sessionManager.setSessionItem(
         'access_token',
-        (
-          await mocks.getMockAccessToken(clientConfig.authDomain, true)
-        ).token
+        (await mocks.getMockAccessToken(clientConfig.authDomain, true)).token
       );
 
       const client = new AuthorizationCode(clientConfig, clientSecret);

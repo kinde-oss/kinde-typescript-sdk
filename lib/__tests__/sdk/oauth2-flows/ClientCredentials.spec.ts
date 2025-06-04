@@ -1,4 +1,4 @@
-import { createLocalJWKSet, importJWK } from 'jose';
+import { importJWK } from 'jose';
 import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import {
@@ -8,6 +8,7 @@ import {
 } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 
 describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {

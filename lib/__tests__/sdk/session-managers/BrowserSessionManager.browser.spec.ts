@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
 import { BrowserSessionManager } from '../../../sdk/session-managers';
+import { describe, it, expect, afterEach } from 'vitest';
 
 describe('BrowserSessionManager', () => {
   const sessionManager = new BrowserSessionManager();
