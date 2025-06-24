@@ -1,6 +1,6 @@
 import { type SessionManager } from '../session-managers/index.js';
 import { type TokenValidationDetailsType, type ClaimTokenType } from './types.js';
-import { jwtVerify } from 'jose';
+import { jwtVerify } from './jose-compat.js';
 
 /**
  * Method extracts the provided claim from the provided token type in the

@@ -1,4 +1,5 @@
-import { CryptoKey } from 'jose';
+import { type CryptoKey } from './jose-compat.js';
+
 export interface TokenCollection {
   refresh_token: string;
   access_token: string;

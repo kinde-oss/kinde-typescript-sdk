@@ -6,7 +6,7 @@ import type {
 } from './types.js';
 import { type SessionManager } from '../session-managers/index.js';
 import { KindeSDKError, KindeSDKErrorCode } from '../exceptions.js';
-import { jwtVerify } from 'jose';
+import { jwtVerify } from './jose-compat.js';
 
 /**
  * Saves the provided token to the current session.
