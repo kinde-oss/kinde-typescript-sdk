@@ -1,4 +1,4 @@
-import { createLocalJWKSet } from 'jose';
+import { createLocalJWKSet } from '../utilities/jose-compat.js';
 import { type SessionManager } from '../session-managers/index.js';
 import * as utilities from '../utilities/index.js';
 import { getSDKHeader } from '../version.js';
@@ -27,7 +27,7 @@ export class ClientCredentials {
     const keyProvider = async () => {
       const func =
         config.jwks !== undefined
-          ? createLocalJWKSet(config.jwks)
+          ? await createLocalJWKSet(config.jwks)
           : await getRemoteJwks(authDomain);
       return await func({ alg: 'RS256' });
     };

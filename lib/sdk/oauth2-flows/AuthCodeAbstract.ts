@@ -11,7 +11,7 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
-import { createLocalJWKSet } from 'jose';
+import { createLocalJWKSet } from '../utilities/jose-compat.js';
 import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
 import type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
@@ -40,7 +40,7 @@ export abstract class AuthCodeAbstract {
     const keyProvider = async () => {
       const func =
         config.jwks !== undefined
-          ? createLocalJWKSet(config.jwks)
+          ? await createLocalJWKSet(config.jwks)
           : await getRemoteJwks(authDomain);
       return await func({ alg: 'RS256' });
     };

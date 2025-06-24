@@ -1,4 +1,4 @@
-import { type JSONWebKeySet } from 'jose';
+import { type JSONWebKeySet } from '../utilities/jose-compat.js';
 
 export enum GrantType {
   AUTHORIZATION_CODE = 'AUTHORIZATION_CODE',
