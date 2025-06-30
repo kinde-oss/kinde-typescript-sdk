@@ -21,7 +21,7 @@ vi.mock('@kinde/jwt-validator', () => ({
 }));
 
 import * as mocks from '../../mocks';
-import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import {
   type TokenCollection,
   commitTokensToSession,

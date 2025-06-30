@@ -29,8 +29,7 @@ export const getFlag = async (
     ((await getClaimValue(
       sessionManager,
       'feature_flags',
-      'access_token',
-      validationDetails
+      'access_token'
     )) as FeatureFlags) ?? {};
   const flag = featureFlags[code];
 

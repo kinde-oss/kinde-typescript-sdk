@@ -114,10 +114,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
     if (!(await isAuthenticated())) {
       throw new Error('Cannot get user details, no authentication credential found');
     }
-    return (await utilities.getUserFromSession(
-      sessionManager,
-      client.tokenValidationDetails
-    ))!;
+    return (await utilities.getUserFromSession(sessionManager))!;
   };
 
   /**
@@ -209,12 +206,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
       );
     }
 
-    return await tokenClaims.getClaimValue(
-      sessionManager,
-      claim,
-      type,
-      client.tokenValidationDetails
-    );
+    return await tokenClaims.getClaimValue(sessionManager, claim, type);
   };
 
   /**
@@ -233,12 +225,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return await tokenClaims.getClaim(
-      sessionManager,
-      claim,
-      type,
-      client.tokenValidationDetails
-    );
+    return await tokenClaims.getClaim(sessionManager, claim, type);
   };
 
   /**
@@ -256,11 +243,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         `Cannot return permission "${name}", no authentication credential found`
       );
     }
-    return await tokenClaims.getPermission(
-      sessionManager,
-      name,
-      client.tokenValidationDetails
-    );
+    return await tokenClaims.getPermission(sessionManager, name);
   };
 
   /**
@@ -273,10 +256,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         'Cannot return user organization, no authentication credential found'
       );
     }
-    return await tokenClaims.getOrganization(
-      sessionManager,
-      client.tokenValidationDetails
-    );
+    return await tokenClaims.getOrganization(sessionManager);
   };
 
   /**
@@ -290,10 +270,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         'Cannot return user organizations, no authentication credential found'
       );
     }
-    return await tokenClaims.getUserOrganizations(
-      sessionManager,
-      client.tokenValidationDetails
-    );
+    return await tokenClaims.getUserOrganizations(sessionManager);
   };
 
   /**
@@ -310,10 +287,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
         'Cannot return user permissions, no authentication credential found'
       );
     }
-    return await tokenClaims.getPermissions(
-      sessionManager,
-      client.tokenValidationDetails
-    );
+    return await tokenClaims.getPermissions(sessionManager);
   };
 
   /**
