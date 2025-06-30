@@ -1,3 +1,25 @@
+import { vi } from 'vitest';
+
+// Mock the validateToken function - must be at the top for Vitest hoisting
+vi.mock('@kinde/jwt-validator', () => ({
+  validateToken: vi.fn().mockImplementation(async ({ token }) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      const isExpired = payload.exp && currentTime >= payload.exp;
+      return {
+        valid: !isExpired,
+        message: isExpired ? 'Token expired' : 'Token valid',
+      };
+    } catch (e) {
+      return {
+        valid: false,
+        message: 'Invalid token format',
+      };
+    }
+  }),
+}));
+
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
 
@@ -10,7 +32,7 @@ import {
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 import { generateRandomString } from '../../../sdk/utilities';
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
@@ -21,11 +43,6 @@ describe('AuthorizationCode', () => {
     logoutRedirectURL: 'http://app-domain.com',
     clientId: 'client-id',
   };
-
-  beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-    clientConfig.jwks = { keys: [publicKey] };
-  });
 
   describe('new AuthorizationCode', () => {
     it('can construct AuthorizationCode instance', () => {

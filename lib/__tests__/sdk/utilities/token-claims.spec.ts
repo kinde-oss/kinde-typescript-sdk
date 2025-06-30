@@ -6,27 +6,15 @@ import {
   getClaimValue,
   getPermission,
   getClaim,
-  type TokenValidationDetailsType,
 } from '../../../sdk/utilities';
-import { importJWK } from 'jose';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 describe('token-claims', () => {
   let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;
   let mockIdToken: Awaited<ReturnType<typeof mocks.getMockIdToken>>;
-  const authDomain = 'https://local-testing@kinde.com';
   const { sessionManager } = mocks;
 
-  let validationDetails: TokenValidationDetailsType;
-
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
-    validationDetails = {
-      issuer: authDomain,
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
-    };
-
     mockAccessToken = await mocks.getMockAccessToken();
     mockIdToken = await mocks.getMockIdToken();
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);
@@ -40,12 +28,7 @@ describe('token-claims', () => {
   describe('getClaimValue', () => {
     it('returns value for a token claim if claim exists', () => {
       Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
-        const claimValue = await getClaimValue(
-          sessionManager,
-          name,
-          'access_token',
-          validationDetails
-        );
+        const claimValue = await getClaimValue(sessionManager, name, 'access_token');
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
         expect(claimValue).toStrictEqual(tokenPayload[name]);
       });
@@ -56,8 +39,7 @@ describe('token-claims', () => {
       const claimValue = await getClaimValue(
         sessionManager,
         claimName,
-        'access_token',
-        validationDetails
+        'access_token'
       );
       expect(claimValue).toBe(null);
     });
@@ -66,12 +48,7 @@ describe('token-claims', () => {
   describe('getClaim', () => {
     it('returns value for a token claim if claim exists', () => {
       Object.keys(mockAccessToken.payload).forEach(async (name: string) => {
-        const claim = await getClaim(
-          sessionManager,
-          name,
-          'access_token',
-          validationDetails
-        );
+        const claim = await getClaim(sessionManager, name, 'access_token');
         const tokenPayload = mockAccessToken.payload as Record<string, unknown>;
         expect(claim).toStrictEqual({ name, value: tokenPayload[name] });
       });
@@ -79,12 +56,7 @@ describe('token-claims', () => {
 
     it('return null if claim does not exist', async () => {
       const claimName = 'non-existant-claim';
-      const claim = await getClaim(
-        sessionManager,
-        claimName,
-        'access_token',
-        validationDetails
-      );
+      const claim = await getClaim(sessionManager, claimName, 'access_token');
       expect(claim).toStrictEqual({ name: claimName, value: null });
     });
   });
@@ -93,9 +65,7 @@ describe('token-claims', () => {
     it('return orgCode and isGranted = true if permission is given', () => {
       const { permissions } = mockAccessToken.payload;
       permissions.forEach(async (permission) => {
-        expect(
-          await getPermission(sessionManager, permission, validationDetails)
-        ).toStrictEqual({
+        expect(await getPermission(sessionManager, permission)).toStrictEqual({
           orgCode: mockAccessToken.payload.org_code,
           isGranted: true,
         });
@@ -105,9 +75,7 @@ describe('token-claims', () => {
     it('return isGranted = false is permission is not given', async () => {
       const orgCode = mockAccessToken.payload.org_code;
       const permissionName = 'non-existant-permission';
-      expect(
-        await getPermission(sessionManager, permissionName, validationDetails)
-      ).toStrictEqual({
+      expect(await getPermission(sessionManager, permissionName)).toStrictEqual({
         orgCode,
         isGranted: false,
       });
@@ -116,9 +84,7 @@ describe('token-claims', () => {
   describe('getUserOrganizations', () => {
     it('lists all user organizations using id token', async () => {
       const orgCodes = mockIdToken.payload.org_codes;
-      expect(
-        await getUserOrganizations(sessionManager, validationDetails)
-      ).toStrictEqual({
+      expect(await getUserOrganizations(sessionManager)).toStrictEqual({
         orgCodes,
       });
     });
@@ -127,9 +93,7 @@ describe('token-claims', () => {
   describe('getOrganization', () => {
     it('returns organization code using accesss token', async () => {
       const orgCode = mockAccessToken.payload.org_code;
-      expect(await getOrganization(sessionManager, validationDetails)).toStrictEqual(
-        { orgCode }
-      );
+      expect(await getOrganization(sessionManager)).toStrictEqual({ orgCode });
     });
   });
 });

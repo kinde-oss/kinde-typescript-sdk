@@ -1,5 +1,27 @@
+import { vi } from 'vitest';
+
+// Mock the validateToken function - must be at the top for Vitest hoisting
+vi.mock('@kinde/jwt-validator', () => ({
+  validateToken: vi.fn().mockImplementation(async ({ token }) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      const isExpired = payload.exp && currentTime >= payload.exp;
+      return {
+        valid: !isExpired,
+        message: isExpired ? 'Token expired' : 'Token valid',
+      };
+    } catch (e) {
+      return {
+        valid: false,
+        message: 'Invalid token format',
+      };
+    }
+  }),
+}));
+
 import * as mocks from '../../mocks';
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
 import {
   type TokenCollection,
   commitTokensToSession,
@@ -10,7 +32,6 @@ import {
 } from '../../../sdk/utilities';
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
-import { importJWK } from 'jose';
 
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
@@ -18,11 +39,8 @@ describe('token-utils', () => {
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
     validationDetails = {
       issuer: domain,
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
     };
   });
 
@@ -99,7 +117,7 @@ describe('token-utils', () => {
         validationDetails
       );
 
-      const storedUser = await getUserFromSession(sessionManager, validationDetails);
+      const storedUser = await getUserFromSession(sessionManager);
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
@@ -116,7 +134,7 @@ describe('token-utils', () => {
 
   describe('isTokenExpired()', () => {
     it('returns true if null is provided as argument', async () => {
-      expect(await isTokenExpired(null, validationDetails)).toBe(true);
+      expect(isTokenExpired(null)).toBe(true);
     });
 
     it('returns true if provided token is expired', async () => {
@@ -124,7 +142,7 @@ describe('token-utils', () => {
         domain,
         true
       );
-      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
+      expect(isTokenExpired(mockAccessToken)).toBe(true);
     });
 
     it('returns true if provided token is missing "exp" claim', async () => {
@@ -132,12 +150,12 @@ describe('token-utils', () => {
         domain,
         true
       );
-      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
+      expect(isTokenExpired(mockAccessToken)).toBe(true);
     });
 
     it('returns false if provided token is not expired', async () => {
       const { token: mockAccessToken } = await mocks.getMockAccessToken(domain);
-      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(false);
+      expect(isTokenExpired(mockAccessToken)).toBe(false);
     });
   });
 });

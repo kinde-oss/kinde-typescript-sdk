@@ -7,7 +7,6 @@ import {
   getFlag,
   type TokenValidationDetailsType,
 } from '../../../sdk/utilities';
-import { importJWK } from 'jose';
 
 describe('feature-flags', () => {
   let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;
@@ -16,11 +15,8 @@ describe('feature-flags', () => {
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
     validationDetails = {
       issuer: '',
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
     };
   });
 

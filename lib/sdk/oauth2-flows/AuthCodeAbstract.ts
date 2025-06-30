@@ -11,8 +11,6 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
-import { createLocalJWKSet } from 'jose';
-import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
 import type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
 /**
@@ -37,17 +35,9 @@ export abstract class AuthCodeAbstract {
     this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
     this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
-    const keyProvider = async () => {
-      const func =
-        config.jwks !== undefined
-          ? createLocalJWKSet(config.jwks)
-          : await getRemoteJwks(authDomain);
-      return await func({ alg: 'RS256' });
-    };
     this.tokenValidationDetails = {
       issuer: config.authDomain,
       audience: config.audience,
-      keyProvider,
     };
   }
 
@@ -142,10 +132,7 @@ export abstract class AuthCodeAbstract {
       throw new Error('No authentication credential found');
     }
 
-    const isAccessTokenExpired = await utilities.isTokenExpired(
-      accessToken,
-      this.tokenValidationDetails
-    );
+    const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
     if (!isAccessTokenExpired) {
       return accessToken;
     }
