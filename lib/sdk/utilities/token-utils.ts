@@ -111,12 +111,22 @@ export const getAccessToken = async (
  * Extracts the user information from the current session returns null if
  * the token is not found.
  * @param {SessionManager} sessionManager
- * @returns {string | null}
+ * @param {TokenValidationDetailsType} validationDetails
+ * @returns {UserType | null}
  */
 export const getUserFromSession = async (
-  sessionManager: SessionManager
+  sessionManager: SessionManager,
+  validationDetails: TokenValidationDetailsType
 ): Promise<UserType | null> => {
   const idTokenString = (await sessionManager.getSessionItem('id_token')) as string;
+  const validation = await validateToken({
+    token: idTokenString,
+    domain: validationDetails.issuer,
+  });
+  if (!validation.valid) {
+    throw new Error('Invalid ID token');
+  }
+
   const payload: Record<string, unknown> = jwtDecoder(idTokenString) ?? {};
   if (Object.keys(payload).length === 0) {
     throw new Error('Invalid ID token');

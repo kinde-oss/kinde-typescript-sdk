@@ -5,6 +5,11 @@ import { jwtDecoder } from '@kinde/jwt-decoder';
 /**
  * Method extracts the provided claim from the provided token type in the
  * current session.
+ * 
+ * Security Model: This function assumes tokens have been cryptographically
+ * validated during session commit via commitTokensToSession. It performs
+ * decoding only on pre-validated tokens without re-validation by design.
+ * 
  * @param {SessionManager} sessionManager
  * @param {string} claim
  * @param {ClaimTokenType} type
@@ -24,6 +29,11 @@ export const getClaimValue = async (
 /**
  * Method extracts the provided claim from the provided token type in the
  * current session, the returned object includes the provided claim.
+ * 
+ * Security Model: This function assumes tokens have been cryptographically
+ * validated during session commit via commitTokensToSession. It performs
+ * decoding only on pre-validated tokens without re-validation by design.
+ * 
  * @param {SessionManager} sessionManager
  * @param {string} claim
  * @param {ClaimTokenType} type
@@ -44,6 +54,11 @@ export const getClaim = async (
  * Method returns the organization code from the current session and returns
  * a boolean in the returned object indicating if the provided permission is
  * present in the session.
+ * 
+ * Security Model: This function assumes tokens have been cryptographically
+ * validated during session commit via commitTokensToSession. It performs
+ * decoding only on pre-validated tokens without re-validation by design.
+ * 
  * @param {SessionManager} sessionManager
  * @param {string} name
  * @returns {{ orgCode: string | null, isGranted: boolean }}
@@ -68,6 +83,11 @@ export const getPermission = async (
 
 /**
  * Method extracts the organization code from the current session.
+ * 
+ * Security Model: This function assumes tokens have been cryptographically
+ * validated during session commit via commitTokensToSession. It performs
+ * decoding only on pre-validated tokens without re-validation by design.
+ * 
  * @param {SessionManager} sessionManager
  * @returns {{ orgCode: string | null }}
  */
@@ -82,6 +102,11 @@ export const getOrganization = async (
 /**
  * Method extracts all the permission and the organization code in the access
  * token in the current session.
+ * 
+ * Security Model: This function assumes tokens have been cryptographically
+ * validated during session commit via commitTokensToSession. It performs
+ * decoding only on pre-validated tokens without re-validation by design.
+ * 
  * @param {SessionManager} sessionManager
  * @returns {{ permissions: string[], orgCode: string | null }}
  */
@@ -105,6 +130,11 @@ export const getPermissions = async (
 /**
  * Method extracts all organization codes from the id token in the current
  * session.
+ * 
+ * Security Model: This function assumes tokens have been cryptographically
+ * validated during session commit via commitTokensToSession. It performs
+ * decoding only on pre-validated tokens without re-validation by design.
+ * 
  * @param {SessionManager} sessionManager
  * @returns {{ orgCodes: string[] }}
  */
