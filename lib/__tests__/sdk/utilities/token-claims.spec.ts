@@ -8,25 +8,20 @@ import {
   getClaim,
   type TokenValidationDetailsType,
 } from '../../../sdk/utilities';
-import { importJWK } from 'jose';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 describe('token-claims', () => {
   let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;
   let mockIdToken: Awaited<ReturnType<typeof mocks.getMockIdToken>>;
-  const authDomain = 'https://local-testing@kinde.com';
+  const authDomain = 'local-testing@kinde.com';
   const { sessionManager } = mocks;
 
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
     validationDetails = {
       issuer: authDomain,
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
     };
-
     mockAccessToken = await mocks.getMockAccessToken();
     mockIdToken = await mocks.getMockIdToken();
     await sessionManager.setSessionItem('access_token', mockAccessToken.token);

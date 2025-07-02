@@ -10,7 +10,7 @@ import {
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 import { generateRandomString } from '../../../sdk/utilities';
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
@@ -21,11 +21,6 @@ describe('AuthorizationCode', () => {
     logoutRedirectURL: 'http://app-domain.com',
     clientId: 'client-id',
   };
-
-  beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-    clientConfig.jwks = { keys: [publicKey] };
-  });
 
   describe('new AuthorizationCode', () => {
     it('can construct AuthorizationCode instance', () => {

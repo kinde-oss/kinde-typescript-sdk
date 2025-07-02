@@ -1,4 +1,3 @@
-import { importJWK } from 'jose';
 import { ClientCredentials } from '../../../sdk/oauth2-flows/ClientCredentials';
 import { type ClientCredentialsOptions } from '../../../sdk/oauth2-flows/types';
 import {
@@ -32,14 +31,9 @@ describe('ClientCredentials', () => {
     let validationDetails: TokenValidationDetailsType;
 
     beforeAll(async () => {
-      const { publicKey } = await mocks.getKeys();
-
       validationDetails = {
         issuer: clientConfig.authDomain,
-        keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
       };
-
-      clientConfig.jwks = { keys: [publicKey] };
     });
 
     const body = new URLSearchParams({

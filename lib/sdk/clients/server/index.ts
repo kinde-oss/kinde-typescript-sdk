@@ -1,5 +1,4 @@
 import createAuthCodeClient from './authorization-code.js';
-import { isNodeEnvironment } from '../../environment.js';
 import createCCClient from './client-credentials.js';
 import { GrantType } from '../../oauth2-flows/index.js';
 
@@ -30,10 +29,6 @@ export const createKindeServerClient = <G extends GrantType>(
   grantType: G,
   options: Options<G>
 ) => {
-  if (!isNodeEnvironment()) {
-    throw new Error('this method must be invoked in a node.js environment');
-  }
-
   switch (grantType) {
     case GrantType.AUTHORIZATION_CODE: {
       const clientOptions = options as ACClientOptions;

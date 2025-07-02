@@ -1,5 +1,3 @@
-import { type JSONWebKeySet } from 'jose';
-
 export enum GrantType {
   AUTHORIZATION_CODE = 'AUTHORIZATION_CODE',
   CLIENT_CREDENTIALS = 'CLIENT_CREDENTIALS',
@@ -36,7 +34,6 @@ export interface OAuth2FlowOptions {
   authDomain: string;
   audience?: string | string[];
   scope?: string;
-  jwks?: JSONWebKeySet;
 }
 
 export interface SDKHeaderOverrideOptions {

@@ -10,7 +10,6 @@ import {
 } from '../../../sdk/utilities';
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
-import { importJWK } from 'jose';
 
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
@@ -18,11 +17,8 @@ describe('token-utils', () => {
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
     validationDetails = {
       issuer: domain,
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
     };
   });
 

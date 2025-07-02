@@ -129,3 +129,24 @@ class ServerSessionManager implements SessionManager {
 export const sessionManager = new ServerSessionManager();
 
 global.fetch = fetchClient;
+
+// Mock @kinde/jwt-validator
+export const createJwtValidatorMock = () => ({
+  validateToken: vi.fn().mockImplementation(async ({ token, domain }) => {
+    if (!token) {
+      return { valid: false, message: 'Token is required' };
+    }
+
+    if (!domain) {
+      return { valid: false, message: 'Domain is required' };
+    }
+
+    const jwtParts = token.split('.');
+    if (jwtParts.length !== 3) {
+      return { valid: false, message: 'Invalid JWT format' };
+    }
+
+    // If it passes basic validation, return true (simplified for testing)
+    return { valid: true, message: 'Token is valid' };
+  }),
+});

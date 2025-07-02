@@ -6,7 +6,7 @@ import { base64UrlEncode, sha256 } from '../../../sdk/utilities';
 import { AuthCodeWithPKCE } from '../../../sdk/oauth2-flows';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 
 describe('AuthCodeWitPKCE', () => {
   const { sessionManager } = mocks;
@@ -16,11 +16,6 @@ describe('AuthCodeWitPKCE', () => {
     logoutRedirectURL: 'http://app-domain.com',
     clientId: 'client-id',
   };
-
-  beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-    clientConfig.jwks = { keys: [publicKey] };
-  });
 
   describe('new AuthCodeWithPKCE', () => {
     it('can construct AuthCodeWithPKCE instance', () => {

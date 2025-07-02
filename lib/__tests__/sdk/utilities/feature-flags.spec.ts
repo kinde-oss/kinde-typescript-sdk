@@ -7,20 +7,17 @@ import {
   getFlag,
   type TokenValidationDetailsType,
 } from '../../../sdk/utilities';
-import { importJWK } from 'jose';
 
 describe('feature-flags', () => {
   let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;
   const { sessionManager } = mocks;
+  const authDomain = 'local-testing@kinde.com';
 
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
     validationDetails = {
-      issuer: '',
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
+      issuer: authDomain,
     };
   });
 
