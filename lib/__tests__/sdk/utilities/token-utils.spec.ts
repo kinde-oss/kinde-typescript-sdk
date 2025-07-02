@@ -117,7 +117,7 @@ describe('token-utils', () => {
         validationDetails
       );
 
-      const storedUser = await getUserFromSession(sessionManager, validationDetails);
+      const storedUser = await getUserFromSession(sessionManager);
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
