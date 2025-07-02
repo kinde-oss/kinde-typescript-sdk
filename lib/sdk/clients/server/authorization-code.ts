@@ -139,7 +139,10 @@ const createAuthorizationCodeClient = (
     if (!(await isAuthenticated(sessionManager))) {
       throw new Error('Cannot get user details, no authentication credential found');
     }
-    return (await utilities.getUserFromSession(sessionManager, client.tokenValidationDetails))!;
+    return (await utilities.getUserFromSession(
+      sessionManager,
+      client.tokenValidationDetails
+    ))!;
   };
 
   /**
