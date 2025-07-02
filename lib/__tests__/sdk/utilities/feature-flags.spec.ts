@@ -11,12 +11,13 @@ import {
 describe('feature-flags', () => {
   let mockAccessToken: Awaited<ReturnType<typeof mocks.getMockAccessToken>>;
   const { sessionManager } = mocks;
+  const authDomain = 'local-testing@kinde.com';
 
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
     validationDetails = {
-      issuer: '',
+      issuer: authDomain,
     };
   });
 

@@ -110,7 +110,12 @@ const withAuthUtilities = (
       );
     }
 
-    return await tokenClaims.getClaimValue(sessionManager, claim, type);
+    return await tokenClaims.getClaimValue(
+      sessionManager,
+      claim,
+      type,
+      validationDetails
+    );
   };
 
   /**
@@ -131,7 +136,12 @@ const withAuthUtilities = (
         `Cannot return claim "${claim}", no authentication credential found`
       );
     }
-    return await tokenClaims.getClaim(sessionManager, claim, type);
+    return await tokenClaims.getClaim(
+      sessionManager,
+      claim,
+      type,
+      validationDetails
+    );
   };
 
   /**
@@ -151,7 +161,7 @@ const withAuthUtilities = (
         `Cannot return permission "${name}", no authentication credential found`
       );
     }
-    return await tokenClaims.getPermission(sessionManager, name);
+    return await tokenClaims.getPermission(sessionManager, name, validationDetails);
   };
 
   /**
@@ -167,7 +177,7 @@ const withAuthUtilities = (
         'Cannot return user organization, no authentication credential found'
       );
     }
-    return await tokenClaims.getOrganization(sessionManager);
+    return await tokenClaims.getOrganization(sessionManager, validationDetails);
   };
 
   /**
@@ -184,7 +194,7 @@ const withAuthUtilities = (
         'Cannot return user organizations, no authentication credential found'
       );
     }
-    return await tokenClaims.getUserOrganizations(sessionManager);
+    return await tokenClaims.getUserOrganizations(sessionManager, validationDetails);
   };
 
   /**
@@ -204,7 +214,7 @@ const withAuthUtilities = (
         'Cannot return user permissions, no authentication credential found'
       );
     }
-    return await tokenClaims.getPermissions(sessionManager);
+    return await tokenClaims.getPermissions(sessionManager, validationDetails);
   };
 
   /**

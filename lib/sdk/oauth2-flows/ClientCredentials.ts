@@ -37,7 +37,10 @@ export class ClientCredentials {
    */
   async getToken(sessionManager: SessionManager): Promise<string> {
     const accessToken = await utilities.getAccessToken(sessionManager);
-    const isTokenExpired = utilities.isTokenExpired(accessToken);
+    const isTokenExpired = await utilities.isTokenExpired(
+      accessToken,
+      this.tokenValidationDetails
+    );
     if (accessToken && !isTokenExpired) {
       return accessToken;
     }

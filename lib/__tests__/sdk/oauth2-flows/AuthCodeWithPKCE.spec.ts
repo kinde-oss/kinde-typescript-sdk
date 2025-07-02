@@ -1,25 +1,3 @@
-import { vi } from 'vitest';
-
-// Mock the validateToken function - must be at the top for Vitest hoisting
-vi.mock('@kinde/jwt-validator', () => ({
-  validateToken: vi.fn().mockImplementation(async ({ token }) => {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-      const isExpired = payload.exp && currentTime >= payload.exp;
-      return {
-        valid: !isExpired,
-        message: isExpired ? 'Token expired' : 'Token valid',
-      };
-    } catch (e) {
-      return {
-        valid: false,
-        message: 'Invalid token format',
-      };
-    }
-  }),
-}));
-
 import type {
   AuthorizationCodeOptions,
   SDKHeaderOverrideOptions,

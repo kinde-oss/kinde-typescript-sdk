@@ -1,25 +1,3 @@
-import { vi } from 'vitest';
-
-// Mock the validateToken function - must be at the top for Vitest hoisting
-vi.mock('@kinde/jwt-validator', () => ({
-  validateToken: vi.fn().mockImplementation(async ({ token }) => {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-      const isExpired = payload.exp && currentTime >= payload.exp;
-      return {
-        valid: !isExpired,
-        message: isExpired ? 'Token expired' : 'Token valid',
-      };
-    } catch (e) {
-      return {
-        valid: false,
-        message: 'Invalid token format',
-      };
-    }
-  }),
-}));
-
 import * as mocks from '../../mocks';
 import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import {
@@ -117,7 +95,7 @@ describe('token-utils', () => {
         validationDetails
       );
 
-      const storedUser = await getUserFromSession(sessionManager);
+      const storedUser = await getUserFromSession(sessionManager, validationDetails);
       const expectedUser = {
         family_name: idTokenPayload.family_name,
         given_name: idTokenPayload.given_name,
@@ -134,7 +112,7 @@ describe('token-utils', () => {
 
   describe('isTokenExpired()', () => {
     it('returns true if null is provided as argument', async () => {
-      expect(isTokenExpired(null)).toBe(true);
+      expect(await isTokenExpired(null, validationDetails)).toBe(true);
     });
 
     it('returns true if provided token is expired', async () => {
@@ -142,7 +120,7 @@ describe('token-utils', () => {
         domain,
         true
       );
-      expect(isTokenExpired(mockAccessToken)).toBe(true);
+      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
     });
 
     it('returns true if provided token is missing "exp" claim', async () => {
@@ -150,12 +128,12 @@ describe('token-utils', () => {
         domain,
         true
       );
-      expect(isTokenExpired(mockAccessToken)).toBe(true);
+      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
     });
 
     it('returns false if provided token is not expired', async () => {
       const { token: mockAccessToken } = await mocks.getMockAccessToken(domain);
-      expect(isTokenExpired(mockAccessToken)).toBe(false);
+      expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(false);
     });
   });
 });

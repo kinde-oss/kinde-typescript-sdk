@@ -13,6 +13,7 @@ import { jwtDecoder } from '@kinde/jwt-decoder';
  * Saves the provided token to the current session.
  * @param {SessionManager} sessionManager
  * @param {string} token
+ * @param {TokenValidationDetailsType} validationDetails
  * @param {TokenType} type
  */
 export const commitTokenToSession = async (
@@ -34,6 +35,10 @@ export const commitTokenToSession = async (
       });
       if (!validation.valid) {
         throw new Error(validation.message);
+      }
+      const isExpired = await isTokenExpired(token, validationDetails);
+      if (isExpired) {
+        throw new Error('Token is expired');
       }
     } catch (e) {
       throw new KindeSDKError(
@@ -111,14 +116,25 @@ export const getAccessToken = async (
  * Extracts the user information from the current session returns null if
  * the token is not found.
  * @param {SessionManager} sessionManager
+ * @param {TokenValidationDetailsType} validationDetails
  * @returns {UserType | null}
  */
 export const getUserFromSession = async (
-  sessionManager: SessionManager
+  sessionManager: SessionManager,
+  validationDetails: TokenValidationDetailsType
 ): Promise<UserType | null> => {
   const idTokenString = (await sessionManager.getSessionItem('id_token')) as string;
 
-  // Simply decode the ID token without validation to accept old tokens
+  // Validate signature to prevent tampering
+  const validation = await validateToken({
+    token: idTokenString,
+    domain: validationDetails.issuer,
+  });
+  if (!validation.valid) {
+    throw new Error(validation.message);
+  }
+
+  // Decode the ID token for user information
   const payload: Record<string, unknown> = jwtDecoder(idTokenString) ?? {};
   if (Object.keys(payload).length === 0) {
     throw new Error('Invalid ID token');
@@ -139,11 +155,24 @@ export const getUserFromSession = async (
 /**
  * Checks if the provided JWT token is valid (expired or not).
  * @param {string | null} token
+ * @param {TokenValidationDetailsType} validationDetails
  * @returns {boolean} is expired or not
  */
-export const isTokenExpired = (token: string | null): boolean => {
+export const isTokenExpired = async (
+  token: string | null,
+  validationDetails: TokenValidationDetailsType
+): Promise<boolean> => {
   if (!token) return true;
   try {
+    // Validate signature to prevent tampering
+    const validation = await validateToken({
+      token,
+      domain: validationDetails.issuer,
+    });
+    if (!validation.valid) {
+      return true;
+    }
+
     const currentUnixTime = Math.floor(Date.now() / 1000);
     const payload = jwtDecoder(token);
     if (!payload || payload.exp === undefined) return true;

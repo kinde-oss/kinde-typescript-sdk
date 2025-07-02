@@ -132,7 +132,10 @@ export abstract class AuthCodeAbstract {
       throw new Error('No authentication credential found');
     }
 
-    const isAccessTokenExpired = utilities.isTokenExpired(accessToken);
+    const isAccessTokenExpired = await utilities.isTokenExpired(
+      accessToken,
+      this.tokenValidationDetails
+    );
     if (!isAccessTokenExpired) {
       return accessToken;
     }
