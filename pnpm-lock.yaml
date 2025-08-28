@@ -26,7 +26,7 @@ importers:
     devDependencies:
       '@openapitools/openapi-generator-cli':
         specifier: ^2.7.0
-        version: 2.23.1(@types/node@20.17.57)
+        version: 2.23.1(@types/node@20.19.11)
       '@tsconfig/node18':
         specifier: ^2.0.1
         version: 2.0.1
@@ -35,13 +35,13 @@ importers:
         version: 21.1.7
       '@types/node':
         specifier: ^20.2.1
-        version: 20.17.57
+        version: 20.19.11
       '@typescript-eslint/eslint-plugin':
         specifier: ^7
         version: 7.18.0(@typescript-eslint/parser@8.41.0(eslint@9.28.0)(typescript@5.9.2))(eslint@9.28.0)(typescript@5.9.2)
       '@vitest/coverage-v8':
         specifier: ^1.3.1
-        version: 1.6.1(vitest@1.6.1(@types/node@20.17.57)(jsdom@22.1.0))
+        version: 1.6.1(vitest@1.6.1(@types/node@20.19.11)(jsdom@22.1.0))
       eslint:
         specifier: ^9.24.0
         version: 9.28.0
@@ -89,7 +89,7 @@ importers:
         version: 5.9.2
       vitest:
         specifier: ^1.3.1
-        version: 1.6.1(@types/node@20.17.57)(jsdom@22.1.0)
+        version: 1.6.1(@types/node@20.19.11)(jsdom@22.1.0)
 
 packages:
 
@@ -585,8 +585,8 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/node@20.17.57':
-    resolution: {integrity: sha512-f3T4y6VU4fVQDKVqJV4Uppy8c1p/sVvS3peyqxyWnzkqXFJLRU7Y1Bl7rMS1Qe9z0v4M6McY0Fp9yBsgHJUsWQ==}
+  '@types/node@20.19.11':
+    resolution: {integrity: sha512-uug3FEEGv0r+jrecvUUpbY8lLisvIjg6AAic6a2bSP5OEOLeJsDSnvhCDov7ipFFMXS3orMpzlmi0ZcuGkBbow==}
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
@@ -2570,8 +2570,8 @@ packages:
   uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
 
-  undici-types@6.19.8:
-    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   universalify@0.2.0:
     resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
@@ -2918,12 +2918,12 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@inquirer/external-editor@1.0.1(@types/node@20.17.57)':
+  '@inquirer/external-editor@1.0.1(@types/node@20.19.11)':
     dependencies:
       chardet: 2.1.0
       iconv-lite: 0.6.3
     optionalDependencies:
-      '@types/node': 20.17.57
+      '@types/node': 20.19.11
 
   '@isaacs/balanced-match@4.0.1': {}
 
@@ -3030,7 +3030,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@openapitools/openapi-generator-cli@2.23.1(@types/node@20.17.57)':
+  '@openapitools/openapi-generator-cli@2.23.1(@types/node@20.19.11)':
     dependencies:
       '@nestjs/axios': 4.0.1(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.11.0)(rxjs@7.8.2)
       '@nestjs/common': 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -3044,7 +3044,7 @@ snapshots:
       console.table: 0.10.0
       fs-extra: 11.3.1
       glob: 11.0.3
-      inquirer: 8.2.7(@types/node@20.17.57)
+      inquirer: 8.2.7(@types/node@20.19.11)
       proxy-agent: 6.5.0
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
@@ -3146,7 +3146,7 @@ snapshots:
 
   '@types/jsdom@21.1.7':
     dependencies:
-      '@types/node': 20.17.57
+      '@types/node': 20.19.11
       '@types/tough-cookie': 4.0.5
       parse5: 7.3.0
 
@@ -3154,9 +3154,9 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/node@20.17.57':
+  '@types/node@20.19.11':
     dependencies:
-      undici-types: 6.19.8
+      undici-types: 6.21.0
 
   '@types/tough-cookie@4.0.5': {}
 
@@ -3373,7 +3373,7 @@ snapshots:
       '@typescript-eslint/types': 8.41.0
       eslint-visitor-keys: 4.2.1
 
-  '@vitest/coverage-v8@1.6.1(vitest@1.6.1(@types/node@20.17.57)(jsdom@22.1.0))':
+  '@vitest/coverage-v8@1.6.1(vitest@1.6.1(@types/node@20.19.11)(jsdom@22.1.0))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -3388,7 +3388,7 @@ snapshots:
       std-env: 3.9.0
       strip-literal: 2.1.1
       test-exclude: 6.0.0
-      vitest: 1.6.1(@types/node@20.17.57)(jsdom@22.1.0)
+      vitest: 1.6.1(@types/node@20.19.11)(jsdom@22.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -4431,9 +4431,9 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  inquirer@8.2.7(@types/node@20.17.57):
+  inquirer@8.2.7(@types/node@20.19.11):
     dependencies:
-      '@inquirer/external-editor': 1.0.1(@types/node@20.17.57)
+      '@inquirer/external-editor': 1.0.1(@types/node@20.19.11)
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       cli-cursor: 3.1.0
@@ -5466,7 +5466,7 @@ snapshots:
 
   uncrypto@0.1.3: {}
 
-  undici-types@6.19.8: {}
+  undici-types@6.21.0: {}
 
   universalify@0.2.0: {}
 
@@ -5483,13 +5483,13 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  vite-node@1.6.1(@types/node@20.17.57):
+  vite-node@1.6.1(@types/node@20.19.11):
     dependencies:
       cac: 6.7.14
       debug: 4.4.1
       pathe: 1.1.2
       picocolors: 1.1.1
-      vite: 5.4.19(@types/node@20.17.57)
+      vite: 5.4.19(@types/node@20.19.11)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -5501,16 +5501,16 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.4.19(@types/node@20.17.57):
+  vite@5.4.19(@types/node@20.19.11):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.5.4
       rollup: 4.41.1
     optionalDependencies:
-      '@types/node': 20.17.57
+      '@types/node': 20.19.11
       fsevents: 2.3.3
 
-  vitest@1.6.1(@types/node@20.17.57)(jsdom@22.1.0):
+  vitest@1.6.1(@types/node@20.19.11)(jsdom@22.1.0):
     dependencies:
       '@vitest/expect': 1.6.1
       '@vitest/runner': 1.6.1
@@ -5529,11 +5529,11 @@ snapshots:
       strip-literal: 2.1.1
       tinybench: 2.9.0
       tinypool: 0.8.4
-      vite: 5.4.19(@types/node@20.17.57)
-      vite-node: 1.6.1(@types/node@20.17.57)
+      vite: 5.4.19(@types/node@20.19.11)
+      vite-node: 1.6.1(@types/node@20.19.11)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 20.17.57
+      '@types/node': 20.19.11
       jsdom: 22.1.0
     transitivePeerDependencies:
       - less
