@@ -47,7 +47,7 @@
   "license": "MIT",
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.7.0",
-    "@tsconfig/node18": "^2.0.1",
+    "@tsconfig/node18": "^18.0.0",
     "@types/jsdom": "^21.1.1",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^7",
