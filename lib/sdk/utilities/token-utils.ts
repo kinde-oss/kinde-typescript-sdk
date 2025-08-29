@@ -62,6 +62,12 @@ export const commitTokensToSession = async (
   tokens: TokenCollection,
   validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
+  const payload: { ksp?: { persistent: boolean } } | null = jwtDecoder<{
+    ksp: { persistent: boolean };
+  }>(tokens.access_token);
+  if (payload) {
+    sessionManager.persistent = payload.ksp?.persistent ?? false;
+  }
   await Promise.all([
     commitTokenToSession(
       sessionManager,
