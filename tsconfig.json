@@ -1,17 +1,28 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "downlevelIteration": true,
-    "lib": ["esnext", "dom"],
-    "declaration": true,
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "downlevelIteration": true,
     "declarationDir": "dist/types",
     "outDir": "./dist",
+    "noEmitOnError": false,
+
+    /* Linting */
     "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "include": ["lib"],
-  "exclude": ["node_modules", "tsconfig.cjs.json"]
+  "exclude": ["**/*.test.ts"],
+  "include": ["lib"]
 }
