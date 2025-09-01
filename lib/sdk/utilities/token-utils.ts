@@ -66,7 +66,7 @@ export const commitTokensToSession = async (
     ksp: { persistent: boolean };
   }>(tokens.access_token);
   if (payload) {
-    sessionManager.persistent = payload.ksp?.persistent ?? false;
+    sessionManager.persistent = payload.ksp?.persistent ?? true;
   }
   await Promise.all([
     commitTokenToSession(
