@@ -1,6 +1,6 @@
 {
   "name": "@kinde-oss/kinde-typescript-sdk",
-  "version": "2.14.0-4",
+  "version": "2.14.0-5",
   "description": "Kinde Typescript SDK",
   "main": "dist-cjs/index.js",
   "module": "dist/index.js",
@@ -23,9 +23,9 @@
     }
   },
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.cjs.json",
+    "build": "npm run generate && tsc && tsc -p tsconfig.cjs.json",
     "postbuild": "node sdk-version.js clean && ncp ./package-cjs.json ./dist-cjs/package.json && ncp ./package-esm.json ./dist/package.json",
-    "prebuild": "node sdk-version.js && rimraf dist dist-cjs lib/models lib/apis",
+    "prebuild": "node sdk-version.js && rimraf dist dist-cjs",
     "lint": "eslint . && prettier . --check",
     "lint:fix": "eslint --fix . && prettier . --write",
     "test": "vitest",
