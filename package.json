@@ -1,9 +1,10 @@
 {
   "name": "@kinde-oss/kinde-typescript-sdk",
-  "version": "2.13.1",
+  "version": "2.14.0-1",
   "description": "Kinde Typescript SDK",
   "main": "dist-cjs/index.js",
   "module": "dist/index.js",
+  "type": "module",
   "types": "dist/types/index.d.ts",
   "files": [
     "dist",
@@ -22,7 +23,7 @@
     }
   },
   "scripts": {
-    "build": "npm run generate && tsc && tsc -p tsconfig.cjs.json",
+    "build": "tsc && tsc -p tsconfig.cjs.json",
     "postbuild": "node sdk-version.js clean && ncp ./package-cjs.json ./dist-cjs/package.json && ncp ./package-esm.json ./dist/package.json",
     "prebuild": "node sdk-version.js && rimraf dist dist-cjs lib/models lib/apis",
     "lint": "eslint . && prettier . --check",
@@ -47,18 +48,13 @@
   "license": "MIT",
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.7.0",
-    "@tsconfig/node18": "^18.0.0",
     "@types/jsdom": "^21.1.1",
+    "typescript-eslint": "^8.41.0",
+    "@eslint/js": "^9.34.0",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@vitest/coverage-v8": "^1.3.1",
     "eslint": "^9.24.0",
-    "eslint-config-prettier": "^10.1.2",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-n": "^17.17.0",
-    "eslint-plugin-prettier": "^5.2.6",
-    "eslint-plugin-promise": "^7.2.1",
     "husky": "^9.0.0",
     "jose": "^6.0.10",
     "jsdom": "^26.0.0",
