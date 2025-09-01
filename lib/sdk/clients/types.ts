@@ -15,8 +15,8 @@ export interface BrowserPKCEClientOptions extends AuthorizationCodeOptions {
 export { PortalPage } from '@kinde/js-utils';
 export type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
-export interface PKCEClientOptions extends AuthorizationCodeOptions {}
-export interface CCClientOptions extends ClientCredentialsOptions {}
+export type PKCEClientOptions = AuthorizationCodeOptions;
+export type CCClientOptions = ClientCredentialsOptions;
 export interface ACClientOptions extends AuthorizationCodeOptions {
   clientSecret?: string;
 }

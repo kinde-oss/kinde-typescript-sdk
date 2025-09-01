@@ -40,10 +40,10 @@ export const commitTokenToSession = async (
       if (isExpired) {
         throw new Error('Token is expired');
       }
-    } catch (e) {
+    } catch (error) {
       throw new KindeSDKError(
         KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
-        `Attempting to commit invalid ${type} token "${token}" to memory`
+        `Attempting to commit invalid ${type} token "${token}" to memory: ${(error as Error).message}`
       );
     }
   }
@@ -183,7 +183,8 @@ export const isTokenExpired = async (
     const payload = jwtDecoder(token);
     if (!payload || payload.exp === undefined) return true;
     return currentUnixTime >= payload.exp;
-  } catch (e) {
+  } catch (error) {
+    console.error(`Error checking if token is expired: ${(error as Error).message}`);
     return true;
   }
 };
