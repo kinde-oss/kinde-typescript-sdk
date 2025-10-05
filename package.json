@@ -72,7 +72,7 @@
     "@kinde/js-utils": "0.23.0",
     "@kinde/jwt-decoder": "^0.2.0",
     "@kinde/jwt-validator": "^0.4.0",
-    "@typescript-eslint/parser": "^8.42.0",
+    "@typescript-eslint/parser": "^8.43.0",
     "eslint-config-love": "125.0.0",
     "uncrypto": "^0.1.3"
   },
