@@ -69,7 +69,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@kinde/js-utils": "0.23.0",
+    "@kinde/js-utils": "0.26.0",
     "@kinde/jwt-decoder": "^0.2.0",
     "@kinde/jwt-validator": "^0.4.0",
     "@typescript-eslint/parser": "^8.42.0",
