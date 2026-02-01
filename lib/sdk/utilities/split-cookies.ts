@@ -17,6 +17,12 @@ export const getSplitCookies = (
   cookieValue: string,
   maxCookieLength: number = MAX_COOKIE_LENGTH
 ): SplitCookie[] => {
+  if (!Number.isInteger(maxCookieLength) || maxCookieLength <= 0) {
+    throw new Error(
+      `maxCookieLength must be a positive integer. Received: ${String(maxCookieLength)}`
+    );
+  }
+
   return splitString(cookieValue, maxCookieLength).map((value, index) => {
     return {
       name: cookieName + (index === 0 ? '' : String(index)),

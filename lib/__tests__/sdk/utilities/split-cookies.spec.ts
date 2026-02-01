@@ -30,6 +30,18 @@ describe('split-cookies utilities', () => {
     expect(getJoinedSplitCookieValue('access_token', cookies)).toBeUndefined();
   });
 
+  it('throws when maxCookieLength is not a positive integer', () => {
+    expect(() => getSplitCookies('access_token', 'value', 0)).toThrow(
+      'maxCookieLength must be a positive integer'
+    );
+    expect(() => getSplitCookies('access_token', 'value', -1)).toThrow(
+      'maxCookieLength must be a positive integer'
+    );
+    expect(() => getSplitCookies('access_token', 'value', 1.5)).toThrow(
+      'maxCookieLength must be a positive integer'
+    );
+  });
+
   it('lists all cookie chunks to delete via startsWith', () => {
     const names = [
       'access_token',
