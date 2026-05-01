@@ -6,23 +6,21 @@ import type {
 } from './types.js';
 import { type SessionManager } from '../session-managers/index.js';
 import { KindeSDKError, KindeSDKErrorCode } from '../exceptions.js';
-import { jwtVerify } from 'jose';
+import { validateToken } from '@kinde/jwt-validator';
+import { jwtDecoder } from '@kinde/jwt-decoder';
 
 /**
  * Saves the provided token to the current session.
  * @param {SessionManager} sessionManager
  * @param {string} token
- * @param {TokenType} type
  * @param {TokenValidationDetailsType} validationDetails
- * @param {string} sessionType - Determines if the token should be stored as 'session' or 'persistent'
-
+ * @param {TokenType} type
  */
 export const commitTokenToSession = async (
   sessionManager: SessionManager,
   token: string,
   type: TokenType,
-  validationDetails: TokenValidationDetailsType,
-  sessionType: string
+  validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
   if (!token) {
     await sessionManager.removeSessionItem(type);
@@ -31,8 +29,17 @@ export const commitTokenToSession = async (
 
   if (type === 'access_token' || type === 'id_token') {
     try {
-      const key = await validationDetails.keyProvider();
-      await jwtVerify(token, key);
+      const validation = await validateToken({
+        token,
+        domain: validationDetails.issuer,
+      });
+      if (!validation.valid) {
+        throw new Error(validation.message);
+      }
+      const isExpired = await isTokenExpired(token, validationDetails);
+      if (isExpired) {
+        throw new Error('Token is expired');
+      }
     } catch (e) {
       throw new KindeSDKError(
         KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
@@ -41,7 +48,7 @@ export const commitTokenToSession = async (
     }
   }
 
-  await sessionManager.setSessionItem(type, token, sessionType);
+  await sessionManager.setSessionItem(type, token);
 };
 
 /**
@@ -55,33 +62,30 @@ export const commitTokensToSession = async (
   tokens: TokenCollection,
   validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
-  const key = await validationDetails.keyProvider();
-  const result = await jwtVerify(tokens.access_token, key);
-
-  const sessionType =
-    result.payload.ksp === 'non_persistent' ? 'session' : 'persistent';
-
+  const payload: { ksp?: { persistent: boolean } } | null = jwtDecoder<{
+    ksp: { persistent: boolean };
+  }>(tokens.access_token);
+  if (payload) {
+    sessionManager.persistent = payload.ksp?.persistent ?? true;
+  }
   await Promise.all([
     commitTokenToSession(
       sessionManager,
       tokens.refresh_token,
       'refresh_token',
-      validationDetails,
-      sessionType
+      validationDetails
     ),
     commitTokenToSession(
       sessionManager,
       tokens.access_token,
       'access_token',
-      validationDetails,
-      sessionType
+      validationDetails
     ),
     commitTokenToSession(
       sessionManager,
       tokens.id_token,
       'id_token',
-      validationDetails,
-      sessionType
+      validationDetails
     ),
   ]);
 };
@@ -118,25 +122,37 @@ export const getAccessToken = async (
  * Extracts the user information from the current session returns null if
  * the token is not found.
  * @param {SessionManager} sessionManager
- * @returns {string | null}
+ * @param {TokenValidationDetailsType} validationDetails
+ * @returns {UserType | null}
  */
 export const getUserFromSession = async (
   sessionManager: SessionManager,
   validationDetails: TokenValidationDetailsType
 ): Promise<UserType | null> => {
   const idTokenString = (await sessionManager.getSessionItem('id_token')) as string;
-  const idToken = await jwtVerify(
-    idTokenString,
-    await validationDetails.keyProvider(),
-    { currentDate: new Date(0) }
-  );
+
+  // Validate signature to prevent tampering
+  const validation = await validateToken({
+    token: idTokenString,
+    domain: validationDetails.issuer,
+  });
+  if (!validation.valid) {
+    throw new Error(validation.message);
+  }
+
+  // Decode the ID token for user information
+  const payload: Record<string, unknown> = jwtDecoder(idTokenString) ?? {};
+  if (Object.keys(payload).length === 0) {
+    throw new Error('Invalid ID token');
+  }
 
   const user: UserType = {
-    family_name: idToken.payload.family_name as string,
-    given_name: idToken.payload.given_name as string,
-    picture: (idToken.payload.picture as string) ?? null,
-    email: idToken.payload.email as string,
-    id: idToken.payload.sub!,
+    family_name: payload.family_name as string,
+    given_name: payload.given_name as string,
+    picture: (payload.picture as string) ?? null,
+    email: payload.email as string,
+    phone: payload.phone as string,
+    id: payload.sub as string,
   };
 
   return user;
@@ -145,6 +161,7 @@ export const getUserFromSession = async (
 /**
  * Checks if the provided JWT token is valid (expired or not).
  * @param {string | null} token
+ * @param {TokenValidationDetailsType} validationDetails
  * @returns {boolean} is expired or not
  */
 export const isTokenExpired = async (
@@ -153,13 +170,19 @@ export const isTokenExpired = async (
 ): Promise<boolean> => {
   if (!token) return true;
   try {
-    const currentUnixTime = Math.floor(Date.now() / 1000);
-    const tokenPayload = await jwtVerify(
+    // Validate signature to prevent tampering
+    const validation = await validateToken({
       token,
-      await validationDetails.keyProvider()
-    );
-    if (tokenPayload.payload.exp === undefined) return true;
-    return currentUnixTime >= tokenPayload.payload.exp;
+      domain: validationDetails.issuer,
+    });
+    if (!validation.valid) {
+      return true;
+    }
+
+    const currentUnixTime = Math.floor(Date.now() / 1000);
+    const payload = jwtDecoder(token);
+    if (!payload || payload.exp === undefined) return true;
+    return currentUnixTime >= payload.exp;
   } catch (e) {
     return true;
   }

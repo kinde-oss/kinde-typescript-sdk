@@ -10,6 +10,7 @@ import {
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 import { generateRandomString } from '../../../sdk/utilities';
+import { describe, it, expect, afterEach } from 'vitest';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
@@ -20,11 +21,6 @@ describe('AuthorizationCode', () => {
     logoutRedirectURL: 'http://app-domain.com',
     clientId: 'client-id',
   };
-
-  beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-    clientConfig.jwks = { keys: [publicKey] };
-  });
 
   describe('new AuthorizationCode', () => {
     it('can construct AuthorizationCode instance', () => {
@@ -381,9 +377,7 @@ describe('AuthorizationCode', () => {
       await sessionManager.setSessionItem('refresh_token', 'mines are here');
       await sessionManager.setSessionItem(
         'access_token',
-        (
-          await mocks.getMockAccessToken(clientConfig.authDomain, true)
-        ).token
+        (await mocks.getMockAccessToken(clientConfig.authDomain, true)).token
       );
 
       const client = new AuthorizationCode(clientConfig, clientSecret);

@@ -7,6 +7,8 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import { createPortalUrl } from '../utilities/createPortalUrl.js';
 
 /**
  * Class provides implementation for the authorization code OAuth2.0 flow.
@@ -36,12 +38,15 @@ export class AuthorizationCode extends AuthCodeAbstract {
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
   ): Promise<URL> {
+    const providedState = options.state ?? options.authUrlParams?.state;
+
     this.state =
-      options.state ??
+      providedState ??
       ((await sessionManager.getSessionItem(
         AuthorizationCode.STATE_KEY
       )) as string) ??
       utilities.generateRandomString();
+
     await sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, this.state);
     const authURL = new URL(this.authorizationEndpoint);
     const authParams = this.generateAuthURLParams(options);
@@ -50,14 +55,34 @@ export class AuthorizationCode extends AuthCodeAbstract {
   }
 
   /**
+   * Method provides implementation for `createPortalUrl` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {Omit<GeneratePortalUrlParams, 'domain'>} options
+   * @returns {Promise<{url: URL}>} required authorization URL
+   */
+  async createPortalUrl(
+    sessionManager: SessionManager,
+    options: Omit<GeneratePortalUrlParams, 'domain'>
+  ): Promise<{ url: URL }> {
+    return await createPortalUrl(sessionManager, {
+      domain: this.config.authDomain,
+      ...options,
+    });
+  }
+
+  /**
    * Method provides implementation for `refreshTokens` method mandated by
    * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
    * further explanation.
    * @param {SessionManager} sessionManager
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   public async refreshTokens(
-    sessionManager: SessionManager
+    sessionManager: SessionManager,
+    commitToSession: boolean = true
   ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = await utilities.getRefreshToken(sessionManager);
 
@@ -73,11 +98,13 @@ export class AuthorizationCode extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(sessionManager, body);
-    await utilities.commitTokensToSession(
-      sessionManager,
-      tokens,
-      this.tokenValidationDetails
-    );
+    if (commitToSession) {
+      await utilities.commitTokensToSession(
+        sessionManager,
+        tokens,
+        this.tokenValidationDetails
+      );
+    }
     return tokens;
   }
 

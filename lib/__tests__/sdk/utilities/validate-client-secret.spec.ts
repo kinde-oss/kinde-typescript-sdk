@@ -1,4 +1,5 @@
 import { validateClientSecret } from '../../../sdk/utilities';
+import { describe, it, expect } from 'vitest';
 
 describe('validateClientSecret', () => {
   it('should return true for valid secrets', () => {

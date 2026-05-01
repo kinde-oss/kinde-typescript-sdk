@@ -1,5 +1,5 @@
 import * as mocks from '../../mocks';
-
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import {
   type TokenCollection,
   commitTokensToSession,
@@ -10,7 +10,6 @@ import {
 } from '../../../sdk/utilities';
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
-import { importJWK } from 'jose';
 
 describe('token-utils', () => {
   const domain = 'local-testing@kinde.com';
@@ -18,11 +17,8 @@ describe('token-utils', () => {
   let validationDetails: TokenValidationDetailsType;
 
   beforeAll(async () => {
-    const { publicKey } = await mocks.getKeys();
-
     validationDetails = {
       issuer: domain,
-      keyProvider: async () => await importJWK(publicKey, mocks.mockJwtAlg),
     };
   });
 
@@ -109,6 +105,7 @@ describe('token-utils', () => {
         email: idTokenPayload.email,
         id: idTokenPayload.sub,
         picture: null,
+        phone: undefined,
       };
 
       expect(await sessionManager.getSessionItem('id_token')).toBe(mockIdToken);

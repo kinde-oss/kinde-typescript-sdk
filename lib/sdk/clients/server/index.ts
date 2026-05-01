@@ -1,5 +1,4 @@
 import createAuthCodeClient from './authorization-code.js';
-import { isNodeEnvironment } from '../../environment.js';
 import createCCClient from './client-credentials.js';
 import { GrantType } from '../../oauth2-flows/index.js';
 
@@ -14,26 +13,22 @@ import type {
 type Options<T> = T extends GrantType.PKCE
   ? PKCEClientOptions
   : T extends GrantType.AUTHORIZATION_CODE
-  ? ACClientOptions
-  : T extends GrantType.CLIENT_CREDENTIALS
-  ? CCClientOptions
-  : never;
+    ? ACClientOptions
+    : T extends GrantType.CLIENT_CREDENTIALS
+      ? CCClientOptions
+      : never;
 type Client<T> = T extends PKCEClientOptions
   ? ACClient
   : T extends ACClientOptions
-  ? ACClient
-  : T extends CCClientOptions
-  ? CCClient
-  : never;
+    ? ACClient
+    : T extends CCClientOptions
+      ? CCClient
+      : never;
 
 export const createKindeServerClient = <G extends GrantType>(
   grantType: G,
   options: Options<G>
 ) => {
-  if (!isNodeEnvironment()) {
-    throw new Error('this method must be invoked in a node.js environment');
-  }
-
   switch (grantType) {
     case GrantType.AUTHORIZATION_CODE: {
       const clientOptions = options as ACClientOptions;

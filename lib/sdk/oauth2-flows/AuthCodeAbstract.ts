@@ -11,8 +11,7 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
-import { createLocalJWKSet } from 'jose';
-import { getRemoteJwks } from '../utilities/remote-jwks-cache.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows
@@ -36,17 +35,9 @@ export abstract class AuthCodeAbstract {
     this.userProfileEndpoint = `${authDomain}/oauth2/v2/user_profile`;
     this.authorizationEndpoint = `${authDomain}/oauth2/auth`;
     this.tokenEndpoint = `${authDomain}/oauth2/token`;
-    const keyProvider = async () => {
-      const func =
-        config.jwks !== undefined
-          ? createLocalJWKSet(config.jwks)
-          : await getRemoteJwks(authDomain);
-      return await func({ alg: 'RS256' });
-    };
     this.tokenValidationDetails = {
       issuer: config.authDomain,
       audience: config.audience,
-      keyProvider,
     };
   }
 
@@ -72,6 +63,17 @@ export abstract class AuthCodeAbstract {
   ): Promise<URL>;
 
   /**
+   * Abstract method mandates implementation of logic required for creating portal URL
+   * for accessing Kinde's portal interface, utilizing session data for authentication.
+   * @param {GeneratePortalUrlParams} options
+   * @returns {Promise<{url: URL}>} object containing the portal URL
+   */
+  public abstract createPortalUrl(
+    sessionManager: SessionManager,
+    options: GeneratePortalUrlParams
+  ): Promise<{ url: URL }>;
+
+  /**
    * Abstract method will implement logic required for exchanging received auth code
    * post user-authentication with authorization server to receive access, refresh
    * and id tokens from this exchange.
@@ -88,10 +90,12 @@ export abstract class AuthCodeAbstract {
    * Abstract method will implement logic in child classes for refreshing access token
    * using refresh token available in current session.
    * @param {SessionManager} sessionManager
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   public abstract refreshTokens(
-    sessionManager: SessionManager
+    sessionManager: SessionManager,
+    commitToSession?: boolean
   ): Promise<OAuth2CodeExchangeResponse>;
 
   /**
@@ -290,8 +294,10 @@ export abstract class AuthCodeAbstract {
         lang,
         login_hint: loginHint,
         connection_id: connectionId,
+        state,
         ...rest
       } = options.authUrlParams;
+
       searchParamsObject = { ...rest, ...searchParamsObject };
 
       if (lang) {

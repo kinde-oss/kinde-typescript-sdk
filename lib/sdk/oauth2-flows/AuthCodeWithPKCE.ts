@@ -12,6 +12,8 @@ import type {
   AuthURLOptions,
   AuthorizationCodeOptions,
 } from './types.js';
+import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import { createPortalUrl } from '../utilities/createPortalUrl.js';
 
 /**
  * Class provides implementation for the authorization code with PKCE extension
@@ -47,7 +49,10 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     this.codeChallenge = challenge;
     this.codeVerifier = verifier;
 
-    this.state = options.state ?? utilities.generateRandomString();
+    const providedState = options.state ?? options.authUrlParams?.state;
+
+    this.state = providedState ?? utilities.generateRandomString();
+
     const setItem = isBrowserEnvironment()
       ? (sessionManager as unknown as BrowserSessionManager).setSessionItemBrowser
       : sessionManager.setSessionItem;
@@ -65,14 +70,34 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
   }
 
   /**
+   * Method provides implementation for `createPortalUrl` method mandated by
+   * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
+   * further explanation.
+   * @param {SessionManager} sessionManager
+   * @param {Omit<GeneratePortalUrlParams, 'domain'>} options
+   * @returns {Promise<{url: URL}>} required authorization URL
+   */
+  async createPortalUrl(
+    sessionManager: SessionManager,
+    options: Omit<GeneratePortalUrlParams, 'domain'>
+  ): Promise<{ url: URL }> {
+    return await createPortalUrl(sessionManager, {
+      domain: this.config.authDomain,
+      ...options,
+    });
+  }
+
+  /**
    * Method provides implementation for `refreshTokens` method mandated by
    * `AuthCodeAbstract` parent class, see corresponding comment in parent class for
    * further explanation.
    * @param {SessionManager} sessionManager
+   * @param {boolean} [commitToSession=true] - Optional parameter, determines whether to commit the refreshed tokens to the session. Defaults to true.
    * @returns {Promise<OAuth2CodeExchangeResponse>}
    */
   public async refreshTokens(
-    sessionManager: SessionManager
+    sessionManager: SessionManager,
+    commitToSession: boolean = true
   ): Promise<OAuth2CodeExchangeResponse> {
     const refreshToken = await utilities.getRefreshToken(sessionManager);
     const body = new URLSearchParams({
@@ -82,11 +107,13 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
     });
 
     const tokens = await this.fetchTokensFor(sessionManager, body, true);
-    await utilities.commitTokensToSession(
-      sessionManager,
-      tokens,
-      this.tokenValidationDetails
-    );
+    if (commitToSession) {
+      await utilities.commitTokensToSession(
+        sessionManager,
+        tokens,
+        this.tokenValidationDetails
+      );
+    }
     return tokens;
   }
 
