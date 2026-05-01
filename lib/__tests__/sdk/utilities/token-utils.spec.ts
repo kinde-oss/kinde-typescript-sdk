@@ -58,8 +58,7 @@ describe('token-utils', () => {
         sessionManager,
         mockAccessToken,
         'access_token',
-        validationDetails,
-        'persistent'
+        validationDetails
       );
       expect(await sessionManager.getSessionItem('access_token')).toBe(
         mockAccessToken
@@ -76,8 +75,7 @@ describe('token-utils', () => {
           sessionManager,
           mockAccessToken,
           'access_token',
-          validationDetails,
-          'persistent'
+          validationDetails
         );
       };
       await expect(commitTokenFn).rejects.toBeInstanceOf(KindeSDKError);
@@ -94,8 +92,7 @@ describe('token-utils', () => {
         sessionManager,
         mockIdToken,
         'id_token',
-        validationDetails,
-        'persistent'
+        validationDetails
       );
 
       const storedUser = await getUserFromSession(sessionManager, validationDetails);

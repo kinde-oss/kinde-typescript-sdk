@@ -77,8 +77,7 @@ describe('ClientCredentials', () => {
         sessionManager,
         mockAccessToken,
         'access_token',
-        validationDetails,
-        'persistent'
+        validationDetails
       );
 
       const client = new ClientCredentials(clientConfig);
