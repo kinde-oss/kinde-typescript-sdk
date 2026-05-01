@@ -10,7 +10,6 @@ const run = async () => {
   const pathToFile = join(__dirname, 'lib/sdk/version.ts');
   const fileContent = await fsPromises.readFile(pathToFile, 'utf8');
 
-  // eslint-disable-next-line no-undef
   const isCleanArg = process.argv[2] === 'clean';
   const [searchValue, replaceValue] = !isCleanArg
     ? [VERSION_PLACEHOLDER, packageJson.version]
