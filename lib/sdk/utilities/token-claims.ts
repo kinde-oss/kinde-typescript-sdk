@@ -150,10 +150,10 @@ export const getUserOrganizations = async (
   sessionManager: SessionManager,
   validationDetails: TokenValidationDetailsType
 ): Promise<{ orgCodes: string[] }> => ({
-  orgCodes: (await getClaimValue(
+  orgCodes: ((await getClaimValue(
     sessionManager,
     'org_codes',
     'id_token',
     validationDetails
-  )) as string[],
+  )) ?? []) as string[],
 });
