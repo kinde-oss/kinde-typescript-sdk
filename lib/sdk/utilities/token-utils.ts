@@ -43,7 +43,7 @@ export const commitTokenToSession = async (
     } catch (error) {
       throw new KindeSDKError(
         KindeSDKErrorCode.INVALID_TOKEN_MEMORY_COMMIT,
-        `Attempting to commit invalid ${type} token "${token}" to memory: ${(error as Error).message}`
+        `Attempting to commit invalid ${type} token to memory: ${(error as Error).message}`
       );
     }
   }

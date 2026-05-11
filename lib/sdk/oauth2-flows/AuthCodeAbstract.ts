@@ -295,6 +295,7 @@ export abstract class AuthCodeAbstract {
         lang,
         login_hint: loginHint,
         connection_id: connectionId,
+        state: _state,
         ...rest
       } = options.authUrlParams;
 
