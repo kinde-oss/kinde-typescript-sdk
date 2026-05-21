@@ -25,70 +25,70 @@ importers:
         version: 0.1.3
     devDependencies:
       '@openapitools/openapi-generator-cli':
-        specifier: ^2.7.0
+        specifier: ^2.34.0
         version: 2.34.0
       '@tsconfig/node20':
-        specifier: ^20.1.0
+        specifier: ^20.1.9
         version: 20.1.9
       '@types/jsdom':
         specifier: ^27.0.0
         version: 27.0.0
       '@types/node':
-        specifier: ^22.18.1
+        specifier: ^22.19.19
         version: 22.19.19
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.42.0
+        specifier: ^8.59.4
         version: 8.59.4(@typescript-eslint/parser@8.59.4(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)(typescript@5.9.3)
       '@typescript-eslint/parser':
-        specifier: ^8.42.0
+        specifier: ^8.59.4
         version: 8.59.4(eslint@9.39.4)(typescript@5.9.3)
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@22.19.19)(jsdom@27.0.0(postcss@8.5.6))(yaml@2.8.3))
       eslint:
-        specifier: ^9.24.0
+        specifier: ^9.39.4
         version: 9.39.4
       eslint-config-love:
         specifier: 125.1.0
         version: 125.1.0(@typescript-eslint/parser@8.59.4(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)(typescript@5.9.3)
       eslint-config-prettier:
-        specifier: ^10.1.2
+        specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.4)
       eslint-plugin-import:
-        specifier: ^2.31.0
+        specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.59.4(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)
       eslint-plugin-n:
-        specifier: ^17.17.0
+        specifier: ^17.24.0
         version: 17.24.0(eslint@9.39.4)(typescript@5.9.3)
       eslint-plugin-prettier:
-        specifier: ^5.2.6
+        specifier: ^5.5.5
         version: 5.5.5(eslint-config-prettier@10.1.8(eslint@9.39.4))(eslint@9.39.4)(prettier@3.6.2)
       eslint-plugin-promise:
         specifier: ^7.2.1
         version: 7.2.1(eslint@9.39.4)
       husky:
-        specifier: ^9.0.0
+        specifier: ^9.1.7
         version: 9.1.7
       jose:
-        specifier: ^6.0.10
+        specifier: ^6.2.3
         version: 6.2.3
       jsdom:
         specifier: ^27.0.0
         version: 27.0.0(postcss@8.5.6)
       lint-staged:
-        specifier: ^16.1.6
+        specifier: ^16.4.0
         version: 16.4.0
       ncp:
         specifier: ^2.0.0
         version: 2.0.0
       prettier:
-        specifier: ^3.5.3
+        specifier: ^3.6.2
         version: 3.6.2
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
-        specifier: ^5.8.3
+        specifier: ^5.9.3
         version: 5.9.3
       vitest:
         specifier: ^3.2.4
@@ -1850,8 +1850,8 @@ packages:
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
 
-  jsrsasign@11.1.0:
-    resolution: {integrity: sha512-Ov74K9GihaK9/9WncTe1mPmvrO7Py665TUfUKvraXBpu+xcTWitrtuOwcjf4KMU9maPaYn0OuaWy0HOzy/GBXg==}
+  jsrsasign@11.1.3:
+    resolution: {integrity: sha512-nPnK5D/4lv0Dwr7TlzrKtAd8JlLZwFTqTUUB3NQCbtdobcRcohGFxjbPySDVh74iWUudcCsapYT6OxoyhJLhhA==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -3011,7 +3011,7 @@ snapshots:
   '@kinde/jwt-validator@0.4.0':
     dependencies:
       '@kinde/jwt-decoder': 0.2.0
-      jsrsasign: 11.1.0
+      jsrsasign: 11.1.3
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -4673,7 +4673,7 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
-  jsrsasign@11.1.0: {}
+  jsrsasign@11.1.3: {}
 
   keyv@4.5.4:
     dependencies:
