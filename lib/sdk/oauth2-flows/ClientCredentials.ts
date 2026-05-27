@@ -105,6 +105,7 @@ export class ClientCredentials {
       await this.getToken(sessionManager);
       return true;
     } catch (error) {
+      console.error(`Error checking if authenticated: ${(error as Error).message}`);
       return false;
     }
   }

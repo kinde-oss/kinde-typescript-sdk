@@ -168,6 +168,7 @@ export abstract class AuthCodeAbstract {
       await this.getToken(sessionManager);
       return true;
     } catch (error) {
+      console.error(`Error checking if authenticated: ${(error as Error).message}`);
       return false;
     }
   }
@@ -294,7 +295,7 @@ export abstract class AuthCodeAbstract {
         lang,
         login_hint: loginHint,
         connection_id: connectionId,
-        state,
+        state: _state,
         ...rest
       } = options.authUrlParams;
 

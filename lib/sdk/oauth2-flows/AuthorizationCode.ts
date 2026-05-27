@@ -38,7 +38,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     sessionManager: SessionManager,
     options: AuthURLOptions = {}
   ): Promise<URL> {
-    const providedState = options.state ?? options.authUrlParams?.state;
+    const providedState = options.state;
 
     this.state =
       providedState ??
