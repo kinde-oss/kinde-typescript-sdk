@@ -1,3 +1,11 @@
+import {
+  isTokenExpired as jsIsTokenExpired,
+  MemoryStorage,
+  StorageKeys,
+  clearActiveStorage,
+  getActiveStorage,
+  setActiveStorage,
+} from '@kinde/js-utils';
 import type {
   TokenCollection,
   UserType,
@@ -169,8 +177,8 @@ export const isTokenExpired = async (
   validationDetails: TokenValidationDetailsType
 ): Promise<boolean> => {
   if (!token) return true;
+
   try {
-    // Validate signature to prevent tampering
     const validation = await validateToken({
       token,
       domain: validationDetails.issuer,
@@ -179,12 +187,29 @@ export const isTokenExpired = async (
       return true;
     }
 
-    const currentUnixTime = Math.floor(Date.now() / 1000);
     const payload = jwtDecoder(token);
-    if (!payload || payload.exp === undefined) return true;
-    return currentUnixTime >= payload.exp;
-  } catch (error) {
-    console.error(`Error checking if token is expired: ${(error as Error).message}`);
+    if (!payload || payload.exp === undefined) {
+      return true;
+    }
+
+    const previous = getActiveStorage();
+    const storage = new MemoryStorage();
+    await storage.setSessionItem(StorageKeys.accessToken, token);
+    setActiveStorage(storage);
+
+    try {
+      const jsExpired = await jsIsTokenExpired();
+      // js-utils treats expiry as exp < now; the SDK uses now >= exp (inclusive).
+      const sdkExpired = Math.floor(Date.now() / 1000) >= payload.exp;
+      return jsExpired || sdkExpired;
+    } finally {
+      if (previous) {
+        setActiveStorage(previous);
+      } else {
+        clearActiveStorage();
+      }
+    }
+  } catch {
     return true;
   }
 };

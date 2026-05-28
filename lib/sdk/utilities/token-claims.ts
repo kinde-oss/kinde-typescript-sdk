@@ -1,8 +1,38 @@
+import {
+  getClaim as jsGetClaim,
+  getCurrentOrganization as jsGetCurrentOrganization,
+  getPermission as jsGetPermission,
+  getPermissions as jsGetPermissions,
+  getUserOrganizations as jsGetUserOrganizations,
+} from '@kinde/js-utils';
+import { validateToken } from '@kinde/jwt-validator';
 import { type SessionManager } from '../session-managers/index.js';
 import { type ClaimTokenType, type TokenValidationDetailsType } from './types.js';
-import { jwtDecoder } from '@kinde/jwt-decoder';
-import { validateToken } from '@kinde/jwt-validator';
+import { mapClaimTokenType, withJsUtilsStorage } from './session-storage-bridge.js';
 import { isTokenExpired } from './token-utils.js';
+
+const validateTokenForClaim = async (
+  sessionManager: SessionManager,
+  type: ClaimTokenType,
+  validationDetails: TokenValidationDetailsType
+): Promise<void> => {
+  const token = (await sessionManager.getSessionItem(type)) as string;
+
+  if (type === 'access_token') {
+    if (await isTokenExpired(token, validationDetails)) {
+      throw new Error('Access token expired');
+    }
+    return;
+  }
+
+  const validation = await validateToken({
+    token,
+    domain: validationDetails.issuer,
+  });
+  if (!validation.valid) {
+    throw new Error(validation.message);
+  }
+};
 
 /**
  * Method extracts the provided claim from the provided token type in the
@@ -19,24 +49,12 @@ export const getClaimValue = async (
   type: ClaimTokenType = 'access_token',
   validationDetails: TokenValidationDetailsType
 ): Promise<unknown | null> => {
-  const token = (await sessionManager.getSessionItem(`${type}`)) as string;
-  if (type === 'access_token') {
-    const expired = await isTokenExpired(token, validationDetails);
-    if (expired) {
-      throw new Error('Access token expired');
-    }
-  } else {
-    // ID token - signature validation only
-    const validation = await validateToken({
-      token,
-      domain: validationDetails.issuer,
-    });
-    if (!validation.valid) {
-      throw new Error(validation.message);
-    }
-  }
-  const tokenPayload = jwtDecoder(token) as Record<string, unknown>;
-  return tokenPayload[claim] ?? null;
+  await validateTokenForClaim(sessionManager, type, validationDetails);
+
+  return await withJsUtilsStorage(sessionManager, async () => {
+    const result = await jsGetClaim(claim, mapClaimTokenType(type));
+    return result?.value ?? null;
+  });
 };
 
 /**
@@ -74,19 +92,12 @@ export const getPermission = async (
   name: string,
   validationDetails: TokenValidationDetailsType
 ): Promise<{ orgCode: string | null; isGranted: boolean }> => {
-  const permissions = ((await getClaimValue(
-    sessionManager,
-    'permissions',
-    'access_token',
-    validationDetails
-  )) ?? []) as string[];
-  const isGranted = permissions.some((p) => p === name);
-  const orgCode = (await getClaimValue(
-    sessionManager,
-    'org_code',
-    'access_token',
-    validationDetails
-  )) as string | null;
+  await validateTokenForClaim(sessionManager, 'access_token', validationDetails);
+
+  const { orgCode, isGranted } = await withJsUtilsStorage(sessionManager, async () =>
+    jsGetPermission(name)
+  );
+
   return { orgCode, isGranted };
 };
 
@@ -99,14 +110,15 @@ export const getPermission = async (
 export const getOrganization = async (
   sessionManager: SessionManager,
   validationDetails: TokenValidationDetailsType
-): Promise<{ orgCode: string | null }> => ({
-  orgCode: (await getClaimValue(
-    sessionManager,
-    'org_code',
-    'access_token',
-    validationDetails
-  )) as string | null,
-});
+): Promise<{ orgCode: string | null }> => {
+  await validateTokenForClaim(sessionManager, 'access_token', validationDetails);
+
+  const orgCode = await withJsUtilsStorage(sessionManager, async () =>
+    jsGetCurrentOrganization()
+  );
+
+  return { orgCode };
+};
 
 /**
  * Method extracts all the permission and the organization code in the access
@@ -119,24 +131,9 @@ export const getPermissions = async (
   sessionManager: SessionManager,
   validationDetails: TokenValidationDetailsType
 ): Promise<{ permissions: string[]; orgCode: string | null }> => {
-  const [permissions, orgCode] = await Promise.all([
-    (await getClaimValue(
-      sessionManager,
-      'permissions',
-      'access_token',
-      validationDetails
-    )) as Promise<string[]>,
-    (await getClaimValue(
-      sessionManager,
-      'org_code',
-      'access_token',
-      validationDetails
-    )) as Promise<string | null>,
-  ]);
-  return {
-    permissions,
-    orgCode,
-  };
+  await validateTokenForClaim(sessionManager, 'access_token', validationDetails);
+
+  return await withJsUtilsStorage(sessionManager, async () => jsGetPermissions());
 };
 
 /**
@@ -149,11 +146,12 @@ export const getPermissions = async (
 export const getUserOrganizations = async (
   sessionManager: SessionManager,
   validationDetails: TokenValidationDetailsType
-): Promise<{ orgCodes: string[] }> => ({
-  orgCodes: ((await getClaimValue(
-    sessionManager,
-    'org_codes',
-    'id_token',
-    validationDetails
-  )) ?? []) as string[],
-});
+): Promise<{ orgCodes: string[] }> => {
+  await validateTokenForClaim(sessionManager, 'id_token', validationDetails);
+
+  const orgCodes = await withJsUtilsStorage(sessionManager, async () =>
+    jsGetUserOrganizations()
+  );
+
+  return { orgCodes: orgCodes ?? [] };
+};
