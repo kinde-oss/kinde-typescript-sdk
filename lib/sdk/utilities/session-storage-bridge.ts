@@ -120,7 +120,9 @@ export const withActiveJsUtilsStorage = async <T>(
   activate: () => Promise<void>,
   fn: () => Promise<T>
 ): Promise<T> => {
-  return await runInStorageContext((stack) => runWithActiveStorageStack(stack, activate, fn));
+  return await runInStorageContext((stack) =>
+    runWithActiveStorageStack(stack, activate, fn)
+  );
 };
 
 /**
