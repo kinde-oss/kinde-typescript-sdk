@@ -16,13 +16,20 @@ const validateTokenForClaim = async (
   type: ClaimTokenType,
   validationDetails: TokenValidationDetailsType
 ): Promise<void> => {
-  const token = (await sessionManager.getSessionItem(type)) as string;
+  const token = (await sessionManager.getSessionItem(type)) as string | null;
 
   if (type === 'access_token') {
+    if (token == null) {
+      throw new Error('Access token missing');
+    }
     if (await isTokenExpired(token, validationDetails)) {
       throw new Error('Access token expired');
     }
     return;
+  }
+
+  if (token == null) {
+    throw new Error('ID token missing');
   }
 
   const validation = await validateToken({

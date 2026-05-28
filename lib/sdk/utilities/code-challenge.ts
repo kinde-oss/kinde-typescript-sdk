@@ -1,7 +1,5 @@
-import {
-  base64UrlEncode as jsBase64UrlEncode,
-  generateRandomString,
-} from '@kinde/js-utils';
+import { base64UrlEncode as jsBase64UrlEncode } from '@kinde/js-utils';
+import { generateRandomString } from './random-string.js';
 import { subtle } from 'uncrypto';
 
 /**

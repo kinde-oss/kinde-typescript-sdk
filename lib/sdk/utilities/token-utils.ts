@@ -1,11 +1,5 @@
-import {
-  isTokenExpired as jsIsTokenExpired,
-  MemoryStorage,
-  StorageKeys,
-  clearActiveStorage,
-  getActiveStorage,
-  setActiveStorage,
-} from '@kinde/js-utils';
+import { isTokenExpired as jsIsTokenExpired } from '@kinde/js-utils';
+import { withAccessTokenInJsUtilsStorage } from './session-storage-bridge.js';
 import type {
   TokenCollection,
   UserType,
@@ -192,23 +186,12 @@ export const isTokenExpired = async (
       return true;
     }
 
-    const previous = getActiveStorage();
-    const storage = new MemoryStorage();
-    await storage.setSessionItem(StorageKeys.accessToken, token);
-    setActiveStorage(storage);
-
-    try {
+    return await withAccessTokenInJsUtilsStorage(token, async () => {
       const jsExpired = await jsIsTokenExpired();
       // js-utils treats expiry as exp < now; the SDK uses now >= exp (inclusive).
       const sdkExpired = Math.floor(Date.now() / 1000) >= payload.exp;
       return jsExpired || sdkExpired;
-    } finally {
-      if (previous) {
-        setActiveStorage(previous);
-      } else {
-        clearActiveStorage();
-      }
-    }
+    });
   } catch {
     return true;
   }

@@ -51,14 +51,23 @@ export const getFlag = async (
     );
   }
 
-  const value = await withJsUtilsStorage(sessionManager, async () => {
-    const flagValue = await jsGetFlag<FlagType[keyof FlagType]>(code);
-    return flagValue ?? flag?.v ?? defaultValue!;
+  let flagValue: FlagType[keyof FlagType] | null = null;
+  await withJsUtilsStorage(sessionManager, async () => {
+    flagValue = await jsGetFlag<FlagType[keyof FlagType]>(code);
   });
 
+  const resolved = flagValue ?? flag?.v ?? defaultValue;
+  if (resolved === undefined) {
+    throw new Error(
+      `Flag ${code} was not found, and no default value has been provided`
+    );
+  }
+
+  const is_default = flagValue == null && flag?.v === undefined;
+
   const response: GetFlagType = {
-    is_default: flag?.v === undefined,
-    value,
+    is_default,
+    value: resolved,
     code,
   };
 
