@@ -2,6 +2,7 @@ allowBuilds:
   '@nestjs/core': true
   '@openapitools/openapi-generator-cli': true
   esbuild: true
+enablePrePostScripts: true
 minimumReleaseAge: 0
 overrides:
   proxy-agent: 6.5.0
