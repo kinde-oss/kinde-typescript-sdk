@@ -7,11 +7,11 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "declaration": true,
-    "downlevelIteration": true,
+    "rootDir": "./lib",
     "declarationDir": "dist/types",
     "outDir": "./dist",
     "noEmitOnError": false,
