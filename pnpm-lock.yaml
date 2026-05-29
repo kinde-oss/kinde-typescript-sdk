@@ -5,7 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  proxy-agent: 6.5.0
+  proxy-agent: 8.0.1
+  '@openapitools/openapi-generator-cli>proxy-agent': 6.5.0
 
 importers:
 
