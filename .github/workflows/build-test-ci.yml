@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [22.x, 24.x]
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -26,22 +26,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      - name: Enabling pre-post scripts
-        run: pnpm config set enable-pre-post-scripts true
-      - name: Debug environment
-        run: |
-          echo "Node version: $(node --version)"
-          echo "pnpm version: $(pnpm --version)"
-          echo "Current directory: $(pwd)"
-          echo "Files in root: $(ls -la)"
-          echo "vitest.config.ts exists: $(test -f vitest.config.ts && echo 'yes' || echo 'no')"
       - run: pnpm install
       - run: pnpm build
       - run: pnpm lint
-      - name: Debug vitest setup
-        run: |
-          echo "Checking vitest config..."
-          npx vitest --version
-          echo "Config files present:"
-          ls -la vitest.config.* || echo "No vitest config files found"
       - run: pnpm test
