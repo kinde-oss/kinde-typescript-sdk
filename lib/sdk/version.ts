@@ -7,7 +7,7 @@
 
 import { type SDKHeaderOverrideOptions } from './oauth2-flows/index.js';
 
-export const SDK_VERSION = '2.13.2' as const;
+export const SDK_VERSION = 'SDK_VERSION_PLACEHOLDER' as const;
 
 export const getSDKHeader = (
   options: SDKHeaderOverrideOptions = {}
