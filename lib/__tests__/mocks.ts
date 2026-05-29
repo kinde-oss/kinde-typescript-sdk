@@ -1,6 +1,6 @@
 import { type JWK, SignJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
 import { type SessionManager } from '../sdk/session-managers';
-import { vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 let mockPrivateKey: JWK | undefined;
 let mockPublicKey: JWK | undefined;
