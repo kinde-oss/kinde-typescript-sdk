@@ -1,6 +1,6 @@
 import { type JWK, SignJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
 import { type SessionManager } from '../sdk/session-managers';
-import { vi } from 'vitest';
+import { type Mock, vi } from 'vitest';
 
 let mockPrivateKey: JWK | undefined;
 let mockPublicKey: JWK | undefined;
@@ -23,7 +23,7 @@ export const getKeys = async (): Promise<{ privateKey: JWK; publicKey: JWK }> =>
   return { privateKey: mockPrivateKey, publicKey: mockPublicKey };
 };
 
-export const fetchClient = vi.fn().mockImplementation(
+export const fetchClient: Mock = vi.fn().mockImplementation(
   async () =>
     await Promise.resolve({
       json: async () => {
@@ -131,7 +131,7 @@ export const sessionManager = new ServerSessionManager();
 global.fetch = fetchClient;
 
 // Mock @kinde/jwt-validator
-export const createJwtValidatorMock = () => ({
+export const createJwtValidatorMock = (): { validateToken: Mock } => ({
   validateToken: vi.fn().mockImplementation(async ({ token, domain }) => {
     if (!token) {
       return { valid: false, message: 'Token is required' };
