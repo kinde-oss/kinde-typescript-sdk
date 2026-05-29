@@ -42,12 +42,14 @@ export interface SDKHeaderOverrideOptions {
 }
 
 export interface AuthorizationCodeOptions
-  extends OAuth2FlowOptions, SDKHeaderOverrideOptions {
+  extends OAuth2FlowOptions,
+    SDKHeaderOverrideOptions {
   redirectURL: string;
 }
 
 export interface ClientCredentialsOptions
-  extends OAuth2FlowOptions, SDKHeaderOverrideOptions {
+  extends OAuth2FlowOptions,
+    SDKHeaderOverrideOptions {
   clientSecret: string;
 }
 
