@@ -12,9 +12,6 @@ import type { ClaimTokenType } from './types.js';
 type ActiveStorageEntry = ReturnType<typeof getActiveStorage>;
 type ActiveStorageStack = ActiveStorageEntry[];
 
-/** LIFO stack for browser nesting (concurrent interleaving is not isolated). */
-let browserStorageStack: ActiveStorageStack = [];
-
 let jsUtilsStorageContext:
   | import('node:async_hooks').AsyncLocalStorage<ActiveStorageStack>
   | undefined;
@@ -91,8 +88,8 @@ const runWithActiveStorageStack = async <T>(
   fn: () => Promise<T>
 ): Promise<T> => {
   pushActiveJsUtilsStorage(stack);
-  await activate();
   try {
+    await activate();
     return await fn();
   } finally {
     popActiveJsUtilsStorage(stack);
@@ -110,7 +107,7 @@ const runInStorageContext = async <T>(
     return context.run(stack, () => fn(stack));
   }
 
-  return fn(browserStorageStack);
+  return fn([]);
 };
 
 /**
@@ -141,7 +138,7 @@ export const withAccessTokenInJsUtilsStorage = async <T>(
 
 /**
  * Runs a callback with the SDK session bridged to js-utils active storage,
- * restoring the previous active storage afterward (LIFO per async context on Node).
+ * restoring the previous active storage afterward (LIFO per async context).
  */
 export const withJsUtilsStorage = async <T>(
   sessionManager: SessionManager,
