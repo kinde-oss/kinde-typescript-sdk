@@ -51,10 +51,9 @@ export const getFlag = async (
     );
   }
 
-  let flagValue: FlagType[keyof FlagType] | null = null;
-  await withJsUtilsStorage(sessionManager, async () => {
-    flagValue = await jsGetFlag<FlagType[keyof FlagType]>(code);
-  });
+  const flagValue = await withJsUtilsStorage(sessionManager, async () =>
+    jsGetFlag<FlagType[keyof FlagType]>(code)
+  );
 
   const resolved = flagValue ?? flag?.v ?? defaultValue;
   if (resolved === undefined) {
