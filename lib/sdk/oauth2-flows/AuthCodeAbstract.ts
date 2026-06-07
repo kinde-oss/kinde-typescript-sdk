@@ -11,7 +11,7 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
-import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import type { GeneratePortalUrlParams } from '../portal.js';
 
 /**
  * Abstract class provides contract (methods) for classes implementing OAuth2.0 flows

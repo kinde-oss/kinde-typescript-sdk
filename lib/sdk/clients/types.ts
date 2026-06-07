@@ -12,8 +12,8 @@ export interface BrowserPKCEClientOptions extends AuthorizationCodeOptions {
   sessionManager?: SessionManager;
 }
 
-export { PortalPage } from '@kinde/js-utils';
-export type { GeneratePortalUrlParams } from '@kinde/js-utils';
+export { PortalPage } from '../portal.js';
+export type { GeneratePortalUrlParams } from '../portal.js';
 
 export interface PKCEClientOptions extends AuthorizationCodeOptions {}
 export interface CCClientOptions extends ClientCredentialsOptions {}

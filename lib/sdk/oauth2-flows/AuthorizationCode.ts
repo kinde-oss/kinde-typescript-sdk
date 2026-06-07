@@ -7,7 +7,7 @@ import type {
   AuthorizationCodeOptions,
   AuthURLOptions,
 } from './types.js';
-import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import type { GeneratePortalUrlParams } from '../portal.js';
 import { createPortalUrl } from '../utilities/createPortalUrl.js';
 
 /**

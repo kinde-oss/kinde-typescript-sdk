@@ -12,7 +12,7 @@ import type {
 } from '../types.js';
 
 import type { OAuth2CodeExchangeResponse } from '../../oauth2-flows/types.js';
-import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import type { GeneratePortalUrlParams } from '../../portal.js';
 
 const createAuthorizationCodeClient = (
   options: ACClientOptions,

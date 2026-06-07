@@ -1,7 +1,7 @@
 import { BrowserSessionManager } from '../../session-managers/index.js';
 import { AuthCodeWithPKCE } from '../../oauth2-flows/index.js';
 import * as utilities from '../../utilities/index.js';
-import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import type { GeneratePortalUrlParams } from '../../portal.js';
 
 import type {
   UserType,

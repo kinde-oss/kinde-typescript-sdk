@@ -4,7 +4,7 @@ import {
   setActiveStorage,
   StorageKeys,
 } from '@kinde/js-utils';
-import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import type { GeneratePortalUrlParams } from '../portal.js';
 import { type SessionManager } from '../session-managers/index.js';
 
 export const createPortalUrl = async (
