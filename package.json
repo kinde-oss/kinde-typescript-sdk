@@ -49,11 +49,11 @@
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/jsdom": "^28.0.0",
-    "@types/node": "^22.18.1",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
     "@vitest/coverage-v8": "^3.2.4",
-    "eslint": "^9.24.0",
+    "eslint": "^10.0.0",
     "eslint-config-love": "154.0.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-import": "^2.31.0",
@@ -78,8 +78,9 @@
   },
   "pnpm": {
     "overrides": {
-      "proxy-agent": "6.5.0"
+      "proxy-agent": "8.0.1",
+      "@openapitools/openapi-generator-cli>proxy-agent": "6.5.0"
     }
   },
-  "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a"
+  "packageManager": "pnpm@10.34.1+sha512.b58fbde6dca66a929538021581f648b4570b6ca19b18e7cbd7f2c07a7b24454155388dacdf08f2af3678e88a6d1fe04f9d609df24bf51735a060ea041b374ab7"
 }
