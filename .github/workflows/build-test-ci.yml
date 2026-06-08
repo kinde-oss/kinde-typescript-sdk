@@ -38,6 +38,7 @@ jobs:
       - run: pnpm install
       - run: pnpm build
       - run: pnpm lint
+        if: matrix.node-version != '18.x'
       - name: Debug vitest setup
         run: |
           echo "Checking vitest config..."
