@@ -42,7 +42,9 @@
     "type": "git",
     "url": "https://github.com/kinde-oss/kinde-typescript-sdk"
   },
-  "bugs": "https://github.com/kinde-oss/kinde-typescript-sdk",
+  "bugs": {
+    "url": "https://github.com/kinde-oss/kinde-typescript-sdk/issues"
+  },
   "homepage": "https://kinde.com",
   "license": "MIT",
   "devDependencies": {
