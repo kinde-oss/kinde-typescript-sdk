@@ -1,5 +1,7 @@
+import { getFlag as jsGetFlag } from '@kinde/js-utils';
 import { type SessionManager } from '../session-managers/index.js';
 import { getClaimValue } from './token-claims.js';
+import { withJsUtilsStorage } from './session-storage-bridge.js';
 
 import {
   type FeatureFlags,
@@ -32,6 +34,7 @@ export const getFlag = async (
       'access_token',
       validationDetails
     )) as FeatureFlags) ?? {};
+
   const flag = featureFlags[code];
 
   if (!flag && defaultValue === undefined) {
@@ -48,9 +51,22 @@ export const getFlag = async (
     );
   }
 
+  const flagValue = await withJsUtilsStorage(sessionManager, async () =>
+    jsGetFlag<FlagType[keyof FlagType]>(code)
+  );
+
+  const resolved = flagValue ?? flag?.v ?? defaultValue;
+  if (resolved === undefined) {
+    throw new Error(
+      `Flag ${code} was not found, and no default value has been provided`
+    );
+  }
+
+  const is_default = flagValue == null && flag?.v === undefined;
+
   const response: GetFlagType = {
-    is_default: flag?.v === undefined,
-    value: flag?.v ?? defaultValue!,
+    is_default,
+    value: resolved,
     code,
   };
 
