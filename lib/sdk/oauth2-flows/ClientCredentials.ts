@@ -79,8 +79,7 @@ export class ClientCredentials {
     const config: RequestInit = { method: 'POST', headers, body };
     const response = await fetch(this.tokenEndpoint, config);
     const payload = (await response.json()) as
-      | OAuth2CCTokenErrorResponse
-      | OAuth2CCTokenResponse;
+      OAuth2CCTokenErrorResponse | OAuth2CCTokenResponse;
 
     const errorPayload = payload as OAuth2CCTokenErrorResponse;
     if (errorPayload.error) {
