@@ -1,6 +1,6 @@
 {
   "name": "@kinde-oss/kinde-typescript-sdk",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "description": "Kinde Typescript SDK",
   "main": "dist-cjs/index.js",
   "module": "dist/index.js",
@@ -47,6 +47,9 @@
   },
   "homepage": "https://kinde.com",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@tsconfig/node24": "^24.0.0",
