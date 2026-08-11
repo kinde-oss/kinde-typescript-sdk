@@ -247,8 +247,7 @@ export abstract class AuthCodeAbstract {
     };
     const response = await fetch(this.tokenEndpoint, config);
     const payload = (await response.json()) as
-      | OAuth2CodeExchangeErrorResponse
-      | OAuth2CodeExchangeResponse;
+      OAuth2CodeExchangeErrorResponse | OAuth2CodeExchangeResponse;
 
     const errorPayload = payload as OAuth2CodeExchangeErrorResponse;
     if (errorPayload.error) {
