@@ -128,7 +128,7 @@ class ServerSessionManager implements SessionManager {
 
 export const sessionManager = new ServerSessionManager();
 
-global.fetch = fetchClient;
+globalThis.fetch = fetchClient;
 
 // Mock @kinde/jwt-validator
 export const createJwtValidatorMock = (): { validateToken: Mock } => ({
