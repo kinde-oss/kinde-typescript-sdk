@@ -123,8 +123,7 @@ export class AuthorizationCode extends AuthCodeAbstract {
     const [code, state] = this.getCallbackURLParams(callbackURL);
     const stateKey = AuthorizationCode.STATE_KEY;
     const storedState = (await sessionManager.getSessionItem(stateKey)) as
-      | string
-      | null;
+      string | null;
     if (!storedState) {
       throw new Error(
         `Authentication flow: Received: ${state} | Expected: State not found`
