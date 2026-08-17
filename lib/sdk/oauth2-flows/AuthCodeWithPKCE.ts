@@ -140,8 +140,7 @@ export class AuthCodeWithPKCE extends AuthCodeAbstract {
       : sessionManager.getSessionItem;
 
     const storedState = (await getItem.call(sessionManager, storedStateKey)) as
-      | string
-      | null;
+      string | null;
     if (!storedState) {
       throw new Error('Stored state not found');
     }
