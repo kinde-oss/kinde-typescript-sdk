@@ -32,9 +32,8 @@ export const getFlag = async (
   const { flagValue, featureFlags } = await withJsUtilsStorage(
     sessionManager,
     async () => {
-      const flags = (await jsGetClaim('feature_flags', 'accessToken'))?.value as
-        | FeatureFlags
-        | undefined;
+      const claim = await jsGetClaim('feature_flags', 'accessToken');
+      const flags = claim?.value as FeatureFlags | undefined;
       const flagValue = await jsGetFlag<FlagType[keyof FlagType]>(code);
       return { flagValue, featureFlags: flags ?? {} };
     }

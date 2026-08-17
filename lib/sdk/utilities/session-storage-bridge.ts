@@ -8,22 +8,20 @@ import {
 import { isNodeEnvironment } from '../environment.js';
 import { type SessionManager } from '../session-managers/index.js';
 import type { ClaimTokenType } from './types.js';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 type ActiveStorageEntry = ReturnType<typeof getActiveStorage>;
 type ActiveStorageStack = ActiveStorageEntry[];
 
-let jsUtilsStorageContext:
-  | import('node:async_hooks').AsyncLocalStorage<ActiveStorageStack>
-  | undefined;
+let jsUtilsStorageContext: AsyncLocalStorage<ActiveStorageStack> | undefined;
 
 const getJsUtilsStorageContext = async (): Promise<
-  import('node:async_hooks').AsyncLocalStorage<ActiveStorageStack> | undefined
+  AsyncLocalStorage<ActiveStorageStack> | undefined
 > => {
   if (!isNodeEnvironment()) {
     return undefined;
   }
   if (!jsUtilsStorageContext) {
-    const { AsyncLocalStorage } = await import('node:async_hooks');
     jsUtilsStorageContext = new AsyncLocalStorage<ActiveStorageStack>();
   }
   return jsUtilsStorageContext;
