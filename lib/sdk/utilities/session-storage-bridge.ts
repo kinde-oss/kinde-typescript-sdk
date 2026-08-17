@@ -111,14 +111,36 @@ const runInStorageContext = async <T>(
 };
 
 /**
+ * Serializes bridged activate → fn → restore sections. `setActiveStorage` is
+ * process-global, so overlapping calls would otherwise clobber each other even
+ * when the restore stack is isolated (Node ALS) or shared (browser fallback).
+ */
+let bridgeLock: Promise<void> = Promise.resolve();
+
+const withBridgeLock = async <T>(fn: () => Promise<T>): Promise<T> => {
+  const prev = bridgeLock;
+  let release!: () => void;
+  bridgeLock = new Promise((r) => {
+    release = r;
+  });
+  await prev;
+  try {
+    return await fn();
+  } finally {
+    release();
+  }
+};
+
+/**
  * Runs a callback with a custom js-utils active storage setup, using a LIFO restore stack.
+ * Concurrent bridged calls are serialized so only one holds active storage at a time.
  */
 export const withActiveJsUtilsStorage = async <T>(
   activate: () => Promise<void>,
   fn: () => Promise<T>
 ): Promise<T> => {
-  return await runInStorageContext((stack) =>
-    runWithActiveStorageStack(stack, activate, fn)
+  return withBridgeLock(() =>
+    runInStorageContext((stack) => runWithActiveStorageStack(stack, activate, fn))
   );
 };
 
