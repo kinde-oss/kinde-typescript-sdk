@@ -1,7 +1,7 @@
-import { getFlag as jsGetFlag } from '@kinde/js-utils';
+import { getClaim as jsGetClaim, getFlag as jsGetFlag } from '@kinde/js-utils';
 import { type SessionManager } from '../session-managers/index.js';
-import { getClaimValue } from './token-claims.js';
 import { withJsUtilsStorage } from './session-storage-bridge.js';
+import { validateTokenForClaim } from './validate-token-for-claim.js';
 
 import {
   type FeatureFlags,
@@ -27,13 +27,18 @@ export const getFlag = async (
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): Promise<GetFlagType> => {
-  const featureFlags =
-    ((await getClaimValue(
-      sessionManager,
-      'feature_flags',
-      'access_token',
-      validationDetails
-    )) as FeatureFlags) ?? {};
+  await validateTokenForClaim(sessionManager, 'access_token', validationDetails);
+
+  const { flagValue, featureFlags } = await withJsUtilsStorage(
+    sessionManager,
+    async () => {
+      const flags = (await jsGetClaim('feature_flags', 'accessToken'))?.value as
+        | FeatureFlags
+        | undefined;
+      const flagValue = await jsGetFlag<FlagType[keyof FlagType]>(code);
+      return { flagValue, featureFlags: flags ?? {} };
+    }
+  );
 
   const flag = featureFlags[code];
 
@@ -50,10 +55,6 @@ export const getFlag = async (
       }`
     );
   }
-
-  const flagValue = await withJsUtilsStorage(sessionManager, async () =>
-    jsGetFlag<FlagType[keyof FlagType]>(code)
-  );
 
   const resolved = flagValue ?? flag?.v ?? defaultValue;
   if (resolved === undefined) {

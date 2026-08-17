@@ -97,5 +97,50 @@ describe('feature-flags', () => {
         );
       }
     });
+
+    describe('is_default', () => {
+      it('is false when flag is present with falsy token values (false / 0 / "")', async () => {
+        const { token } = await mocks.getMockAccessToken(authDomain, false, false, {
+          bool_flag: { t: 'b', v: false },
+          int_flag: { t: 'i', v: 0 },
+          string_flag: { t: 's', v: '' },
+        });
+        await sessionManager.setSessionItem('access_token', token);
+
+        expect(
+          await getFlag(sessionManager, 'bool_flag', validationDetails)
+        ).toMatchObject({ is_default: false, value: false, type: 'boolean' });
+        expect(
+          await getFlag(sessionManager, 'int_flag', validationDetails)
+        ).toMatchObject({ is_default: false, value: 0, type: 'number' });
+        expect(
+          await getFlag(sessionManager, 'string_flag', validationDetails)
+        ).toMatchObject({ is_default: false, value: '', type: 'string' });
+      });
+
+      it('is true when flag is missing and defaultValue is provided', async () => {
+        expect(
+          await getFlag(
+            sessionManager,
+            'missing_flag',
+            validationDetails,
+            'fallback'
+          )
+        ).toMatchObject({
+          is_default: true,
+          value: 'fallback',
+          code: 'missing_flag',
+        });
+      });
+
+      it('is false when flag is present in token and jsGetFlag returns a value', async () => {
+        expect(
+          await getFlag(sessionManager, 'theme', validationDetails)
+        ).toMatchObject({ is_default: false, value: 'pink', type: 'string' });
+        expect(
+          await getFlag(sessionManager, 'is_dark_mode', validationDetails)
+        ).toMatchObject({ is_default: false, value: false, type: 'boolean' });
+      });
+    });
   });
 });
