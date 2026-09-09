@@ -2,6 +2,7 @@ import { BrowserSessionManager } from '../../session-managers/index.js';
 import { AuthCodeWithPKCE } from '../../oauth2-flows/index.js';
 import * as utilities from '../../utilities/index.js';
 import type { GeneratePortalUrlParams } from '@kinde/js-utils';
+import { validateToken } from '@kinde/jwt-validator';
 
 import type {
   UserType,
@@ -23,6 +24,7 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
   const { featureFlags, tokenClaims } = utilities;
   const sessionManager = options.sessionManager ?? new BrowserSessionManager();
   const client = new AuthCodeWithPKCE(options);
+  const domain = options.authDomain;
 
   /**
    * Method makes use of the `createAuthorizationURL` method of the AuthCodeWithPKCE
@@ -92,7 +94,20 @@ const createAuthCodeWithPKCEClient = (options: BrowserPKCEClientOptions) => {
    * @returns {Promise<boolean>}
    */
   const isAuthenticated = async (): Promise<boolean> => {
-    return await client.isAuthenticated(sessionManager);
+    // First, check if the token is valid before other checks
+    const token = await client.getToken(sessionManager);
+    if (!token || typeof token !== 'string' || token.trim() === '') {
+      return false;
+    }
+    try {
+      const isValid = await validateToken({ token, domain });
+      if (!isValid) {
+        return false;
+      }
+      return await client.isAuthenticated(sessionManager);
+    } catch (e) {
+      return false;
+    }
   };
 
   /**
