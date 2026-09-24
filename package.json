@@ -59,7 +59,7 @@
     "@typescript-eslint/parser": "^8.42.0",
     "@vitest/coverage-v8": "^4.0.0",
     "eslint": "^10.0.0",
-    "eslint-config-love": "154.1.0",
+    "eslint-config-love": "157.0.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^18.0.0",
