@@ -5,4 +5,4 @@ allowBuilds:
 enablePrePostScripts: true
 minimumReleaseAge: 0
 overrides:
-  proxy-agent: 6.5.0
+  proxy-agent: 8.0.2
