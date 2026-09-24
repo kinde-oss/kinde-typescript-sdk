@@ -19,7 +19,7 @@ importers:
         version: 0.2.5
       '@kinde/jwt-validator':
         specifier: ^0.4.0
-        version: 0.4.4
+        version: 0.4.5
       uncrypto:
         specifier: ^0.1.3
         version: 0.1.3
@@ -426,8 +426,8 @@ packages:
   '@kinde/jwt-decoder@0.2.5':
     resolution: {integrity: sha512-du2JjKb560YJCwM1chjkpZBbg6q3v2RX1JfT1Dbhl0QjrmKsWFTZvFja34rdjacps0CjdA4nE3XHPzMDejbg5g==}
 
-  '@kinde/jwt-validator@0.4.4':
-    resolution: {integrity: sha512-g9Cp/JfLRftie/5w8WHz21aI0GtRW2rvPE30fDRfIcdScSQ27Aidkw4oV/cepWvHV2bnifybnx79olgN8U8FRA==}
+  '@kinde/jwt-validator@0.4.5':
+    resolution: {integrity: sha512-oXrLhl4bYUv8TPiKthh23IC6XM5j0paIeKnCpSpHyKLOIowFQhkCx1oml8BZcpEdgn0qo4sIIESReKpp/mLJIA==}
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -1737,8 +1737,8 @@ packages:
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
 
-  jsrsasign@11.1.3:
-    resolution: {integrity: sha512-nPnK5D/4lv0Dwr7TlzrKtAd8JlLZwFTqTUUB3NQCbtdobcRcohGFxjbPySDVh74iWUudcCsapYT6OxoyhJLhhA==}
+  jsrsasign@11.1.5:
+    resolution: {integrity: sha512-i6mAjey0/4UQmlOaNS2vROl8EkWV8Ei436reJAby2OPQ3lF6uXSs1VYpnM8hndmmCMFIzNc04Uw2GF+0JVLFbg==}
     deprecated: This package is no longer maintained.
 
   keyv@4.5.4:
@@ -2724,10 +2724,10 @@ snapshots:
 
   '@kinde/jwt-decoder@0.2.5': {}
 
-  '@kinde/jwt-validator@0.4.4':
+  '@kinde/jwt-validator@0.4.5':
     dependencies:
       '@kinde/jwt-decoder': 0.2.5
-      jsrsasign: 11.1.3
+      jsrsasign: 11.1.5
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -3860,9 +3860,9 @@ snapshots:
 
   fast-safe-stringify@2.1.1: {}
 
-  fdir@6.5.0(picomatch@4.0.5):
+  fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
-      picomatch: 4.0.5
+      picomatch: 4.0.7
 
   figures@3.2.0:
     dependencies:
@@ -4241,7 +4241,7 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
-  jsrsasign@11.1.3: {}
+  jsrsasign@11.1.5: {}
 
   keyv@4.5.4:
     dependencies:
@@ -4729,8 +4729,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.5)
-      picomatch: 4.0.5
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
 
   tinyrainbow@3.1.1: {}
 
@@ -4855,8 +4855,8 @@ snapshots:
   vite@7.3.6(@types/node@24.13.3)(yaml@2.9.0):
     dependencies:
       esbuild: 0.28.1
-      fdir: 6.5.0(picomatch@4.0.5)
-      picomatch: 4.0.5
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
       postcss: 8.5.16
       rollup: 4.62.2
       tinyglobby: 0.2.17
