@@ -86,6 +86,21 @@ export const withActiveJsUtilsStorage = async <T>(
 };
 
 /**
+ * Runs a callback with a single access token in js-utils active storage,
+ * restoring the previous active storage afterward.
+ */
+export const withAccessTokenInJsUtilsStorage = async <T>(
+  accessToken: string,
+  fn: () => Promise<T>
+): Promise<T> => {
+  return await withActiveJsUtilsStorage(async () => {
+    const storage = new MemoryStorage();
+    await storage.setSessionItem(StorageKeys.accessToken, accessToken);
+    setActiveStorage(storage);
+  }, fn);
+};
+
+/**
  * Runs a callback with the SDK session bridged to js-utils active storage,
  * restoring the previous active storage afterward.
  */
