@@ -126,6 +126,7 @@ describe('token-utils', () => {
     it('returns true if provided token is missing "exp" claim', async () => {
       const { token: mockAccessToken } = await mocks.getMockAccessToken(
         domain,
+        false,
         true
       );
       expect(await isTokenExpired(mockAccessToken, validationDetails)).toBe(true);
