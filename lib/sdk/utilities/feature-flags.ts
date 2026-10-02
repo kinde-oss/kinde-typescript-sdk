@@ -1,5 +1,7 @@
+import { getClaim as jsGetClaim, getFlag as jsGetFlag } from '@kinde/js-utils';
 import { type SessionManager } from '../session-managers/index.js';
-import { getClaimValue } from './token-claims.js';
+import { withJsUtilsStorage } from './session-storage-bridge.js';
+import { validateTokenForClaim } from './validate-token-for-claim.js';
 
 import {
   type FeatureFlags,
@@ -25,13 +27,18 @@ export const getFlag = async (
   defaultValue?: FlagType[keyof FlagType],
   type?: keyof FlagType
 ): Promise<GetFlagType> => {
-  const featureFlags =
-    ((await getClaimValue(
-      sessionManager,
-      'feature_flags',
-      'access_token',
-      validationDetails
-    )) as FeatureFlags) ?? {};
+  await validateTokenForClaim(sessionManager, 'access_token', validationDetails);
+
+  const { flagValue, featureFlags } = await withJsUtilsStorage(
+    sessionManager,
+    async () => {
+      const claim = await jsGetClaim('feature_flags', 'accessToken');
+      const flags = claim?.value as FeatureFlags | undefined;
+      const flagValue = await jsGetFlag<FlagType[keyof FlagType]>(code);
+      return { flagValue, featureFlags: flags ?? {} };
+    }
+  );
+
   const flag = featureFlags[code];
 
   if (!flag && defaultValue === undefined) {
@@ -48,9 +55,18 @@ export const getFlag = async (
     );
   }
 
+  const resolved = flagValue ?? flag?.v ?? defaultValue;
+  if (resolved === undefined) {
+    throw new Error(
+      `Flag ${code} was not found, and no default value has been provided`
+    );
+  }
+
+  const is_default = flagValue == null && flag?.v === undefined;
+
   const response: GetFlagType = {
-    is_default: flag?.v === undefined,
-    value: flag?.v ?? defaultValue!,
+    is_default,
+    value: resolved,
     code,
   };
 
