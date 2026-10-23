@@ -1,17 +1,13 @@
+import { base64UrlEncode as jsBase64UrlEncode } from '@kinde/js-utils';
 import { generateRandomString } from './random-string.js';
 import { subtle } from 'uncrypto';
 
 /**
- * Encodes the provided ArrayBuffer string to base-64 format.
+ * Encodes the provided ArrayBuffer to base64url format.
  * @param {ArrayBuffer} str
  * @returns {string}
  */
-export const base64UrlEncode = (str: ArrayBuffer): string => {
-  return btoa(String.fromCharCode(...new Uint8Array(str)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-};
+export const base64UrlEncode = (str: ArrayBuffer): string => jsBase64UrlEncode(str);
 
 /**
  * Creates a one-way hash for the provided string using SHA-256
