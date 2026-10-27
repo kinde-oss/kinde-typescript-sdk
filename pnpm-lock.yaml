@@ -174,7 +174,7 @@ importers:
         version: 0.32.1
       '@kinde/jwt-decoder':
         specifier: ^0.2.0
-        version: 0.2.5
+        version: 0.2.6
       '@kinde/jwt-validator':
         specifier: ^0.4.0
         version: 0.4.5
@@ -593,8 +593,8 @@ packages:
   '@kinde/js-utils@0.32.1':
     resolution: {integrity: sha512-sh65zgj+pvc0K38zF1FytRQOpkzJy2qmth0u+vSzgbcLdCDYfEpswcnnbqqiwK6CXIkAMGiOlQGe5wPLpNoHfw==}
 
-  '@kinde/jwt-decoder@0.2.5':
-    resolution: {integrity: sha512-du2JjKb560YJCwM1chjkpZBbg6q3v2RX1JfT1Dbhl0QjrmKsWFTZvFja34rdjacps0CjdA4nE3XHPzMDejbg5g==}
+  '@kinde/jwt-decoder@0.2.6':
+    resolution: {integrity: sha512-DJIkhTdt6JWKSj+lO2IIHxUmRMJfbhQ8Jyr4rvhgF4GVO9wA+9L1t/aGHpBQjp8NiTAjs/4cavP+iXO/n+o+JQ==}
 
   '@kinde/jwt-validator@0.4.5':
     resolution: {integrity: sha512-oXrLhl4bYUv8TPiKthh23IC6XM5j0paIeKnCpSpHyKLOIowFQhkCx1oml8BZcpEdgn0qo4sIIESReKpp/mLJIA==}
@@ -2910,13 +2910,13 @@ snapshots:
 
   '@kinde/js-utils@0.32.1':
     dependencies:
-      '@kinde/jwt-decoder': 0.2.5
+      '@kinde/jwt-decoder': 0.2.6
 
-  '@kinde/jwt-decoder@0.2.5': {}
+  '@kinde/jwt-decoder@0.2.6': {}
 
   '@kinde/jwt-validator@0.4.5':
     dependencies:
-      '@kinde/jwt-decoder': 0.2.5
+      '@kinde/jwt-decoder': 0.2.6
       jsrsasign: 11.1.5
 
   '@lukeed/csprng@1.1.0': {}
