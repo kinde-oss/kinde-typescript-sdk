@@ -269,10 +269,7 @@ export abstract class AuthCodeAbstract {
       // still-valid session (and emit Max-Age=0 cookies) on serverless hosts
       // that cannot re-read the winner's cookies mid-flight.
       if (isStaleRefresh) {
-        throw new KindeSDKError(
-          KindeSDKErrorCode.STALE_REFRESH_TOKEN,
-          message
-        );
+        throw new KindeSDKError(KindeSDKErrorCode.STALE_REFRESH_TOKEN, message);
       }
 
       await sessionManager.destroySession();
