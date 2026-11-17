@@ -149,6 +149,13 @@ export abstract class AuthCodeAbstract {
       const tokens = await this.refreshTokens(sessionManager);
       return tokens.access_token;
     } catch (error) {
+      // Preserve stale-refresh typing for race losers; wrap everything else.
+      if (
+        error instanceof KindeSDKError &&
+        error.errorCode === KindeSDKErrorCode.STALE_REFRESH_TOKEN
+      ) {
+        throw error;
+      }
       throw new KindeSDKError(
         KindeSDKErrorCode.FAILED_TOKENS_REFRESH_ATTEMPT,
         `Failed to refresh tokens owing to: ${(error as Error).message}`
@@ -251,13 +258,37 @@ export abstract class AuthCodeAbstract {
 
     const errorPayload = payload as OAuth2CodeExchangeErrorResponse;
     if (errorPayload.error) {
-      await sessionManager.destroySession();
       const errorDescription = errorPayload.error_description;
       const message = errorDescription ?? errorPayload.error;
+      const isRefreshGrant = body.get('grant_type') === 'refresh_token';
+      const isStaleRefresh =
+        isRefreshGrant && this.isStaleRefreshTokenError(errorPayload.error);
+
+      // Overlapping refreshes: the race loser often gets invalid_grant after the
+      // winner rotated the refresh token. Clearing the session here would wipe a
+      // still-valid session (and emit Max-Age=0 cookies) on serverless hosts
+      // that cannot re-read the winner's cookies mid-flight.
+      if (isStaleRefresh) {
+        throw new KindeSDKError(
+          KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+          message
+        );
+      }
+
+      await sessionManager.destroySession();
       throw new Error(message);
     }
 
     return payload as OAuth2CodeExchangeResponse;
+  }
+
+  /**
+   * OAuth errors that indicate a refresh token was rejected as unusable for this
+   * attempt. Commonly `invalid_grant` after concurrent refresh rotation — do not
+   * treat as confirmation that the overall session is dead.
+   */
+  private isStaleRefreshTokenError(error: string): boolean {
+    return error === 'invalid_grant';
   }
 
   /**

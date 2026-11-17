@@ -7,7 +7,7 @@ import {
 } from '../../../sdk/utilities';
 import { getSDKHeader } from '../../../sdk/version';
 import * as mocks from '../../mocks';
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
 
 describe('ClientCredentials', () => {
   const clientConfig: ClientCredentialsOptions = {
@@ -54,20 +54,41 @@ describe('ClientCredentials', () => {
       mocks.fetchClient.mockClear();
     });
 
-    it('throws an exception when fetching access token returns an error response', async () => {
-      const errorDescription = 'error_description';
+    it('ClientCredentials destroys session when token endpoint returns an error', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      await sessionManager.setSessionItem('access_token', 'stale-access');
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
-          error: 'error',
-          [errorDescription]: errorDescription,
+          error: 'invalid_client',
+          error_description: 'Client authentication failed',
         }),
       });
 
       const client = new ClientCredentials(clientConfig);
-      await expect(async () => {
-        await client.getToken(sessionManager);
-      }).rejects.toThrow(errorDescription);
-      expect(mocks.fetchClient).toHaveBeenCalled();
+      try {
+        await expect(client.getToken(sessionManager)).rejects.toThrow(
+          'Client authentication failed'
+        );
+        expect(mocks.fetchClient).toHaveBeenCalled();
+        expect(destroySpy).toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('access_token')).toBeNull();
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('prefers error_description over error when both are present', async () => {
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_client',
+          error_description: 'Client authentication failed',
+        }),
+      });
+
+      const client = new ClientCredentials(clientConfig);
+      await expect(client.getToken(sessionManager)).rejects.toThrow(
+        'Client authentication failed'
+      );
     });
 
     it('return access token if an unexpired token is available in memory', async () => {
@@ -79,11 +100,17 @@ describe('ClientCredentials', () => {
         'access_token',
         validationDetails
       );
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
 
       const client = new ClientCredentials(clientConfig);
-      const accessToken = await client.getToken(sessionManager);
-      expect(mocks.fetchClient).not.toHaveBeenCalled();
-      expect(accessToken).toBe(mockAccessToken);
+      try {
+        const accessToken = await client.getToken(sessionManager);
+        expect(mocks.fetchClient).not.toHaveBeenCalled();
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(accessToken).toBe(mockAccessToken);
+      } finally {
+        destroySpy.mockRestore();
+      }
     });
 
     it('fetches an access token if no access token is available in memory', async () => {
