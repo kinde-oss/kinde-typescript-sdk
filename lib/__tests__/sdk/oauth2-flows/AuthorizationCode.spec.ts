@@ -10,7 +10,7 @@ import {
 
 import { KindeSDKError, KindeSDKErrorCode } from '../../../sdk/exceptions';
 import { generateRandomString } from '../../../sdk/utilities';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 describe('AuthorizationCode', () => {
   const { sessionManager } = mocks;
@@ -144,31 +144,66 @@ describe('AuthorizationCode', () => {
       expect(mocks.fetchClient).not.toHaveBeenCalled();
     });
 
-    it('throws an exception when fetching tokens returns an error response', async () => {
+    it('destroys session when auth-code exchange returns an error', async () => {
       const callbackURL = new URL(
         `${clientConfig.redirectURL}?state=state&code=code`
       );
-      const errorDescription = 'error_description';
       await sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, 'state');
+      await sessionManager.setSessionItem('access_token', 'stale-access');
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
-          error: 'error',
-          [errorDescription]: errorDescription,
+          error: 'access_denied',
+          error_description: 'User denied access',
         }),
       });
 
-      await expect(async () => {
-        const client = new AuthorizationCode(clientConfig, clientSecret);
-        await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
-      }).rejects.toThrow(errorDescription);
-      expect(mocks.fetchClient).toHaveBeenCalled();
+      try {
+        await expect(async () => {
+          const client = new AuthorizationCode(clientConfig, clientSecret);
+          await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
+        }).rejects.toThrow('User denied access');
+        expect(mocks.fetchClient).toHaveBeenCalled();
+        expect(destroySpy).toHaveBeenCalled();
+        // destroySession is awaited before throw — session already cleared
+        expect(await sessionManager.getSessionItem('access_token')).toBeNull();
+      } finally {
+        destroySpy.mockRestore();
+      }
     });
 
-    it('saves tokens to memory store after exchanging auth code for tokens', async () => {
+    it('destroys session when auth-code exchange returns invalid_grant', async () => {
+      const callbackURL = new URL(
+        `${clientConfig.redirectURL}?state=state&code=code`
+      );
+      await sessionManager.setSessionItem(AuthorizationCode.STATE_KEY, 'state');
+      await sessionManager.setSessionItem('refresh_token', 'existing-refresh');
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_grant',
+          error_description: 'Authorization code is invalid',
+        }),
+      });
+
+      try {
+        await expect(async () => {
+          const client = new AuthorizationCode(clientConfig, clientSecret);
+          await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
+        }).rejects.toThrow('Authorization code is invalid');
+        expect(destroySpy).toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('refresh_token')).toBeNull();
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('exchange success does not destroy session', async () => {
       const mockAccessToken = await mocks.getMockAccessToken(
         clientConfig.authDomain
       );
       const mockIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
           access_token: mockAccessToken.token,
@@ -183,16 +218,24 @@ describe('AuthorizationCode', () => {
       const stateKey = AuthorizationCode.STATE_KEY;
       await sessionManager.setSessionItem(stateKey, 'state');
       const client = new AuthorizationCode(clientConfig, clientSecret);
-      await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
-      expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
 
-      const foundRefreshToken = await sessionManager.getSessionItem('refresh_token');
-      const foundAccessToken = await sessionManager.getSessionItem('access_token');
-      const foundIdToken = await sessionManager.getSessionItem('id_token');
+      try {
+        await client.handleRedirectFromAuthDomain(sessionManager, callbackURL);
+        expect(mocks.fetchClient).toHaveBeenCalledTimes(1);
+        expect(destroySpy).not.toHaveBeenCalled();
 
-      expect(foundAccessToken).toBe(mockAccessToken.token);
-      expect(foundRefreshToken).toBe('refresh_token');
-      expect(foundIdToken).toBe(mockIdToken.token);
+        expect(await sessionManager.getSessionItem('access_token')).toBe(
+          mockAccessToken.token
+        );
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'refresh_token'
+        );
+        expect(await sessionManager.getSessionItem('id_token')).toBe(
+          mockIdToken.token
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
     });
   });
 
@@ -232,12 +275,12 @@ describe('AuthorizationCode', () => {
       }).rejects.toThrow('Cannot persist session no valid refresh token found');
     });
 
-    it('throws an exception when refreshing tokens returns an error response', async () => {
-      const errorDescription = 'error_description';
+    it('getToken refresh invalid_grant does not destroy session', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
       mocks.fetchClient.mockResolvedValue({
         json: () => ({
-          error: 'error',
-          [errorDescription]: errorDescription,
+          error: 'invalid_grant',
+          error_description: 'Refresh token is invalid or expired',
         }),
       });
 
@@ -248,11 +291,52 @@ describe('AuthorizationCode', () => {
       await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
       await sessionManager.setSessionItem('refresh_token', 'refresh_token');
 
-      await expect(async () => {
-        const client = new AuthorizationCode(clientConfig, clientSecret);
-        await client.getToken(sessionManager);
-      }).rejects.toThrow(errorDescription);
-      expect(mocks.fetchClient).toHaveBeenCalled();
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(client.getToken(sessionManager)).rejects.toMatchObject({
+          errorCode: KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+          message: 'Refresh token is invalid or expired',
+        });
+        expect(mocks.fetchClient).toHaveBeenCalled();
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'refresh_token'
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('isAuthenticated false after refresh invalid_grant without destroying session', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_grant',
+          error_description: 'Refresh token is invalid or expired',
+        }),
+      });
+
+      const expiredAccessToken = await mocks.getMockAccessToken(
+        clientConfig.authDomain,
+        true
+      );
+      await sessionManager.setSessionItem('access_token', expiredAccessToken.token);
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(client.isAuthenticated(sessionManager)).resolves.toBe(false);
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'refresh_token'
+        );
+      } finally {
+        destroySpy.mockRestore();
+        consoleErrorSpy.mockRestore();
+      }
     });
 
     it('fetches new tokens if access token is expired and refresh token is available', async () => {
@@ -387,6 +471,181 @@ describe('AuthorizationCode', () => {
         'errorCode',
         KindeSDKErrorCode.FAILED_TOKENS_REFRESH_ATTEMPT
       );
+    });
+  });
+
+  describe('refreshTokens()', () => {
+    afterEach(async () => {
+      mocks.fetchClient.mockClear();
+      await sessionManager.destroySession();
+    });
+
+    it('throws on refresh invalid_grant without destroying session', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_grant',
+        }),
+      });
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem('access_token', 'access_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(client.refreshTokens(sessionManager)).rejects.toMatchObject({
+          name: 'KindeSDKError',
+          errorCode: KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+          message: 'invalid_grant',
+        });
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('access_token')).toBe(
+          'access_token'
+        );
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'refresh_token'
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('throws on refresh invalid_grant with error_description without destroying session', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_grant',
+          error_description: 'Refresh token is invalid or expired',
+        }),
+      });
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem('access_token', 'access_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(client.refreshTokens(sessionManager)).rejects.toMatchObject({
+          errorCode: KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+          message: 'Refresh token is invalid or expired',
+        });
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'refresh_token'
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('destroys session on non-invalid_grant refresh error', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_client',
+          error_description: 'Client authentication failed',
+        }),
+      });
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem('access_token', 'access_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(client.refreshTokens(sessionManager)).rejects.toThrow(
+          'Client authentication failed'
+        );
+        expect(destroySpy).toHaveBeenCalled();
+        // destroySession is awaited before throw — session already cleared
+        expect(await sessionManager.getSessionItem('access_token')).toBeNull();
+        expect(await sessionManager.getSessionItem('refresh_token')).toBeNull();
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('commits tokens on successful refresh', async () => {
+      const newAccessToken = await mocks.getMockAccessToken(clientConfig.authDomain);
+      const newIdToken = await mocks.getMockIdToken(clientConfig.authDomain);
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          access_token: newAccessToken.token,
+          refresh_token: 'new_refresh_token',
+          id_token: newIdToken.token,
+        }),
+      });
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem('access_token', 'access_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        const tokens = await client.refreshTokens(sessionManager);
+        expect(tokens.access_token).toBe(newAccessToken.token);
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('access_token')).toBe(
+          newAccessToken.token
+        );
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'new_refresh_token'
+        );
+        expect(await sessionManager.getSessionItem('id_token')).toBe(
+          newIdToken.token
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('invalid_grant with commitToSession false does not destroy session', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_grant',
+          error_description: 'Refresh token is invalid or expired',
+        }),
+      });
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem('access_token', 'access_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(
+          client.refreshTokens(sessionManager, false)
+        ).rejects.toMatchObject({
+          errorCode: KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+        });
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('access_token')).toBe(
+          'access_token'
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
+    });
+
+    it('sequential refresh invalid_grant never destroys session', async () => {
+      const destroySpy = vi.spyOn(sessionManager, 'destroySession');
+      mocks.fetchClient.mockResolvedValue({
+        json: () => ({
+          error: 'invalid_grant',
+          error_description: 'Refresh token is invalid or expired',
+        }),
+      });
+      await sessionManager.setSessionItem('refresh_token', 'refresh_token');
+      await sessionManager.setSessionItem('access_token', 'access_token');
+
+      const client = new AuthorizationCode(clientConfig, clientSecret);
+      try {
+        await expect(client.refreshTokens(sessionManager)).rejects.toMatchObject({
+          errorCode: KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+        });
+        await expect(client.refreshTokens(sessionManager)).rejects.toMatchObject({
+          errorCode: KindeSDKErrorCode.STALE_REFRESH_TOKEN,
+        });
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(await sessionManager.getSessionItem('refresh_token')).toBe(
+          'refresh_token'
+        );
+      } finally {
+        destroySpy.mockRestore();
+      }
     });
   });
 
